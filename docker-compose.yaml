@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  memsql:
+    image: memsql/cluster-in-a-box:latest
+    environment:
+      ROOT_PASSWORD: ${DB_PASSWORD}
+      MEMSQL_DATABASE: ${DB_NAME}
+      LICENSE_KEY: ${LICENSE_KEY}
+      START_AFTER_INIT: 'Y'
+    ports:
+      - 127.0.0.1:${DB_PORT}:3306
+      - 127.0.0.1:8085:8080
