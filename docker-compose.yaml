@@ -1,7 +1,8 @@
-version: "3.7"
+version: '3.7'
 services:
   memsql:
     image: memsql/cluster-in-a-box:latest
+    restart: always
     environment:
       ROOT_PASSWORD: ${DB_PASSWORD}
       MEMSQL_DATABASE: ${DB_NAME}
@@ -11,4 +12,21 @@ services:
       - 127.0.0.1:${DB_PORT}:3306
       - 127.0.0.1:8085:8080
     volumes:
-      - /tmp:/var/lib/memsql:rw
+      - db_data:/var/lib/memsql:rw
+
+  app:
+    build: .
+    restart: always
+    ports:
+      - 127.0.0.1:5000:5000
+    depends_on:
+      - db
+    volumes:
+      - ./:/app
+    environment:
+      - FLASK_APP=wsgi:app
+      - FLASK_ENV=production
+      - FLASK_DEBUG=0
+
+volumes:
+  db_data:
