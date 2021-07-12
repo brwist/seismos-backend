@@ -1,6 +1,5 @@
 from flask_jwt_extended import jwt_required
 from flask_restful import Resource
-from werkzeug.wrappers import request
 from flasgger_marshmallow import swagger_decorator
 
 from app.schemas import (
@@ -30,8 +29,8 @@ class TrackingSheet(Resource):
     )
     def post(self, tracking_sheet_id):
         """ Add stage to tracking sheet """
-        req = request.json_schema
-        stage = req["stage"]
+        # req = request.json_schema
+        # stage = req["stage"]
         print("Creating stage...")
         # TODO create stage
         return {"msg": f"stage in {tracking_sheet_id} created"}
