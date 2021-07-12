@@ -29,6 +29,7 @@ FIELDS_JSON_TYPE_MAP = {
     fields.Str: 'string',
     fields.Bool: 'bool',
     fields.Int: 'number',
+    fields.Raw: 'raw',
 }
 
 if int(marshmallow.__version__.split('.')[1]) == 3:
