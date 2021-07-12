@@ -8,7 +8,11 @@ from flasgger import Swagger
 
 
 # instantiate extensions
-SWAGGER_TEMPLATE = {"securityDefinitions": {"APIKeyHeader": {"type": "apiKey", "name": "x-access-token", "in": "header"}}}
+SWAGGER_TEMPLATE = {
+    "securityDefinitions": {
+        "APIKeyHeader": {"type": "apiKey", "name": "x-access-token", "in": "header"}
+    }
+}
 
 db = SQLAlchemy()
 jwt = JWTManager()
