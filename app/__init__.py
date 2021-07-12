@@ -2,48 +2,38 @@ import os
 
 from flask import Flask
 from flask_restful import Api
-from app.views import ENDPOINTS_MAP
 from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager
+from flasgger import Swagger
+
 
 # instantiate extensions
+SWAGGER_TEMPLATE = {"securityDefinitions": {"APIKeyHeader": {"type": "apiKey", "name": "x-access-token", "in": "header"}}}
+
 db = SQLAlchemy()
+jwt = JWTManager()
+api = Api(prefix="/api")
+swagger = Swagger(template=SWAGGER_TEMPLATE)
 
 
 def create_app(environment="development"):
     from config import config
-    # from app.models import (
-    #     User,
-    #     AnonymousUser,
-    # )
+    from app.views import ENDPOINTS_MAP
 
     # Instantiate app.
     app = Flask(__name__)
-    api = Api(app)
-
-    for resource, url in ENDPOINTS_MAP.items():
-        api.add_resource(resource, url)
+    jwt.init_app(app)
+    # Swagger for API DOC
+    swagger.init_app(app)
 
     # Set app config.
     env = os.environ.get("FLASK_ENV", environment)
     app.config.from_object(config[env])
     config[env].configure(app)
+
+    for resource, url in ENDPOINTS_MAP.items():
+        api.add_resource(resource, url)
+    api.init_app(app)
     db.init_app(app)
-
-    # Set up extensions.
-    # login_manager.init_app(app)
-    
-    # Set up flask login.
-    # @login_manager.user_loader
-    # def get_user(id):
-    #     return User.query.get(int(id))
-
-    # login_manager.login_view = "auth.login"
-    # login_manager.login_message_category = "info"
-    # login_manager.anonymous_user = AnonymousUser
-
-    # # Error handlers.
-    # @app.errorhandler(HTTPException)
-    # def handle_http_error(exc):
-    #     return render_template("error.html", error=exc), exc.code
 
     return app

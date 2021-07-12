@@ -1,4 +1,6 @@
 endpoints:
     / - test endpoint...
-    /data_stream
-    /project/ (GET, PUT, DELETE)
+    /prod/api: 
+        auth/auth-login
+        auth/auth-logout
+        project/create

@@ -8,9 +8,15 @@ class BaseConfig(object):
 
     APP_NAME = "Simple Flask App"
     DEBUG_TB_ENABLED = False
+
     SECRET_KEY = os.environ.get(
         "SECRET_KEY", "Ensure you set a secret key, this is important!"
     )
+
+    JWT_SECRET_KEY = os.environ.get(
+        "JWT_SECRET_KEY", "No secret key for JWT token"
+    )
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_ENABLED = False
 

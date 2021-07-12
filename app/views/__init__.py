@@ -1,7 +1,6 @@
 # flake8: noqa F401
-from .root import Root
-
+from .auth import Login
 
 ENDPOINTS_MAP = {
-    Root: '/',
+    Login: "/auth",
 }
