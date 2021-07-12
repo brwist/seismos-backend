@@ -21,4 +21,4 @@ def client():
 
 def test_db_connection(client):
     all_users = User.query.all()
-    print(all_users)
+    assert len(all_users)
