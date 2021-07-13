@@ -11,6 +11,7 @@ class InputData(Resource):
     @jwt_required()
     @flasgger.swag_from(
         {
+            "tags": ["Input data"],
             "parameters": flasgger.marshmallow_apispec.schema2parameters(
                 InputFileSchema, location="form"
             ),
@@ -46,12 +47,13 @@ class InputData(Resource):
         }
     )
     def post(self):
+        """ Upload file into server """
         f = request.files["file"]
         f.save(f"static/{f.filename}")
         return {"msg": "OK"}
 
     @jwt_required()
-    @swagger_decorator(response_schema={200: InputFileSchema})
+    @swagger_decorator(response_schema={200: InputFileSchema}, tag="Input data")
     def get(self):
         """Get file wich has been uploaded earler"""
         return {"filename": "some file"}

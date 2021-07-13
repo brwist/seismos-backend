@@ -14,6 +14,7 @@ class DailyLog(Resource):
     @jwt_required()
     @swagger_decorator(
         response_schema={200: DailyLogSchema},
+        tag="Daily log",
     )
     def get(self):
         """ Get daily log """
@@ -22,7 +23,8 @@ class DailyLog(Resource):
     @jwt_required()
     @swagger_decorator(
         json_schema=DailyLogSchema,
-        response_schema={200: SuccessSchema, 401: ErrorSchema}
+        response_schema={200: SuccessSchema, 401: ErrorSchema},
+        tag="Daily log",
     )
     def post(self):
         """ Create daily log """

@@ -13,6 +13,7 @@ class OCReport(Resource):
     @jwt_required()
     @swagger_decorator(
         response_schema={200: OCReportSchema},
+        tag="OC Report",
     )
     def get(self):
         """ Get OC raport data"""
@@ -22,6 +23,7 @@ class OCReport(Resource):
     @swagger_decorator(
         json_schema=OCReportSchema,
         response_schema={200: SuccessSchema, 401: ErrorSchema},
+        tag="OC Report",
     )
     def post(self):
         """ Approve OC report """
@@ -33,6 +35,7 @@ class OCReportExport(Resource):
     @swagger_decorator(
         json_schema=OCReportSchema,
         response_schema={200: SuccessSchema, 401: ErrorSchema},
+        tag="OC Report",
     )
     def post(self):
         """ Export OC """
