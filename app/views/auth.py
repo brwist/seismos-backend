@@ -22,6 +22,7 @@ class Login(Resource):
         json_schema=UserLoginSchema,
         response_schema={200: AccessTokenResponseSchema, 401: ErrorSchema},
         tag="Auth",
+        jwt_required=False,
     )
     def post(self):
         """ Login user and return JWT token """
@@ -39,7 +40,7 @@ class Login(Resource):
     def get(self):
         """ Get User Data """
         username = get_jwt_identity()
-        user = User.filter(User.username == username).first()
+        user = User.query.filter(User.username == username).first()
         if not user:
             return {'error': True, 'err_str': f'User {username} not found'}
 
