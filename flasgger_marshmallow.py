@@ -69,6 +69,7 @@ def swagger_decorator(
     json_schema=None,
     headers_schema=None,
     response_schema=None,
+    tag="default"
 ):
     def decorator(func):
         def parse_simple_schema(c_schema, location):
@@ -219,6 +220,7 @@ def swagger_decorator(
                         )
 
             ret_doc = """---\n""" + yaml.dump(doc_dict)
+            ret_doc += f"tags: \n - {tag}"
             return ret_doc
 
         func.__doc__ = (

@@ -14,6 +14,7 @@ class DefaultValue(Resource):
     @jwt_required()
     @swagger_decorator(
         response_schema={200: DefaultValueSchema},
+        tag="Default Value"
     )
     def get(self):
         """ Get default value """
@@ -22,7 +23,8 @@ class DefaultValue(Resource):
     @jwt_required()
     @swagger_decorator(
         json_schema=DefaultValueSchema,
-        response_schema={200: SuccessSchema, 401: ErrorSchema}
+        response_schema={200: SuccessSchema, 401: ErrorSchema},
+        tag="Default Value"
     )
     def put(self):
         """ Update default value """

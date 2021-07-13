@@ -21,6 +21,7 @@ class Login(Resource):
     @swagger_decorator(
         json_schema=UserLoginSchema,
         response_schema={200: AccessTokenResponseSchema, 401: ErrorSchema},
+        tag="Auth",
     )
     def post(self):
         """ Login user and return JWT token """
@@ -34,7 +35,7 @@ class Login(Resource):
         return {"msg": "User not found"}, 401
 
     @jwt_required()
-    @swagger_decorator(response_schema={200: UserDataSchema})
+    @swagger_decorator(response_schema={200: UserDataSchema}, tag="Auth")
     def get(self):
         """ Get User Data """
         username = get_jwt_identity()

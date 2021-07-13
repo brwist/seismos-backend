@@ -16,6 +16,7 @@ class TrackingSheet(Resource):
     @swagger_decorator(
         response_schema={200: TrackingSheetSchema},
         path_schema=TrackingSheetIdSchema,
+        tag="Tracking Sheet",
     )
     def get(self, tracking_sheet_id):
         """ Get Tracking sheet """
@@ -26,6 +27,7 @@ class TrackingSheet(Resource):
         response_schema={200: SuccessSchema},
         path_schema=TrackingSheetIdSchema,
         json_schema=TrackingSheetStageSchema,
+        tag="Tracking Sheet",
     )
     def post(self, tracking_sheet_id):
         """ Add stage to tracking sheet """
@@ -40,6 +42,7 @@ class TrackingSheet(Resource):
         response_schema={200: SuccessSchema},
         path_schema=TrackingSheetIdSchema,
         json_schema=TrackingSheetSchema,
+        tag="Tracking Sheet",
     )
     def put(self, tracking_sheet_id):
         """ Update tracking sheet """
@@ -50,7 +53,8 @@ class CreateTrackingSheet(Resource):
     @jwt_required()
     @swagger_decorator(
         json_schema=TrackingSheetSchema,
-        response_schema={200: SuccessSchema, 401: ErrorSchema}
+        response_schema={200: SuccessSchema, 401: ErrorSchema},
+        tag="Tracking Sheet",
     )
     def post(self):
         """ Create tracking sheet """

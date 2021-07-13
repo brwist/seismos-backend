@@ -14,7 +14,8 @@ class Project(Resource):
     @jwt_required()
     @swagger_decorator(
         response_schema={200: ProjectSchema},
-        path_schema=ProjectIdPathSchema
+        path_schema=ProjectIdPathSchema,
+        tag="Project",
     )
     def get(self, project_id):
         """ Get project data"""
@@ -25,7 +26,8 @@ class ProjectCreate(Resource):
     @jwt_required()
     @swagger_decorator(
         json_schema=ProjectSchema,
-        response_schema={200: SuccessSchema, 401: ErrorSchema}
+        response_schema={200: SuccessSchema, 401: ErrorSchema},
+        tag="Project",
     )
     def post(self):
         """ Create project """
