@@ -8,9 +8,26 @@ from flasgger import Swagger
 
 
 # instantiate extensions
+# SWAGGER_TEMPLATE = {
+#     "securityDefinitions": {
+#         "Bearer": {
+#             "type": "apiKey",
+#             "name": "Authorization",
+#             "in": "header",
+#             "authenticationScheme": "Bearer",
+#         }
+#     }
+# }
+
 SWAGGER_TEMPLATE = {
-    "securityDefinitions": {
-        "APIKeyHeader": {"type": "apiKey", "name": "x-access-token", "in": "header"}
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+            }
+        }
     }
 }
 
@@ -26,14 +43,21 @@ def create_app(environment="development"):
 
     # Instantiate app.
     app = Flask(__name__)
-    jwt.init_app(app)
-    # Swagger for API DOC
-    swagger.init_app(app)
 
     # Set app config.
     env = os.environ.get("FLASK_ENV", environment)
     app.config.from_object(config[env])
     config[env].configure(app)
+
+    app.config["SWAGGER"] = {
+        "title": "Seismos API",
+        "uiversion": 3,
+        "openapi": "3.0.2",
+    }
+
+    jwt.init_app(app)
+    # Swagger for API DOC
+    swagger.init_app(app)
 
     for resource, url in ENDPOINTS_MAP.items():
         api.add_resource(resource, url)

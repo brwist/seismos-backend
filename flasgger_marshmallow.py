@@ -69,7 +69,8 @@ def swagger_decorator(
     json_schema=None,
     headers_schema=None,
     response_schema=None,
-    tag="default"
+    tag="default",
+    jwt_required=True,
 ):
     def decorator(func):
         def parse_simple_schema(c_schema, location):
@@ -180,27 +181,42 @@ def swagger_decorator(
                     parse_simple_schema(headers_schema, "header")
                 )
             if json_schema:
-                doc_dict["parameters"].extend(
-                    parse_request_body_json_schema(json_schema)
-                )
+                doc_dict["requestBody"] = {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": parse_json_schema(json_schema),
+                            }
+                        }
+                    }
+                }
             if response_schema:
                 doc_dict["responses"] = {}
                 for code, current_schema in response_schema.items():
                     doc_dict["responses"][code] = {
                         "description": current_schema.__doc__,
-                        "schema": {
-                            "type": "object",
-                            "properties": parse_json_schema(current_schema),
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": parse_json_schema(current_schema),
+                                },
+                            }
                         },
                     }
                     if (
-                        not doc_dict["responses"][code]
+                        not doc_dict["responses"][code]["content"]["application/json"]
                         .get("schema", {})
                         .get("properties")
                     ):
-                        doc_dict["responses"][code].update({"schema": None})
+                        doc_dict["responses"][code]["content"][
+                            "application/json"
+                        ].update({"schema": None})
                     if getattr(current_schema.Meta, "headers", None):
-                        doc_dict["responses"][code].update(
+                        doc_dict["responses"][code]["content"][
+                            "application/json"
+                        ].update(
                             {"headers": parse_json_schema(current_schema.Meta.headers)}
                         )
                     produces = getattr(current_schema.Meta, "produces", None)
@@ -209,7 +225,11 @@ def swagger_decorator(
                         doc_dict["produces"].extend(produces)
                         "application/xml" in produces and doc_dict["responses"][code][
                             "schema"
-                        ] and doc_dict["responses"][code]["schema"].update(
+                        ] and doc_dict["responses"][code]["content"][
+                            "application/json"
+                        ][
+                            "schema"
+                        ].update(
                             {
                                 "xml": {
                                     "name": getattr(
@@ -218,9 +238,11 @@ def swagger_decorator(
                                 }
                             }
                         )
-
             ret_doc = """---\n""" + yaml.dump(doc_dict)
-            ret_doc += f"tags: \n - {tag}"
+            ret_doc += f"tags: \n - {tag}\n"
+            if jwt_required:
+                ret_doc += "security: \n - bearerAuth: []\n"
+
             return ret_doc
 
         func.__doc__ = (
