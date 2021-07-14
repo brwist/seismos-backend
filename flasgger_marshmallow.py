@@ -85,7 +85,7 @@ def swagger_decorator(
                 tmp = {
                     "in": location,
                     "name": getattr(value, "data_key", None) or key,
-                    "type": FIELDS_JSON_TYPE_MAP.get(values_real_types[0]),
+                    "schema": {"type": FIELDS_JSON_TYPE_MAP.get(values_real_types[0])},
                     "required": value.required if location != "path" else True,
                     "description": value.metadata.get("doc", ""),
                 }

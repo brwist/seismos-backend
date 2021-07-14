@@ -12,9 +12,6 @@ class InputData(Resource):
     @flasgger.swag_from(
         {
             "tags": ["Input data"],
-            "parameters": flasgger.marshmallow_apispec.schema2parameters(
-                InputFileSchema, location="form"
-            ),
             "requestBody": {
                 "required": True,
                 "content": {
