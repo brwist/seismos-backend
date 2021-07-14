@@ -8,16 +8,6 @@ from flasgger import Swagger
 
 
 # instantiate extensions
-# SWAGGER_TEMPLATE = {
-#     "securityDefinitions": {
-#         "Bearer": {
-#             "type": "apiKey",
-#             "name": "Authorization",
-#             "in": "header",
-#             "authenticationScheme": "Bearer",
-#         }
-#     }
-# }
 
 SWAGGER_TEMPLATE = {
     "components": {
