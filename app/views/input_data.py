@@ -4,7 +4,7 @@ from flask_restful import Resource
 from flasgger_marshmallow import swagger_decorator
 import flasgger
 import marshmallow
-from app.schemas import InputFileSchema
+from app.schemas import InputFileSchema, SuccessSchema
 
 
 class InputData(Resource):
@@ -13,6 +13,7 @@ class InputData(Resource):
         {
             "tags": ["Input data"],
             "requestBody": {
+                "description": "Upload file with data input",
                 "required": True,
                 "content": {
                     "multipart/form-data": {
@@ -20,14 +21,6 @@ class InputData(Resource):
                             marshmallow.Schema.from_dict(
                                 {
                                     **InputFileSchema().fields,
-                                    "attachments": marshmallow.fields.List(
-                                        marshmallow.fields.Raw(
-                                            metadata=dict(
-                                                type="file",
-                                                description="files to attach",
-                                            )
-                                        )
-                                    ),
                                 }
                             )
                         ),
@@ -39,8 +32,18 @@ class InputData(Resource):
                 },
             },
             "responses": {
-                204: {"msg": "File is uploaded"},
+                "204": {
+                    "description": "Success message",
+                    "content": {
+                        "application/json": {
+                            "schema": flasgger.marshmallow_apispec.schema2jsonschema(
+                                        marshmallow.Schema.from_dict({**SuccessSchema().fields})
+                            ),
+                        }
+                    }
+                },
             },
+            "security": {"bearerAuth": []},  # TODO swagger not alow send JWT token
         }
     )
     def post(self):
