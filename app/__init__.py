@@ -5,7 +5,8 @@ from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flasgger import Swagger
-
+from flask_cors import CORS
+from flask_migrate import Migrate
 
 # instantiate extensions
 
@@ -33,6 +34,7 @@ def create_app(environment="development"):
 
     # Instantiate app.
     app = Flask(__name__)
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     # Set app config.
     env = os.environ.get("FLASK_ENV", environment)
@@ -53,5 +55,6 @@ def create_app(environment="development"):
         api.add_resource(resource, url)
     api.init_app(app)
     db.init_app(app)
+    Migrate(app, db)
 
     return app
