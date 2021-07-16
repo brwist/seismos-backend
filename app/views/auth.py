@@ -20,7 +20,7 @@ from flasgger_marshmallow import swagger_decorator
 class Login(Resource):
     @swagger_decorator(
         json_schema=UserLoginSchema,
-        response_schema={200: AccessTokenResponseSchema, 401: ErrorSchema},
+        response_schema={200: AccessTokenResponseSchema, 403: ErrorSchema},
         tag="Auth",
         jwt_required=False,
     )
@@ -42,7 +42,7 @@ class Login(Resource):
                 },
             }
 
-        return {"msg": "User not found"}, 401
+        return {"msg": "User not found"}, 403
 
     @jwt_required()
     @swagger_decorator(response_schema={200: UserStatusResponseSchema}, tag="Auth")
