@@ -4,8 +4,8 @@ from app.models import User
 
 from app.schemas import (
     UserLoginSchema,
-    UserDataSchema,
     AccessTokenResponseSchema,
+    UserStatusResponseSchema,
     ErrorSchema,
 )
 
@@ -30,13 +30,22 @@ class Login(Resource):
 
         user = User.authenticate(req["username"], req["password"])
         if user:
+            user_data = user.to_dict()
             access_token = create_access_token(identity=user.username)
-            return {"access_token": access_token}
+            return {
+                "status": 200,
+                "message": "Login Successful",
+                "data": {
+                    "access_token": access_token,
+                    "user": user_data,
+                    "project_ids": [],  # TODO fill projects
+                },
+            }
 
         return {"msg": "User not found"}, 401
 
     @jwt_required()
-    @swagger_decorator(response_schema={200: UserDataSchema}, tag="Auth")
+    @swagger_decorator(response_schema={200: UserStatusResponseSchema}, tag="Auth")
     def get(self):
         """ Get User Data """
         username = get_jwt_identity()
@@ -44,4 +53,11 @@ class Login(Resource):
         if not user:
             return {'error': True, 'err_str': f'User {username} not found'}
 
-        return {"username": user.username, "email": user.email}
+        return {
+            "status": 200,
+            "message": "User details",
+            "data": {
+                "user": user.to_dict(),
+                "project_ids": [],  # TODO fill projects
+            }
+        }

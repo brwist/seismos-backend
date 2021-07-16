@@ -16,8 +16,17 @@ class User(db.Model, ModelMixin):
     username = db.Column(db.String(60), nullable=False)
     email = db.Column(db.String(255), nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
-    activated = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
+    active = db.Column(db.Boolean, default=False, nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'created_at': self.created_at.timestamp(),
+            'active': self.active,
+        }
 
     @hybrid_property
     def password(self):
@@ -37,3 +46,12 @@ class User(db.Model, ModelMixin):
 
     def __repr__(self):
         return f"<User: {self.username}>"
+
+
+class UserProjects(db.Model):
+
+    __tablename__ = "user_projects"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
+    project_id = db.Column(db.Integer, nullable=False)

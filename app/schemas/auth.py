@@ -6,10 +6,32 @@ class UserLoginSchema(Schema):
     password = fields.String(required=True, description="Password for login")
 
 
-class UserDataSchema(Schema):
-    username = fields.Str(description="username")
-    email = fields.Str(description="email")
+class UserSchema(Schema):
+    id = fields.Int()
+    username = fields.String()
+    email = fields.Email()
+    active = fields.Boolean()
+    created_at = fields.Int()
+
+
+class UserStatusDataScheme(Schema):
+    user = fields.Nested(UserSchema)
+    project_ids = fields.List(fields.Integer())
+
+
+class AccessTokenSuccessSchema(Schema):
+    access_token = fields.Str()
+    user = fields.Nested(UserSchema)
+    project_ids = fields.List(fields.Integer())
 
 
 class AccessTokenResponseSchema(Schema):
-    access_token = fields.Str()
+    status = fields.Int()
+    message = fields.Str()
+    data = fields.Nested(AccessTokenSuccessSchema)
+
+
+class UserStatusResponseSchema(Schema):
+    status = fields.Int()
+    message = fields.Str()
+    data = fields.Nested(UserStatusDataScheme)

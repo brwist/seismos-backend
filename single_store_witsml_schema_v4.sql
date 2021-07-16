@@ -803,3 +803,23 @@ CREATE TABLE `wireline`  (
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
 );
+
+DROP TABLE IF EXISTS seismos.`user`;
+CREATE TABLE `user`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `client_uuid` char(60) NOT NULL,
+  `email` char(255) NOT NULL,
+  `password_hash` char(255) NOT NULL,
+
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`user_project`;
+CREATE TABLE `user_project`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `project_id` int NOT NULL,
+
+  PRIMARY KEY (`id`)
+);
