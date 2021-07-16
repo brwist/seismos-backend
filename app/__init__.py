@@ -34,8 +34,7 @@ def create_app(environment="development"):
 
     # Instantiate app.
     app = Flask(__name__)
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
-
+    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
     # Set app config.
     env = os.environ.get("FLASK_ENV", environment)
     app.config.from_object(config[env])
