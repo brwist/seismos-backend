@@ -1,4 +1,18 @@
 [[package]]
+name = "alembic"
+version = "1.6.5"
+description = "A database migration tool for SQLAlchemy."
+category = "main"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7"
+
+[package.dependencies]
+Mako = "*"
+python-dateutil = "*"
+python-editor = ">=0.3"
+SQLAlchemy = ">=1.3.0"
+
+[[package]]
 name = "aniso8601"
 version = "9.0.1"
 description = "A library for parsing ISO 8601 strings."
@@ -29,7 +43,7 @@ yaml = ["PyYAML (>=3.10)"]
 name = "appdirs"
 version = "1.4.4"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -37,7 +51,7 @@ python-versions = "*"
 name = "atomicwrites"
 version = "1.4.0"
 description = "Atomic file writes."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -59,7 +73,7 @@ tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>
 name = "black"
 version = "21.6b0"
 description = "The uncompromising code formatter."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6.2"
 
@@ -100,7 +114,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 name = "flake8"
 version = "3.9.2"
 description = "the modular source code checker: pep8 pyflakes and co"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 
@@ -157,6 +171,18 @@ marshmallow = ">=3.0.0"
 webargs = ">=6.0.0"
 
 [[package]]
+name = "flask-cors"
+version = "3.0.10"
+description = "A Flask extension adding a decorator for CORS support"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Flask = ">=0.9"
+Six = "*"
+
+[[package]]
 name = "flask-jwt-extended"
 version = "4.2.3"
 description = "Extended JWT integration with Flask"
@@ -171,6 +197,19 @@ Werkzeug = ">=0.14"
 
 [package.extras]
 asymmetric_crypto = ["cryptography (>=3.0,<4.0)"]
+
+[[package]]
+name = "flask-migrate"
+version = "3.0.1"
+description = "SQLAlchemy database migrations for Flask applications using Alembic"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+alembic = ">=0.7"
+Flask = ">=0.9"
+Flask-SQLAlchemy = ">=1.0"
 
 [[package]]
 name = "flask-restful"
@@ -216,7 +255,7 @@ docs = ["sphinx"]
 name = "iniconfig"
 version = "1.1.1"
 description = "iniconfig: brain-dead simple config-ini parsing"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -260,6 +299,21 @@ format = ["idna", "jsonpointer (>1.13)", "rfc3987", "strict-rfc3339", "webcolors
 format_nongpl = ["idna", "jsonpointer (>1.13)", "webcolors", "rfc3986-validator (>0.1.0)", "rfc3339-validator"]
 
 [[package]]
+name = "mako"
+version = "1.1.4"
+description = "A super-fast templating language that borrows the  best ideas from the existing templating languages."
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.dependencies]
+MarkupSafe = ">=0.9.2"
+
+[package.extras]
+babel = ["babel"]
+lingua = ["lingua"]
+
+[[package]]
 name = "markupsafe"
 version = "2.0.1"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -285,7 +339,7 @@ tests = ["pytest", "pytz", "simplejson"]
 name = "mccabe"
 version = "0.6.1"
 description = "McCabe checker, plugin for flake8"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -301,7 +355,7 @@ python-versions = "*"
 name = "mypy-extensions"
 version = "0.4.3"
 description = "Experimental type system extensions for programs checked with the mypy typechecker."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -317,7 +371,7 @@ python-versions = ">=3.5"
 name = "packaging"
 version = "21.0"
 description = "Core utilities for Python packages"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -328,7 +382,7 @@ pyparsing = ">=2.0.2"
 name = "pathspec"
 version = "0.8.1"
 description = "Utility library for gitignore style pattern matching of file paths."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
@@ -336,7 +390,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 name = "pluggy"
 version = "0.13.1"
 description = "plugin and hook calling mechanisms for python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -347,7 +401,7 @@ dev = ["pre-commit", "tox"]
 name = "py"
 version = "1.10.0"
 description = "library with cross-python path, ini-parsing, io, code, log facilities"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -355,7 +409,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "pycodestyle"
 version = "2.7.0"
 description = "Python style guide checker"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -363,7 +417,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "pyflakes"
 version = "2.3.1"
 description = "passive checker of Python programs"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -385,7 +439,7 @@ tests = ["pytest (>=6.0.0,<7.0.0)", "coverage[toml] (==5.0.4)"]
 name = "pyparsing"
 version = "2.4.7"
 description = "Python parsing module"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -401,7 +455,7 @@ python-versions = ">=3.6"
 name = "pytest"
 version = "6.2.4"
 description = "pytest: simple powerful testing with Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -419,6 +473,17 @@ toml = "*"
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
 
 [[package]]
+name = "python-dateutil"
+version = "2.8.2"
+description = "Extensions to the standard Python datetime module"
+category = "main"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+
+[package.dependencies]
+six = ">=1.5"
+
+[[package]]
 name = "python-dotenv"
 version = "0.18.0"
 description = "Read key-value pairs from a .env file and set them as environment variables"
@@ -428,6 +493,14 @@ python-versions = "*"
 
 [package.extras]
 cli = ["click (>=5.0)"]
+
+[[package]]
+name = "python-editor"
+version = "1.0.4"
+description = "Programmatically open an editor, capture the result."
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "pytz"
@@ -449,7 +522,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 name = "regex"
 version = "2021.7.6"
 description = "Alternative regular expression module, to replace re."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -523,7 +596,7 @@ url = ["furl (>=0.4.1)"]
 name = "toml"
 version = "0.10.2"
 description = "Python Library for Tom's Obvious, Minimal Language"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -559,9 +632,13 @@ watchdog = ["watchdog"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "d3a27968fafddbc6d8ea3ab794a516b3d069b150886547068303569e1a80bbea"
+content-hash = "fe98cf52a3ad82bf87554e111370a4cc5e9ff9212dcdcbd34e3d845d18125f8e"
 
 [metadata.files]
+alembic = [
+    {file = "alembic-1.6.5-py2.py3-none-any.whl", hash = "sha256:e78be5b919f5bb184e3e0e2dd1ca986f2362e29a2bc933c446fe89f39dbe4e9c"},
+    {file = "alembic-1.6.5.tar.gz", hash = "sha256:a21fedebb3fb8f6bbbba51a11114f08c78709377051384c9c5ead5705ee93a51"},
+]
 aniso8601 = [
     {file = "aniso8601-9.0.1-py2.py3-none-any.whl", hash = "sha256:1d2b7ef82963909e93c4f24ce48d4de9e66009a21bf1c1e1c85bdd0812fe412f"},
     {file = "aniso8601-9.0.1.tar.gz", hash = "sha256:72e3117667eedf66951bb2d93f4296a56b94b078a8a95905a052611fb3f1b973"},
@@ -610,9 +687,17 @@ flask-apispec = [
     {file = "flask-apispec-0.11.0.tar.gz", hash = "sha256:89e05dd2cb6e91ad999033c59aed4b5036aea9f0794d5ea5d9082be8ad4a99f2"},
     {file = "flask_apispec-0.11.0-py2.py3-none-any.whl", hash = "sha256:7e82dabcac4234c1540438daac045e8475804b4dcf7f68898ffc47113ab34da0"},
 ]
+flask-cors = [
+    {file = "Flask-Cors-3.0.10.tar.gz", hash = "sha256:b60839393f3b84a0f3746f6cdca56c1ad7426aa738b70d6c61375857823181de"},
+    {file = "Flask_Cors-3.0.10-py2.py3-none-any.whl", hash = "sha256:74efc975af1194fc7891ff5cd85b0f7478be4f7f59fe158102e91abb72bb4438"},
+]
 flask-jwt-extended = [
     {file = "Flask-JWT-Extended-4.2.3.tar.gz", hash = "sha256:22b8ffa7587d50aaf65f3009f1d55ef7287da8260eaf4655a5837e33479216c3"},
     {file = "Flask_JWT_Extended-4.2.3-py2.py3-none-any.whl", hash = "sha256:26969d931bd959dd6b82b2ac07733b499d52c8967229e70bf4ad5859de6cb3b2"},
+]
+flask-migrate = [
+    {file = "Flask-Migrate-3.0.1.tar.gz", hash = "sha256:4d42e8f861d78cb6e9319afcba5bf76062e5efd7784184dd2a1cccd9de34a702"},
+    {file = "Flask_Migrate-3.0.1-py2.py3-none-any.whl", hash = "sha256:df9043d2050df3c0e0f6313f6b529b62c837b6033c20335e9d0b4acdf2c40e23"},
 ]
 flask-restful = [
     {file = "Flask-RESTful-0.3.9.tar.gz", hash = "sha256:ccec650b835d48192138c85329ae03735e6ced58e9b2d9c2146d6c84c06fa53e"},
@@ -688,6 +773,10 @@ jinja2 = [
 jsonschema = [
     {file = "jsonschema-3.2.0-py2.py3-none-any.whl", hash = "sha256:4e5b3cf8216f577bee9ce139cbe72eca3ea4f292ec60928ff24758ce626cd163"},
     {file = "jsonschema-3.2.0.tar.gz", hash = "sha256:c8a85b28d377cc7737e46e2d9f2b4f44ee3c0e1deac6bf46ddefc7187d30797a"},
+]
+mako = [
+    {file = "Mako-1.1.4-py2.py3-none-any.whl", hash = "sha256:aea166356da44b9b830c8023cd9b557fa856bd8b4035d6de771ca027dfc5cc6e"},
+    {file = "Mako-1.1.4.tar.gz", hash = "sha256:17831f0b7087c313c0ffae2bcbbd3c1d5ba9eeac9c38f2eb7b50e8c99fe9d5ab"},
 ]
 markupsafe = [
     {file = "MarkupSafe-2.0.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:f9081981fe268bd86831e5c75f7de206ef275defcb82bc70740ae6dc507aee51"},
@@ -807,9 +896,20 @@ pytest = [
     {file = "pytest-6.2.4-py3-none-any.whl", hash = "sha256:91ef2131a9bd6be8f76f1f08eac5c5317221d6ad1e143ae03894b862e8976890"},
     {file = "pytest-6.2.4.tar.gz", hash = "sha256:50bcad0a0b9c5a72c8e4e7c9855a3ad496ca6a881a3641b4260605450772c54b"},
 ]
+python-dateutil = [
+    {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
+    {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
+]
 python-dotenv = [
     {file = "python-dotenv-0.18.0.tar.gz", hash = "sha256:effaac3c1e58d89b3ccb4d04a40dc7ad6e0275fda25fd75ae9d323e2465e202d"},
     {file = "python_dotenv-0.18.0-py2.py3-none-any.whl", hash = "sha256:dd8fe852847f4fbfadabf6183ddd4c824a9651f02d51714fa075c95561959c7d"},
+]
+python-editor = [
+    {file = "python-editor-1.0.4.tar.gz", hash = "sha256:51fda6bcc5ddbbb7063b2af7509e43bd84bfc32a4ff71349ec7847713882327b"},
+    {file = "python_editor-1.0.4-py2-none-any.whl", hash = "sha256:5f98b069316ea1c2ed3f67e7f5df6c0d8f10b689964a4a811ff64f0106819ec8"},
+    {file = "python_editor-1.0.4-py2.7.egg", hash = "sha256:ea87e17f6ec459e780e4221f295411462e0d0810858e055fc514684350a2f522"},
+    {file = "python_editor-1.0.4-py3-none-any.whl", hash = "sha256:1bf6e860a8ad52a14c3ee1252d5dc25b2030618ed80c022598f00176adc8367d"},
+    {file = "python_editor-1.0.4-py3.5.egg", hash = "sha256:c3da2053dbab6b29c94e43c486ff67206eafbe7eb52dbec7390b5e2fb05aac77"},
 ]
 pytz = [
     {file = "pytz-2021.1-py2.py3-none-any.whl", hash = "sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798"},
