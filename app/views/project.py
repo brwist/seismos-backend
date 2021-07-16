@@ -2,11 +2,11 @@ from flask_jwt_extended import jwt_required
 from flask_restful import Resource
 from flasgger_marshmallow import swagger_decorator
 
+
 from app.schemas import (
     ProjectSchema,
     ProjectIdPathSchema,
     SuccessSchema,
-    ErrorSchema,
 )
 
 
@@ -26,7 +26,7 @@ class ProjectCreate(Resource):
     @jwt_required()
     @swagger_decorator(
         json_schema=ProjectSchema,
-        response_schema={200: SuccessSchema, 401: ErrorSchema},
+        response_schema={200: SuccessSchema},
         tag="Project",
     )
     def post(self):
