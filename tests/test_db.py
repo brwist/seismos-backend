@@ -6,7 +6,6 @@ from app import db, create_app
 @pytest.fixture
 def client():
     app = create_app(environment="testing")
-    app.config["TESTING"] = True
 
     with app.test_client() as client:
         app_ctx = app.app_context()

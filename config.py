@@ -20,6 +20,8 @@ class BaseConfig(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_ENABLED = False
 
+    STATIC_PATH = "static"
+
     @staticmethod
     def configure(app):
         # Implement this method to do further configuration on your app.

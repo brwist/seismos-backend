@@ -1,0 +1,92 @@
+{
+    "jobInfoValues": {
+      "job_name": "test_job_name",
+      "job_type": "test_job_type",
+      "job_id": "test_job_id",
+      "afe_id": "test_afe_id", 
+      "country_name": "test_country_name",    
+      "basin_name": "test_basin_name",  
+      "state": "test_state",  
+      "job_start_date": "1968-12-06",
+      "job_end_date": "1968-12-07"
+    },
+    "padInfoValues": {
+      "pad_name": "test_pad_name",
+      "pad_uuid": "test_pad_uuid",
+      "client_name": "test_client_name",
+      "customer_field_rep": "test_customer_field_rep",
+      "rep_contact_number": 55,
+      "operator_name": "test_operator_name",
+      "service_company_name": "test_service_company_name",
+      "wireline_company": "test_wireline_company"
+    },
+    "wellInfoValues": [
+      {
+        "well_name": "test_well_name",
+        "num_stages": 3,
+        "well_api": "test_well_api",
+        "formation": "test_formation",
+        "lat": "test_lat",
+        "easting": "test_easting",
+        "northing": "test_northing"
+      }
+    ],
+    "wellVolumeValues": [
+      [
+        {
+            "type": "test_Casing",       
+            "od": 3.14,
+            "wt": 3.14,
+            "id": "test_id",
+            "depth_md": 3.14,
+            "tol": "test_tol"   
+        },
+        {
+            "type": "test_linear_1",       
+            "od": 3.14,
+            "wt": 3.14,
+            "id": "test_id",
+            "depth_md": 3.14,
+            "tol": "test_tol"   
+          },
+        {
+            "type": "test_Casing",       
+            "od": 3.14,
+            "wt": 3.14,
+            "id": "test_id",
+            "depth_md": 3.14,
+            "tol": "test_tol"   
+        }
+      ]
+    ],
+    "wellVolumeEstimationsValues": [
+      {
+        "surface_vol": 3.14,  
+        "bbls": 3.14,
+        "gallons": 3.14
+      }
+    ],
+    "clientInfoValues": [
+      {
+        "clientusername": "test_clientusername",           
+        "title": "test_title",
+        "password": "test_password"            
+      }
+    ],
+    "crewInfoValues": [
+      {
+        "role": "test_role",                     
+        "name": "test_name",
+        "phone_number": "test_phone_number"
+      }
+    ],
+    "equipmentValues": {
+      "trailers_id": 55,
+      "powerpack_id": 55,
+      "source_id": 55,
+      "accumulator_id": 55,
+      "hydrophones_id": 55,
+      "transducer_id": 55,
+      "hotspot_id": 55
+    }
+  }

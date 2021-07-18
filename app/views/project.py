@@ -6,7 +6,7 @@ from flasgger_marshmallow import swagger_decorator
 from app.schemas import (
     ProjectSchema,
     ProjectIdPathSchema,
-    SuccessSchema,
+    CreateProjectSuccessSchema,
 )
 
 
@@ -26,9 +26,18 @@ class ProjectCreate(Resource):
     @jwt_required()
     @swagger_decorator(
         json_schema=ProjectSchema,
-        response_schema={200: SuccessSchema},
+        response_schema={200: CreateProjectSuccessSchema},
         tag="Project",
     )
     def post(self):
         """ Create project """
-        return {"msg": "project created"}
+        
+        return {
+            "status": 200,
+            "message": "Project created successfully!",
+            "data": {
+                "project": {
+                    "id": 0,
+                }
+            }
+        }

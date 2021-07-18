@@ -1,5 +1,5 @@
 # flake8: noqa F401
-from .project import ProjectSchema, ProjectIdPathSchema
+from .project import ProjectSchema, ProjectIdPathSchema, CreateProjectSuccessSchema
 from .base import ErrorSchema, SuccessSchema
 from .auth import UserLoginSchema, AccessTokenResponseSchema, UserStatusResponseSchema
 from .tracking_sheet import TrackingSheetIdSchema, TrackingSheetSchema, TrackingSheetStageSchema
