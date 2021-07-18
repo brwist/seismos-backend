@@ -72,7 +72,12 @@ class EquipmentSchema(Schema):
     hotspot_id = fields.Int()
 
 
+class ProjectDataScehma(Schema):
+    project_name = fields.Str()
+
+
 class ProjectSchema(Schema):
+    projectValues = fields.Nested(ProjectDataScehma)
     jobInfoValues = fields.Nested(JobInfoSchema)
     padInfoValues = fields.Nested(PadInfoSchema)
     wellInfoValues = fields.List(fields.Nested(WellInfoSchema))
