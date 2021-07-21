@@ -121,12 +121,22 @@ def swagger_decorator(
                     tmp[key] = {
                         "type": "array",
                         "description": value.metadata.get("doc", ""),
-                        "items": {
-                            "type": "string",
-                        },
                     }
-                    if not isinstance(value.default, _Missing):
-                        tmp[key]["default"] = value.default
+
+                    values_real_types = list(
+                        set(FIELDS_JSON_TYPE_MAP) & set(value.inner.__class__.__mro__)
+                    )
+                    values_real_types.sort(key=value.inner.__class__.__mro__.index)
+                    if not values_real_types:
+                        raise "Unsuported type: %s" % str(type(value.inner))
+                    tmp[key]["itmes"] = {
+                        "type": FIELDS_JSON_TYPE_MAP.get(values_real_types[0]),
+                        # "description": value.inner.metadata.get("doc", ""),
+                        # "required": value.inner.required,
+                    }
+
+                    # if not isinstance(value.inner.default, _Missing):
+                    #     tmp[key]["items"]["default"] = value.inner.default
                 else:
                     values_real_types = list(
                         set(FIELDS_JSON_TYPE_MAP) & set(value.__class__.__mro__)
@@ -143,18 +153,62 @@ def swagger_decorator(
                         tmp[key]["default"] = value.default
             return tmp
 
-        def parse_request_body_json_schema(c_schema):
-            tmp = {
-                "in": "body",
-                "name": "body",
-                "required": True,
-                "description": "json body",
-                "schema": {
-                    "properties": parse_json_schema(c_schema),
-                    "type": "object",
-                },
+        def parse_field(schemas_field):
+            res = {}
+            values_real_types = list(
+                set(FIELDS_JSON_TYPE_MAP) & set(schemas_field.__class__.__mro__)
+            )
+            values_real_types.sort(key=schemas_field.__class__.__mro__.index)
+            if not values_real_types:
+                raise "Unsuported type: %s" % str(type(schemas_field))
+
+            field_type = FIELDS_JSON_TYPE_MAP.get(values_real_types[0])
+
+            res = {
+                "type": field_type,
+                "description": schemas_field.metadata.get("doc", ""),
+                "required": schemas_field.required,
             }
-            return [tmp]
+
+            if hasattr(schemas_field, "schema"):
+                res = {
+                    "properties": parse_request_schema(schemas_field.schema)
+                }
+
+            elif field_type == "array":
+                res["items"] = parse_field(schemas_field.inner)
+
+            if not isinstance(schemas_field.default, _Missing):
+                res["default"] = schemas_field.default
+            return res
+
+        def parse_request_schema(r_schema):
+            doc = {}
+            for key, value in (
+                r_schema.__dict__.get("_declared_fields")
+                or r_schema.__dict__.get("declared_fields")
+                or {}
+            ).items():
+                key = getattr(value, "data_key", None) or key
+                if isinstance(value, fields.Nested):
+                    if value.many:
+                        doc[key] = {
+                            "type": "array",
+                            "description": value.metadata.get("doc", ""),
+                            "items": {
+                                "type": "object",
+                                "properties": parse_request_schema(value.schema),
+                            },
+                        }
+                    else:
+                        doc[key] = {
+                            "type": "object",
+                            "properties": parse_request_schema(value.schema),
+                        }
+
+                else:
+                    doc[key] = parse_field(value)
+            return doc
 
         def generate_doc():
             doc_dict = {}
@@ -186,8 +240,8 @@ def swagger_decorator(
                         "application/json": {
                             "schema": {
                                 "type": "object",
-                                "properties": parse_json_schema(json_schema),
-                            }
+                                "properties": parse_request_schema(json_schema)
+                            },
                         }
                     }
                 }
@@ -200,7 +254,7 @@ def swagger_decorator(
                             "application/json": {
                                 "schema": {
                                     "type": "object",
-                                    "properties": parse_json_schema(current_schema),
+                                    "properties": parse_request_schema(current_schema),
                                 },
                             }
                         },

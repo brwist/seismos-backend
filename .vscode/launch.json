@@ -16,6 +16,8 @@
             "args": [
                 "run",
                 "--no-debugger",
+                "-p",
+                "8087"
             ],
             "jinja": true
         }

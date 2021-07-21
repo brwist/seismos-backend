@@ -33,7 +33,6 @@ class TrackingSheet(Resource):
         """ Add stage to tracking sheet """
         # req = request.json_schema
         # stage = req["stage"]
-        print("Creating stage...")
         # TODO create stage
         return {"msg": f"stage in {tracking_sheet_id} created"}
 

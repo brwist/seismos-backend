@@ -221,7 +221,7 @@ CREATE TABLE `fluid_type_lookup`  (
 DROP TABLE IF EXISTS seismos.`formation`;
 CREATE TABLE `formation`  (
   `id` int NOT NULL AUTO_INCREMENT,
-  `value` int NOT NULL,
+  `value` TEXT NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
@@ -317,7 +317,8 @@ CREATE TABLE `geophysical_properties`  (
 
 DROP TABLE IF EXISTS seismos.`job_info`;
 CREATE TABLE `job_info`  (
-  `job_id` int NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `job_id` text,
   `job_name` text NOT NULL,
   `afe_id` int NULL,
   `job_start_date` datetime NULL,
@@ -325,8 +326,11 @@ CREATE TABLE `job_info`  (
   `job_type_id` int NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`job_id`)
+  PRIMARY KEY (`id`)
 );
+
+
+
 
 DROP TABLE IF EXISTS seismos.`job_type`;
 CREATE TABLE `job_type`  (
@@ -771,14 +775,21 @@ CREATE TABLE `well`  (
   `estimated_surface_vol` float NULL,
   `estimated_bbls` float NULL,
   `estimated_gallons` float NULL,
+  `casing_od` float NULL,
+  `casing_wt` float NULL,
+  `casing_id` float NULL,
+  `casing_depth_md` float NULL,
+  `casing_tol` float NULL,
   `liner1_od` float NULL,
   `liner1_wt` float NULL,
-  `liner1_id` text NULL,
+  `liner1_id` float NULL,
   `liner1_depth_md` float NULL,
+  `liner1_tol` float NULL,
   `liner2_od` float NULL,
   `liner2_wt` float NULL,
-  `liner2_id` text NULL,
+  `liner2_id` float NULL,
   `liner2_depth_md` float NULL,
+  `liner2_tol` float NULL,
   `measured_depth_unit` text NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
@@ -807,7 +818,6 @@ CREATE TABLE `wireline`  (
 DROP TABLE IF EXISTS seismos.`user`;
 CREATE TABLE `user`  (
   `id` int NOT NULL AUTO_INCREMENT,
-  `client_uuid` char(60) NOT NULL,
   `email` char(255) NOT NULL,
   `password_hash` char(255) NOT NULL,
 

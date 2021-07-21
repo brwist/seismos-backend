@@ -59,7 +59,12 @@ def test_project(client):
     with open(create_project_json_path, "r") as json_f:
         payload = json.load(json_f)
         assert payload
-        resp = client.post("/api/project", headers={"Authorization": f"Bearer {access_token}"}, data=payload)
+        resp = client.post(
+            "/api/project",
+            headers={"Authorization": f"Bearer {access_token}"},
+            json=payload,
+        )
+
         assert resp.status_code == 200
         assert resp.json
         assert resp.json["message"] == "Project created successfully!"

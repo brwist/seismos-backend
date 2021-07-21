@@ -1,4 +1,7 @@
 {
+    "projectValues": {
+      "project_name": "test_project"
+    },
     "jobInfoValues": {
       "job_name": "test_job_name",
       "job_type": "test_job_type",
@@ -7,8 +10,8 @@
       "country_name": "test_country_name",    
       "basin_name": "test_basin_name",  
       "state": "test_state",  
-      "job_start_date": "1968-12-06",
-      "job_end_date": "1968-12-07"
+      "job_start_date": 3123123,
+      "job_end_date": 33333333
     },
     "padInfoValues": {
       "pad_name": "test_pad_name",

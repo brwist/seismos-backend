@@ -1,6 +1,0 @@
-endpoints:
-    / - test endpoint...
-    /prod/api: 
-        auth/auth-login
-        auth/auth-logout
-        project/create

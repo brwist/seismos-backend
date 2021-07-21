@@ -9,8 +9,8 @@ class JobInfoSchema(Schema):
     country_name = fields.Str()
     basin_name = fields.Str()
     state = fields.Str()
-    job_start_date = fields.DateTime()
-    job_end_time = fields.DateTime()
+    job_start_date = fields.Integer()
+    job_end_date = fields.Integer()
 
 
 class PadInfoSchema(Schema):
@@ -81,7 +81,7 @@ class ProjectSchema(Schema):
     jobInfoValues = fields.Nested(JobInfoSchema)
     padInfoValues = fields.Nested(PadInfoSchema)
     wellInfoValues = fields.List(fields.Nested(WellInfoSchema))
-    wellValomuValues = fields.List(fields.List(fields.Nested(WellVolumeSchema)))
+    wellVolumeValues = fields.List(fields.List(fields.Nested(WellVolumeSchema)))
     wellVolumeEstimationsValues = fields.List(fields.Nested(WellVolumeEstimationSchema))
     clientInfoValues = fields.List(fields.Nested(ClientInfoSchema))
     crewInfoValues = fields.List(fields.Nested(CrewInfoSchema))

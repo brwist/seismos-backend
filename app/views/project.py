@@ -1,5 +1,6 @@
-from flask_jwt_extended import jwt_required
+from flask import request
 from flask_restful import Resource
+from flask_jwt_extended import jwt_required
 from flasgger_marshmallow import swagger_decorator
 
 
@@ -9,8 +10,13 @@ from app.schemas import (
     CreateProjectSuccessSchema,
 )
 
+from app.models import (
+    Project,
+    JobInfo,
+)
 
-class Project(Resource):
+
+class ProjectGet(Resource):
     @jwt_required()
     @swagger_decorator(
         response_schema={200: ProjectSchema},
@@ -19,6 +25,7 @@ class Project(Resource):
     )
     def get(self, project_id):
         """ Get project data"""
+        # TODO get the project    
         return {"name": f"Project with id: {project_id}"}
 
 
@@ -31,7 +38,10 @@ class ProjectCreate(Resource):
     )
     def post(self):
         """ Create project """
-        
+        req = request.json_schema
+        project_name = req["projectValues"]["project_name"]
+        # project = Project(name=project_name)
+
         return {
             "status": 200,
             "message": "Project created successfully!",

@@ -22,7 +22,7 @@ class UserStatusDataScheme(Schema):
 class AccessTokenSuccessSchema(Schema):
     access_token = fields.Str()
     user = fields.Nested(UserSchema)
-    project_ids = fields.List(fields.Integer())
+    project_ids = fields.List(fields.Int())
 
 
 class AccessTokenResponseSchema(Schema):
