@@ -1,8 +1,8 @@
-from app.models.mixin_models import TimestampMixin
+from app.models.mixin_models import TimestampMixin, ModelMixin
 from app import db
 
 
-class CustomerFieldRep(TimestampMixin, db.Model):
+class CustomerFieldRep(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "customer_field_rep"
 

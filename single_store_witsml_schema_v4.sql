@@ -820,6 +820,7 @@ CREATE TABLE `user`  (
   `id` int NOT NULL AUTO_INCREMENT,
   `email` char(255) NOT NULL,
   `password_hash` char(255) NOT NULL,
+  `username` char(60) NOT NULL,
 
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   PRIMARY KEY (`id`)

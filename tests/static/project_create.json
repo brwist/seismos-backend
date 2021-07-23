@@ -1,7 +1,9 @@
 {
     "projectValues": {
-      "project_name": "test_project"
+      "project_name": "test_project",
+      "project_uuid": "9ef998bc-54cf-46ff-92b3-cb54757b77e5"
     },
+  
     "jobInfoValues": {
       "job_name": "test_job_name",
       "job_type": "test_job_type",
@@ -37,28 +39,28 @@
     "wellVolumeValues": [
       [
         {
-            "type": "test_Casing",       
+            "type": "Casing",       
             "od": 3.14,
             "wt": 3.14,
-            "id": "test_id",
+            "id":  3.14,
             "depth_md": 3.14,
-            "tol": "test_tol"   
+            "tol":  3.14  
         },
         {
-            "type": "test_linear_1",       
+            "type": "Linear1",       
             "od": 3.14,
             "wt": 3.14,
-            "id": "test_id",
+            "id":  3.14,
             "depth_md": 3.14,
-            "tol": "test_tol"   
+            "tol":  3.14
           },
         {
-            "type": "test_Casing",       
+            "type": "Linear2",       
             "od": 3.14,
             "wt": 3.14,
-            "id": "test_id",
+            "id":  3.14,
             "depth_md": 3.14,
-            "tol": "test_tol"   
+            "tol":  3.14
         }
       ]
     ],
@@ -78,7 +80,7 @@
     ],
     "crewInfoValues": [
       {
-        "role": "test_role",                     
+        "role": "engineer",                     
         "name": "test_name",
         "phone_number": "test_phone_number"
       }

@@ -31,7 +31,7 @@ class Login(Resource):
         user = User.authenticate(req["username"], req["password"])
         if user:
             user_data = user.to_dict()
-            access_token = create_access_token(identity=user.username)
+            access_token = create_access_token(identity=user.id)
             return {
                 "status": 200,
                 "message": "Login Successful",
@@ -48,10 +48,10 @@ class Login(Resource):
     @swagger_decorator(response_schema={200: UserStatusResponseSchema}, tag="Auth")
     def get(self):
         """ Get User Data """
-        username = get_jwt_identity()
-        user = User.query.filter(User.username == username).first()
+        user_id = get_jwt_identity()
+        user = User.query.filter(User.id == user_id).first()
         if not user:
-            return {'error': True, 'err_str': f'User {username} not found'}
+            return {'error': True, 'err_str': 'User not found'}
 
         return {
             "status": 200,

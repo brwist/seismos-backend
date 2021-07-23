@@ -5,7 +5,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
-from app.models.utils import ModelMixin
+from .mixin_models import ModelMixin
 
 
 class User(db.Model, ModelMixin):
@@ -17,7 +17,6 @@ class User(db.Model, ModelMixin):
     email = db.Column(db.String(255), nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
-    active = db.Column(db.Boolean, default=False, nullable=False)
 
     def to_dict(self):
         return {
@@ -25,7 +24,6 @@ class User(db.Model, ModelMixin):
             'username': self.username,
             'email': self.email,
             'created_at': self.created_at.timestamp(),
-            'active': self.active,
         }
 
     @hybrid_property

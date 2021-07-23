@@ -1,8 +1,8 @@
-from app.models.mixin_models import TimestampMixin
+from app.models.mixin_models import TimestampMixin, ModelMixin
 from app import db
 
 
-class Client(TimestampMixin, db.Model):
+class Client(TimestampMixin, db.Model, ModelMixin):
 
     __tablename__ = "client"
 

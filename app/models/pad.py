@@ -1,8 +1,8 @@
-from app.models.mixin_models import TimestampMixin
+from app.models.mixin_models import TimestampMixin, ModelMixin
 from app import db
 
 
-class Pad(TimestampMixin, db.Model):
+class Pad(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "pad"
 

@@ -7,4 +7,11 @@ from .formation import Formation
 from .pad import Pad
 from .project import Project
 from .well import Well
-from .job_info import JobInfo
+from .job import JobInfo, JobType
+from .crew import Crew, ProjectCrew
+from .location import (
+    LocationInfo,
+    CountryName,
+    BasinName,
+    State,
+)

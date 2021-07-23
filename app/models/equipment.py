@@ -1,8 +1,8 @@
-from app.models.mixin_models import TimestampMixin
+from app.models.mixin_models import TimestampMixin, ModelMixin
 from app import db
 
 
-class Equipment(TimestampMixin, db.Model):
+class Equipment(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "equipment"
 
@@ -14,3 +14,4 @@ class Equipment(TimestampMixin, db.Model):
     hydrophones_id = db.Column(db.Integer)
     hotspot_id = db.Column(db.Integer)
     computer_id = db.Column(db.Integer)
+    transducer_id = db.Column(db.Integer)

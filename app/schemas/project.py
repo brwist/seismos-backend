@@ -36,12 +36,12 @@ class WellInfoSchema(Schema):
 
 
 class WellVolumeSchema(Schema):
-    id = fields.Str()
     type = fields.Str()
+    id = fields.Float()
     od = fields.Float()
     wt = fields.Float()
     depth_md = fields.Float()
-    tol = fields.Str()  # ambiguity
+    tol = fields.Float()
 
 
 class WellVolumeEstimationSchema(Schema):
@@ -74,6 +74,7 @@ class EquipmentSchema(Schema):
 
 class ProjectDataScehma(Schema):
     project_name = fields.Str()
+    project_uuid = fields.Str()
 
 
 class ProjectSchema(Schema):
