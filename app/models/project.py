@@ -13,7 +13,25 @@ class Project(TimestampMixin, ModelMixin, db.Model):
     equipment_id = db.Column(db.Integer)
 
     equipment = db.relationship(
-        'Equipment',
+        "Equipment",
         foreign_keys=[equipment_id],
-        primaryjoin='Project.equipment_id == Equipment.id'
+        primaryjoin="Project.equipment_id == Equipment.id"
+    )
+
+    client = db.relationship(
+        "Client",
+        foreign_keys=[client_id],
+        primaryjoin="Project.client_id == Client.id"
+    )
+
+    pad = db.relationship(
+        "Pad",
+        foreign_keys=[id],
+        primaryjoin="Project.id == Pad.project_id"
+    )
+
+    job_info = db.relationship(
+        "JobInfo",
+        foreign_keys=[id],
+        primaryjoin="Project.id == JobInfo.project_id"
     )

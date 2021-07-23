@@ -62,3 +62,25 @@ def test_project_endpoint(client_with_user):
         assert project.equipment.hydrophones_id == payload["equipmentValues"]["hydrophones_id"]
         assert project.equipment.transducer_id == payload["equipmentValues"]["transducer_id"]
         assert project.equipment.hotspot_id == payload["equipmentValues"]["hotspot_id"]
+
+        # client test
+        assert project.client
+        assert project.client.client_name == payload["padInfoValues"]["client_name"]
+        assert project.client.project_id == project.id
+        assert project.client.operator_name == payload["padInfoValues"]["operator_name"]
+        assert project.client.service_company_name == payload["padInfoValues"]["service_company_name"]
+        assert project.client.wireline_company == payload["padInfoValues"]["wireline_company"]
+
+        # client customer field
+
+        # Pad test
+        assert project.pad.pad_name == payload["padInfoValues"]["pad_name"]
+        assert project.pad.number_of_wells == len(payload["wellInfoValues"])
+
+        # Job test
+        assert project.job_info.job_id == payload["jobInfoValues"]["job_id"]
+        assert project.job_info.job_name == payload["jobInfoValues"]["job_name"]
+        assert project.job_info.afe_id == payload["jobInfoValues"]["afe_id"]
+        assert int(project.job_info.job_start_date.timestamp()) == payload["jobInfoValues"]["job_start_date"]
+        assert int(project.job_info.job_end_date.timestamp()) == payload["jobInfoValues"]["job_end_date"]
+        # TODO Job type test

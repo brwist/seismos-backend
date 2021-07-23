@@ -43,7 +43,7 @@ class ProjectGet(Resource):
     )
     def get(self, project_id):
         """ Get project data"""
-        # TODO get the project    
+        # TODO get the project
         return {"name": f"Project with id: {project_id}"}
 
 
@@ -125,6 +125,7 @@ class ProjectCreate(Resource):
             afe_id=job_data["afe_id"],
             job_start_date=datetime.fromtimestamp(job_data["job_start_date"]),
             job_end_date=datetime.fromtimestamp(job_data["job_end_date"]),
+            project_id=project.id,
         )
 
         job.save()
