@@ -324,6 +324,7 @@ CREATE TABLE `job_info`  (
   `job_start_date` datetime NULL,
   `job_end_date` datetime NULL,
   `job_type_id` int NULL,
+  `project_id` INT,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
