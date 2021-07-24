@@ -15,3 +15,5 @@ class Client(TimestampMixin, db.Model, ModelMixin):
     service_company_name = db.Column(db.Text)
     wireline_company = db.Column(db.Text)
     other_comments = db.Column(db.String(200))
+    password = db.Column(db.String(50))
+    title = db.Column(db.String(50))

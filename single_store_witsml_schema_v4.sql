@@ -73,6 +73,8 @@ CREATE TABLE seismos.`client`  (
   `service_company_name` text NULL,
   `wireline_company` text NULL,
   `other_comments` text(200) NULL,
+  `password` char(50) NULL,
+  `title` char(50) NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)

@@ -98,6 +98,9 @@ class ProjectCreate(Resource):
             operator_name=pad_data["operator_name"],
             service_company_name=pad_data["service_company_name"],
             wireline_company=pad_data["wireline_company"],
+            # TODO Why list? (Make clean up)
+            password=req["clientInfoValues"][0]["password"],
+            title=req["clientInfoValues"][0]["title"]
         )
 
         client.save()
