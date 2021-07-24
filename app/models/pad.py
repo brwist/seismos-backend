@@ -12,3 +12,10 @@ class Pad(TimestampMixin, ModelMixin, db.Model):
     pad_name = db.Column(db.Text, nullable=False)
     number_of_wells = db.Column(db.Integer)
     well_spacing = db.Column(db.Float)
+
+    wells = db.relationship(
+        "Well",
+        foreign_keys=[id],
+        primaryjoin="Pad.id == Well.pad_id",
+        uselist=True
+    )

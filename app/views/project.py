@@ -210,7 +210,8 @@ class ProjectCreate(Resource):
             county_name_id=country_name.id,
             basin_name_id=basin_name.id,
             state_id=state.id,
-        )  # TODO location_info save to what??
+            job_info_id=job.id,
+        ).save()
 
         return {
             "status": 200,

@@ -348,6 +348,7 @@ CREATE TABLE `location_info`  (
   `county_name_id` int NOT NULL,
   `basin_name_id` int NOT NULL,
   `state_id` int NOT NULL,
+  `job_info_id` int,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)

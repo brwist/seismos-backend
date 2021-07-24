@@ -10,6 +10,25 @@ class LocationInfo(TimestampMixin, ModelMixin, db.Model):
     county_name_id = db.Column(db.Integer, nullable=False)
     basin_name_id = db.Column(db.Integer, nullable=False)
     state_id = db.Column(db.Integer, nullable=False)
+    job_info_id = db.Column(db.Integer)
+
+    country_name = db.relationship(
+        "CountryName",
+        foreign_keys=[county_name_id],
+        primaryjoin="LocationInfo.county_name_id == CountryName.id"
+    )
+
+    basin_name = db.relationship(
+        "BasinName",
+        foreign_keys=[basin_name_id],
+        primaryjoin="LocationInfo.basin_name_id == BasinName.id"
+    )
+
+    state = db.relationship(
+        "State",
+        foreign_keys=[state_id],
+        primaryjoin="LocationInfo.state_id == State.id"
+    )
 
 
 class CountryName(TimestampMixin, ModelMixin, db.Model):

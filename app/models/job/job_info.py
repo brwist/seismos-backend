@@ -1,4 +1,4 @@
-from .mixin_models import TimestampMixin, ModelMixin
+from app.models.mixin_models import TimestampMixin, ModelMixin
 from app import db
 
 
@@ -15,10 +15,14 @@ class JobInfo(TimestampMixin, ModelMixin, db.Model):
     job_end_date = db.Column(db.DateTime)
     project_id = db.Column(db.Integer)
 
+    job_type = db.relationship(
+        "JobType",
+        foreign_keys=[job_type_id],
+        primaryjoin="JobInfo.job_type_id == JobType.id"
+    )
 
-class JobType(TimestampMixin, ModelMixin, db.Model):
-
-    __tablename__ = "job_type"
-
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
-    value = db.Column(db.Text)
+    location = db.relationship(
+        "LocationInfo",
+        foreign_keys=[id],
+        primaryjoin="JobInfo.id == LocationInfo.job_info_id"
+    )

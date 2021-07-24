@@ -35,3 +35,10 @@ class Project(TimestampMixin, ModelMixin, db.Model):
         foreign_keys=[id],
         primaryjoin="Project.id == JobInfo.project_id"
     )
+
+    project_crew = db.relationship(
+        "ProjectCrew",
+        foreign_keys=[id],
+        primaryjoin="Project.id == ProjectCrew.project_id",
+        uselist=True
+    )

@@ -76,6 +76,7 @@ def test_project_endpoint(client_with_user):
         # Pad test
         assert project.pad.pad_name == payload["padInfoValues"]["pad_name"]
         assert project.pad.number_of_wells == len(payload["wellInfoValues"])
+        assert project.pad.number_of_wells == len(project.pad.wells)
 
         # Job test
         assert project.job_info.job_id == payload["jobInfoValues"]["job_id"]
@@ -83,4 +84,13 @@ def test_project_endpoint(client_with_user):
         assert project.job_info.afe_id == payload["jobInfoValues"]["afe_id"]
         assert int(project.job_info.job_start_date.timestamp()) == payload["jobInfoValues"]["job_start_date"]
         assert int(project.job_info.job_end_date.timestamp()) == payload["jobInfoValues"]["job_end_date"]
-        # TODO Job type test
+        assert project.job_info.job_type
+        assert project.job_info.job_type.value == payload["jobInfoValues"]["job_type"]
+        assert project.job_info.location
+        assert project.job_info.location.country_name.county_name == payload["jobInfoValues"]["country_name"]
+        assert project.job_info.location.basin_name.basin_name == payload["jobInfoValues"]["basin_name"]
+        assert project.job_info.location.state.value == payload["jobInfoValues"]["state"]
+
+        # Crew test
+        assert project.project_crew
+        assert len(project.project_crew) == len(payload["crewInfoValues"])
