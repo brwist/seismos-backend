@@ -176,6 +176,10 @@ class ProjectCreate(Resource):
                 formation_id=formation.id,
                 num_stages=well_info["num_stages"],
 
+                lat=well_info["lat"],
+                easting=well_info["easting"],
+                northing=well_info["northing"],
+
                 casing_od=casing["od"],
                 casing_wt=casing["wt"],
                 casing_id=casing["id"],

@@ -1,5 +1,10 @@
 version: '3.7'
 services:
+  front_end:
+    image: datasleek/seismos:amd64
+    ports:
+      - "3000:3000"
+
   memsql:
     image: memsql/cluster-in-a-box:latest
     restart: always
