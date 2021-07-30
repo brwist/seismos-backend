@@ -10,6 +10,8 @@ from app.schemas import (
     ProjectSchema,
     ProjectIdPathSchema,
     CreateProjectSuccessSchema,
+    ErrorSchema,
+    ProjectReturnSchema,
 )
 
 
@@ -37,14 +39,36 @@ from marshmallow.exceptions import ValidationError
 class ProjectGet(Resource):
     @jwt_required()
     @swagger_decorator(
-        response_schema={200: ProjectSchema},
+        response_schema={200: ProjectReturnSchema, 404: ErrorSchema},
         path_schema=ProjectIdPathSchema,
         tag="Project",
     )
     def get(self, project_id):
         """ Get project data"""
-        # TODO get the project
-        return {"name": f"Project with id: {project_id}"}
+        project = Project.query.filter(Project.id == project_id).first()
+        if not project:
+            msg = f"Project with id: {project_id} not found"
+            return {"msg": msg}, 404
+
+        wells = []
+        for well in project.pad.wells:
+            wells.append({
+                "id": well.id,
+                "well_name": well.well_name,
+                "num_stages": well.num_stages,
+            })
+
+        return {
+            "status": 200,
+            "message": "Project details",
+            "data": {
+                "project": {
+                    "id": project.id,
+                    "project_name": project.project_name,
+                    "wells": wells
+                }
+            }
+        }
 
 
 class ProjectCreate(Resource):
@@ -75,7 +99,8 @@ class ProjectCreate(Resource):
         project = Project(
             project_name=project_name,
             project_uuid=project_uuid,
-            client_id=get_jwt_identity(),
+            client_id=0,
+            user_id=get_jwt_identity(),
             equipment_id=equipment.id
         )
 

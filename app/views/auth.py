@@ -1,6 +1,6 @@
 from flask import request
 from flask_restful import Resource
-from app.models import User
+from app.models import User, Project
 
 from app.schemas import (
     UserLoginSchema,
@@ -32,13 +32,19 @@ class Login(Resource):
         if user:
             user_data = user.to_dict()
             access_token = create_access_token(identity=user.id)
+
+            user_projects = Project.query.filter(Project.user_id == user.id).all()
+            project_ids = []
+            for project in user_projects:
+                project_ids.append(project.id)
+
             return {
                 "status": 200,
                 "message": "Login Successful",
                 "data": {
                     "access_token": access_token,
                     "user": user_data,
-                    "project_ids": [],  # TODO fill projects
+                    "project_ids": project_ids,
                 },
             }
 
@@ -53,11 +59,16 @@ class Login(Resource):
         if not user:
             return {'error': True, 'err_str': 'User not found'}
 
+        user_projects = Project.query.filter(Project.user_id == user_id).all()
+        project_ids = []
+        for project in user_projects:
+            project_ids.append(project.id)
+
         return {
             "status": 200,
             "message": "User details",
             "data": {
                 "user": user.to_dict(),
-                "project_ids": [],  # TODO fill projects
+                "project_ids": project_ids,
             }
         }

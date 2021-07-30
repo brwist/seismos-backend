@@ -10,6 +10,7 @@ class Project(TimestampMixin, ModelMixin, db.Model):
     project_uuid = db.Column(db.String(36), nullable=False)
     project_name = db.Column(db.Text, nullable=False)  # TODO make it string with fix max width
     client_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
     equipment_id = db.Column(db.Integer)
 
     equipment = db.relationship(

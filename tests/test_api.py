@@ -1,6 +1,9 @@
+import os
+import io
 import json
 from .utils import USER_CREDS
 from app.models import Project
+from uuid import uuid4
 
 
 def test_auth(client_with_user):
@@ -96,3 +99,119 @@ def test_project_endpoint(client_with_user):
         # Crew test
         assert project.project_crew
         assert len(project.project_crew) == len(payload["crewInfoValues"])
+
+
+def test_input_data_endpoint(client_with_user):
+    resp = client_with_user.post("/api/auth", json=USER_CREDS)
+    access_token = resp.json["data"]["access_token"]
+
+    assert access_token
+
+    filename = f"{str(uuid4())}.jpg"
+    data = {
+        "file": (io.BytesIO(b"abcdef"), filename)
+    }
+
+    file_path = f"static/{filename}"
+
+    resp = client_with_user.post(
+        "/api/input-data",
+        headers={"Authorization": f"Bearer {access_token}"},
+        content_type='multipart/form-data',
+        data=data,
+    )
+
+    assert resp.status_code == 200
+
+    with open(file_path) as uploaded_file:
+        assert uploaded_file
+        os.remove(file_path)
+
+
+    input_data = {
+        "project_id": 0,
+        "well_id": 0,
+    }
+
+    resp = client_with_user.get(
+        "/api/input-data",
+        headers={"Authorization": f"Bearer {access_token}"},
+        json=input_data
+    )
+
+    assert resp
+    assert resp.json
+    assert resp.json["status"]
+    assert resp.json["message"]
+    assert resp.json["message"] == "Data input details"
+    assert resp.json["data"]
+    assert resp.json["data"]["data_input"]
+
+    data_input_field = ("hydrophone", "pumping_data", "pressure", "survey", "gamma_ray", "mud_log")
+    for field in data_input_field:
+        assert resp.json["data"]["data_input"][field]
+        assert "file" in resp.json["data"]["data_input"][field]
+        assert resp.json["data"]["data_input"][field]["file"]
+
+
+def test_daily_log(client_with_user):
+    resp = client_with_user.post("/api/auth", json=USER_CREDS)
+    access_token = resp.json["data"]["access_token"]
+
+    create_project_json_path = "tests/static/project_create.json"
+
+    with open(create_project_json_path, "r") as json_f:
+        payload = json.load(json_f)
+        assert payload
+        resp = client_with_user.post(
+            "/api/project",
+            headers={"Authorization": f"Bearer {access_token}"},
+            json=payload,
+        )
+
+        assert resp
+        assert resp.status_code == 200
+
+        proj_id = resp.json["data"]["project"]["id"]
+        assert proj_id
+
+        project = Project.query.filter(Project.id == proj_id).first()
+        assert project
+        assert project.pad.wells
+        well = project.pad.wells[0]
+        assert well
+
+        payload = {
+            "project_id": project.id,
+            "well_id": well.id,
+            "logs": [
+                {
+                    "date": 1339521878,
+                    "time": "10:30 AM",
+                    "description": "First description"
+                },
+                {
+                    "date": 1339829878,
+                    "time": "6:30 PM",
+                    "description": "Second description"
+                }
+            ]
+        }
+
+        resp = client_with_user.post(
+            "/api/daily-log",
+            headers={"Authorization": f"Bearer {access_token}"},
+            json=payload,
+        )
+
+        assert resp
+        assert resp.status_code == 201
+        assert resp.json["status"] == 201
+        assert resp.json["message"] == "Daily logs created"
+
+        resp = client_with_user.get(
+            f"/api/daily-log/{well.id}",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+
+        assert resp

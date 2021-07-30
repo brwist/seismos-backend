@@ -7,13 +7,16 @@ from app.schemas import (
     SuccessSchema,
     ErrorSchema,
     DefaultValueSchema,
+    DefaultValuesResponseSchema,
+    DefaultValueRequestSchema,
 )
 
 
 class DefaultValue(Resource):
     @jwt_required()
     @swagger_decorator(
-        response_schema={200: DefaultValueSchema},
+        json_schema=DefaultValueRequestSchema,
+        response_schema={200: DefaultValuesResponseSchema},
         tag="Default Value"
     )
     def get(self):

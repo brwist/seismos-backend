@@ -9,6 +9,7 @@ from .project import Project
 from .well import Well
 from .job import JobInfo, JobType
 from .crew import Crew, ProjectCrew
+from .daily_log import DailyLog
 from .location import (
     LocationInfo,
     CountryName,

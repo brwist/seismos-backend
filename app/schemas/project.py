@@ -89,6 +89,28 @@ class ProjectSchema(Schema):
     equipmentValues = fields.Nested(EquipmentSchema)
 
 
+class WellReturnData(Schema):
+    id = fields.Int()
+    well_name = fields.String()
+    num_stages = fields.Int()
+
+
+class ProjectReturnDataSchema(Schema):
+    id = fields.Integer()
+    project_name = fields.Str()
+    wells = fields.List(fields.Nested(WellReturnData))
+
+
+class ProjectFieldSchema(Schema):
+    project = fields.Nested(ProjectReturnDataSchema)
+
+
+class ProjectReturnSchema(Schema):
+    status = fields.Integer()
+    message = fields.Str()
+    data = fields.Nested(ProjectFieldSchema)
+
+
 class ProjectIdPathSchema(Schema):
     project_id = fields.Str(required=True)
 
