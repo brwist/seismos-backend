@@ -51,3 +51,10 @@ class Well(TimestampMixin, ModelMixin, db.Model):
     liner2_depth_md = db.Column(db.Float)
     liner2_tol = db.Column(db.Float)
     measured_depth_unit = db.Column(db.Text)
+
+    daily_logs = db.relationship(
+        "DailyLog",
+        foreign_keys=[id],
+        primaryjoin="Well.id == DailyLog.well_id",
+        uselist=True
+    )

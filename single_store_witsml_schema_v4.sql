@@ -332,9 +332,6 @@ CREATE TABLE `job_info`  (
   PRIMARY KEY (`id`)
 );
 
-
-
-
 DROP TABLE IF EXISTS seismos.`job_type`;
 CREATE TABLE `job_type`  (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -512,12 +509,12 @@ CREATE TABLE `project`  (
   `project_uuid` char(36) NOT NULL,
   `project_name` text NOT NULL,
   `client_id` int NOT NULL,
+  `user_id` int NOT NULL,
   `equipment_id` int NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
 );
-
 
 DROP TABLE IF EXISTS seismos.`project_crew`;
 CREATE TABLE `project_crew`  (
@@ -839,5 +836,15 @@ CREATE TABLE `user_project`  (
   `user_id` int NOT NULL,
   `project_id` int NOT NULL,
 
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`daily_log`;
+CREATE TABLE `daily_log`  (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `well_id` INT NOT NULL,
+  `description` CHAR(255) NOT NULL,
+  `date` DATETIME NOT NULL,
+  `time` CHAR(20) NOT NULL,
   PRIMARY KEY (`id`)
 );

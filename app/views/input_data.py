@@ -4,7 +4,12 @@ from flask_restful import Resource
 from flasgger_marshmallow import swagger_decorator
 import flasgger
 import marshmallow
-from app.schemas import InputFileSchema, SuccessSchema
+from app.schemas import (
+    InputFileSchema,
+    SuccessSchema,
+    InputDataRequestSchema,
+    DataInputResponseSchema,
+)
 
 
 class InputData(Resource):
@@ -37,7 +42,7 @@ class InputData(Resource):
                     "content": {
                         "application/json": {
                             "schema": flasgger.marshmallow_apispec.schema2jsonschema(
-                                        marshmallow.Schema.from_dict({**SuccessSchema().fields})
+                                marshmallow.Schema.from_dict({**SuccessSchema().fields})
                             ),
                         }
                     }
@@ -53,7 +58,36 @@ class InputData(Resource):
         return {"msg": "OK"}
 
     @jwt_required()
-    @swagger_decorator(response_schema={200: InputFileSchema}, tag="Input data")
+    @swagger_decorator(
+        response_schema={200: DataInputResponseSchema},
+        json_schema=InputDataRequestSchema,
+        tag="Input data"
+    )
     def get(self):
         """Get file wich has been uploaded earler"""
-        return {"filename": "some file"}
+        return {
+            "status": 200,
+            "message": "Data input details",
+            "data": {
+                "data_input": {
+                    "hydrophone": {
+                        "file": "plug",
+                    },
+                    "pumping_data": {
+                        "file": "plug",
+                    },
+                    "pressure": {
+                        "file": "plug",
+                    },
+                    "survey": {
+                        "file": "plug",
+                    },
+                    "gamma_ray": {
+                        "file": "plug",
+                    },
+                    "mud_log": {
+                        "file": "plug",
+                    }
+                }
+            }
+        }
