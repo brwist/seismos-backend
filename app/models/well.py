@@ -58,3 +58,12 @@ class Well(TimestampMixin, ModelMixin, db.Model):
         primaryjoin="Well.id == DailyLog.well_id",
         uselist=True
     )
+
+    def get_logs(self):
+        logs = []
+        for log in self.daily_logs:
+            logs.append({
+                "date": int(log.date.timestamp()), "time": log.time, "description": log.description,
+            })
+
+        return logs

@@ -9,7 +9,6 @@ from app.schemas import (
     ErrorSchema,
     DailyLogCreateSchema,
     DailyLogCreateResponseSchema,
-    DailyLogRequestSchema,
     DailyLogResponseSchema,
     WellPathIdSchema,
 )
@@ -18,24 +17,29 @@ from app.schemas import (
 class DailyLogResource(Resource):
     @jwt_required()
     @swagger_decorator(
-        response_schema={200: DailyLogResponseSchema},
+        response_schema={200: DailyLogResponseSchema, 401: ErrorSchema},
         path_schema=WellPathIdSchema,
         tag="Daily log",
     )
     def get(self, well_id):
-        """Get daily log"""
+        """ Get dealy log """
 
-        return {
+        well = Well.query.filter(Well.id == well_id).first()
+        if not well:
+            return {"msg": f"Well with id {well_id} not found"}, 401
+
+        logs = well.get_logs()
+
+        resp = {
             "status": 200,
             "message": "Daily log details",
-            "data": {
-                "logs": [
-                    {"date": 1112345, "time": "plug", "Description": "first_log"},
-                    {"date": 1112345, "time": "plug", "Description": "second_log"},
-                ]
-            },
+            "logs": logs
         }
 
+        return resp, 200
+
+
+class DailyLogCreateResource(Resource):
     @jwt_required()
     @swagger_decorator(
         json_schema=DailyLogCreateSchema,

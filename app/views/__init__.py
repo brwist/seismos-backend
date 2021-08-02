@@ -4,7 +4,7 @@ from .project import ProjectGet, ProjectCreate
 from .tracking_sheet import TrackingSheet, CreateTrackingSheet
 from .oc_report import OCReport, OCReportExport
 from .input_data import InputData
-from .daily_log import DailyLogResource
+from .daily_log import DailyLogResource, DailyLogCreateResource
 from .deafult_value import DefaultValue
 
 ENDPOINTS_MAP = {
@@ -16,6 +16,7 @@ ENDPOINTS_MAP = {
     OCReport: "/oc-report",
     OCReportExport: "/oc-report/export",
     InputData: "/input-data",
-    DailyLogResource: "/daily-log",
+    DailyLogResource: "/daily-log/<well_id>",
+    DailyLogCreateResource: "/daily-log",
     DefaultValue: "/default-value",
 }
