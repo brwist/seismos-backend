@@ -1,7 +1,7 @@
 import os
 import io
 import json
-from .utils import USER_CREDS
+from .utils import USER_CREDS, TEST_STATIC_ROOT
 from app.models import Project
 from uuid import uuid4
 
@@ -29,7 +29,7 @@ def test_project_endpoint(client_with_user):
     resp = client_with_user.post("/api/auth", json=USER_CREDS)
     access_token = resp.json["data"]["access_token"]
 
-    create_project_json_path = "tests/static/project_create.json"
+    create_project_json_path = f"{TEST_STATIC_ROOT}/project_create.json"
 
     with open(create_project_json_path, "r") as json_f:
         payload = json.load(json_f)
@@ -158,7 +158,7 @@ def test_daily_log(client_with_user):
     resp = client_with_user.post("/api/auth", json=USER_CREDS)
     access_token = resp.json["data"]["access_token"]
 
-    create_project_json_path = "tests/static/project_create.json"
+    create_project_json_path = f"{TEST_STATIC_ROOT}/project_create.json"
 
     with open(create_project_json_path, "r") as json_f:
         payload = json.load(json_f)
@@ -181,37 +181,36 @@ def test_daily_log(client_with_user):
         well = project.pad.wells[0]
         assert well
 
-        payload = {
-            "project_id": project.id,
-            "well_id": well.id,
-            "logs": [
-                {
-                    "date": 1339521878,
-                    "time": "10:30 AM",
-                    "description": "First description"
-                },
-                {
-                    "date": 1339829878,
-                    "time": "6:30 PM",
-                    "description": "Second description"
-                }
-            ]
-        }
+        create_logs_static_path = f"{TEST_STATIC_ROOT}/daily_logs_create.json"
 
-        resp = client_with_user.post(
-            "/api/daily-log",
-            headers={"Authorization": f"Bearer {access_token}"},
-            json=payload,
-        )
+        with open(create_logs_static_path, "r") as json_f:
+            logs = json.load(json_f)
+            assert logs
 
-        assert resp
-        assert resp.status_code == 201
-        assert resp.json["status"] == 201
-        assert resp.json["message"] == "Daily logs created"
+            for log in logs:
+                assert log
 
-        resp = client_with_user.get(
-            f"/api/daily-log/{well.id}",
-            headers={"Authorization": f"Bearer {access_token}"},
-        )
+            payload = {
+                "logs": logs,
+                "project_id": 0,
+                "well_id": well.id
+            }
 
-        assert resp
+            resp = client_with_user.post(
+                "/api/daily-log",
+                headers={"Authorization": f"Bearer {access_token}"},
+                json=payload,
+            )
+
+            assert resp.status_code == 201
+            assert resp.json["status"] == 201
+            assert resp.json["message"] == "Daily logs created"
+
+            resp = client_with_user.get(
+                f"/api/daily-log/{well.id}",
+                headers={"Authorization": f"Bearer {access_token}"},
+            )
+
+            assert resp.status_code == 200
+            assert "logs" in resp.json
+            assert len(resp.json["logs"]) == 2

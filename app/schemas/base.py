@@ -14,4 +14,4 @@ class PathIdSchema(Schema):
 
 
 class WellPathIdSchema(Schema):
-    well_id = fields.Int()
+    well_id = fields.Str()
