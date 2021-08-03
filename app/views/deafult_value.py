@@ -1,36 +1,50 @@
 from flask import request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
 from flasgger_marshmallow import swagger_decorator
 
+from app.models import Well
 from app.schemas import (
     SuccessSchema,
     ErrorSchema,
     DefaultValueSchema,
-    DefaultValuesResponseSchema,
-    DefaultValueRequestSchema,
+    WellPathIdSchema,
 )
 
 
-class DefaultValue(Resource):
+class DefaultValueResource(Resource):
     @jwt_required()
     @swagger_decorator(
-        json_schema=DefaultValueRequestSchema,
-        response_schema={200: DefaultValuesResponseSchema},
+        path_schema=WellPathIdSchema,
+        response_schema={200: DefaultValueSchema, 401: ErrorSchema},
         tag="Default Value"
     )
-    def get(self):
+    def get(self, well_id):
+        well = Well.query.filter(Well.id == well_id).first()
+        if not well or well.pad.project.user_id != get_jwt_identity():
+            return {"msg": "Well not found"}, 401
+
         """ Get default value """
-        return {"default_value": "1100"}
+        return well.default_value.to_json()
 
     @jwt_required()
     @swagger_decorator(
         json_schema=DefaultValueSchema,
+        path_schema=WellPathIdSchema,
         response_schema={200: SuccessSchema, 401: ErrorSchema},
-        tag="Default Value"
+        tag="Default Value",
     )
-    def put(self):
-        """ Update default value """
-        req = request.json_schema
+    def put(self, well_id):
+        """ Create well default value """
+        well = Well.query.filter(Well.id == well_id).first()
+        if not well or well.pad.project.user_id != get_jwt_identity():
+            return {
+                "msg": "Well not found",
+            }, 401
 
-        return {"msg": f"Default value updated {req['data']}"}
+        req = request.json_schema
+        req["well_id"] = well_id
+
+        well.default_value.update(req)
+
+        return {"msg": "Well's default value has been updated"}, 200

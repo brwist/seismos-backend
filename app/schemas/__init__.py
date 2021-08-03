@@ -15,5 +15,5 @@ from .daily_log import (
 from .default_value import (
     DefaultValueSchema,
     DefaultValuesResponseSchema,
-    DefaultValueRequestSchema
+    DefaultValueRequestSchema,
 )

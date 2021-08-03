@@ -5,7 +5,7 @@ from .tracking_sheet import TrackingSheet, CreateTrackingSheet
 from .oc_report import OCReport, OCReportExport
 from .input_data import InputData
 from .daily_log import DailyLogResource
-from .deafult_value import DefaultValue
+from .deafult_value import DefaultValueResource
 
 ENDPOINTS_MAP = {
     Login: "/auth",
@@ -17,5 +17,5 @@ ENDPOINTS_MAP = {
     OCReportExport: "/oc-report/export",
     InputData: "/input-data",
     DailyLogResource: "/daily-log",
-    DefaultValue: "/default-value",
+    DefaultValueResource: "/default-value/<well_id>",
 }

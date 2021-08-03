@@ -1,0 +1,21 @@
+{
+    "acid": "acid_test",
+    "base": "base_test",
+    "bhp_temp": "bhp_temp_test",
+    "bht_temp": "bht_temp_test",
+    "description": "description_test",
+    "field": "field_test",
+    "field_engineer": "field_engineer_test",
+    "fluid_type": "fluid_type_test",
+    "frac_design": "frac_design_test",
+    "n_clusters": 2,
+    "perf_diameter": "pref_diameter_test",
+    "perf_gun": "pref_gun_test",
+    "plug_seat_technique": "plug_seat_technique_test",
+    "plug_type": "plug_type_test",
+    "proppant_data": "proppant_data_test",
+    "pulsing_parameters": "pulsign_parameters_test",
+    "pumping_summary": "pumping_summary_test",
+    "spf": "spf_test"
+  }
+  

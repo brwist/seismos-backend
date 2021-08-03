@@ -58,3 +58,9 @@ class Well(TimestampMixin, ModelMixin, db.Model):
         primaryjoin="Well.id == DailyLog.well_id",
         uselist=True
     )
+
+    default_value = db.relationship(
+        "DefaultValue",
+        foreign_keys=[id],
+        primaryjoin="Well.id == DefaultValue.well_id",
+    )

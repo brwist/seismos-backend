@@ -848,3 +848,28 @@ CREATE TABLE `daily_log`  (
   `time` CHAR(20) NOT NULL,
   PRIMARY KEY (`id`)
 );
+
+DROP TABLE IF EXIST seismos.`default_value`;
+CREATE TABLE `default_value` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `well_id` INT NOT NULL,
+  `field_engineer` CHAR(255),
+  `bht_temp` CHAR(255),
+  `bhp_temp` CHAR(255),
+  `frac_design` CHAR(255),
+  `plug_type` CHAR(255),
+  `plug_seat_technique` CHAR(255),
+  `n_clusters` INT UNSIGNED,
+  `perf_gun` CHAR(255),
+  `description` CHAR(255),
+  `perf_diameter` CHAR(255),
+  `spf` CHAR(255),
+  `field` CHAR(255),
+  `acid` CHAR(255),
+  `base` CHAR(255),
+  `fluid_type` CHAR(255),
+  `proppant_data` CHAR(255),
+  `pulsing_parameters` CHAR(255),
+  `pumping_summary` CHAR(255),
+  PRIMARY KEY (`id`),
+);

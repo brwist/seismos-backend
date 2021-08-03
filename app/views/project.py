@@ -31,6 +31,7 @@ from app.models import (
     ProjectCrew,
     Well,
     Formation,
+    DefaultValue,
 )
 
 from marshmallow.exceptions import ValidationError
@@ -45,6 +46,7 @@ class ProjectGet(Resource):
     )
     def get(self, project_id):
         """ Get project data"""
+        # TODO add user validation (if current user created project)
         project = Project.query.filter(Project.id == project_id).first()
         if not project:
             msg = f"Project with id: {project_id} not found"
@@ -228,6 +230,7 @@ class ProjectCreate(Resource):
                 estimated_gallons=wellEstim["gallons"],
             )
             well.save()
+            DefaultValue(well_id=well.id).save()
 
         # location entity
         country_name = CountryName(county_name=job_data["country_name"])

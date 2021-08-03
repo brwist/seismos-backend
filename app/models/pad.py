@@ -1,3 +1,4 @@
+from sqlalchemy.orm import backref
 from app.models.mixin_models import TimestampMixin, ModelMixin
 from app import db
 
@@ -17,5 +18,7 @@ class Pad(TimestampMixin, ModelMixin, db.Model):
         "Well",
         foreign_keys=[id],
         primaryjoin="Pad.id == Well.pad_id",
-        uselist=True
+        uselist=True,
+        backref=backref('pad', uselist=False),
+        lazy=True,
     )

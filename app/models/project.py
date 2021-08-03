@@ -1,3 +1,4 @@
+from sqlalchemy.orm import backref
 from app.models.mixin_models import TimestampMixin, ModelMixin
 from app import db
 
@@ -28,7 +29,9 @@ class Project(TimestampMixin, ModelMixin, db.Model):
     pad = db.relationship(
         "Pad",
         foreign_keys=[id],
-        primaryjoin="Project.id == Pad.project_id"
+        primaryjoin="Project.id == Pad.project_id",
+        backref=backref("project", uselist=False),
+        lazy=True,
     )
 
     job_info = db.relationship(
