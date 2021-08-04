@@ -59,6 +59,7 @@ class Well(TimestampMixin, ModelMixin, db.Model):
         uselist=True
     )
 
+<<<<<<< HEAD
     def get_logs(self):
         logs = []
         for log in self.daily_logs:
@@ -67,3 +68,10 @@ class Well(TimestampMixin, ModelMixin, db.Model):
             })
 
         return logs
+=======
+    default_value = db.relationship(
+        "DefaultVolumes",
+        foreign_keys=[id],
+        primaryjoin="Well.id == DefaultVolumes.well_id",
+    )
+>>>>>>> gleb/add/default_values_endpoint
