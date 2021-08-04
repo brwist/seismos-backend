@@ -195,26 +195,6 @@ def test_daily_log(client_with_user):
                 "well_id": well.id
             }
 
-<<<<<<< HEAD
-            resp = client_with_user.post(
-                "/api/daily-log",
-                headers={"Authorization": f"Bearer {access_token}"},
-                json=payload,
-            )
-
-            assert resp.status_code == 201
-            assert resp.json["status"] == 201
-            assert resp.json["message"] == "Daily logs created"
-
-            resp = client_with_user.get(
-                f"/api/daily-log/{well.id}",
-                headers={"Authorization": f"Bearer {access_token}"},
-            )
-
-            assert resp.status_code == 200
-            assert "logs" in resp.json
-            assert len(resp.json["logs"]) == 2
-=======
         assert resp
 
 
@@ -261,4 +241,3 @@ def test_default_value(client_with_user):
             for key, value in default_values.items():
                 assert key in resp.json
                 assert value == resp.json[key]
->>>>>>> gleb/add/default_values_endpoint
