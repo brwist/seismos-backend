@@ -849,8 +849,8 @@ CREATE TABLE `daily_log`  (
   PRIMARY KEY (`id`)
 );
 
-DROP TABLE IF EXIST seismos.`default_value`;
-CREATE TABLE `default_value` (
+DROP TABLE IF EXISTS seismos.`default_volumes`;
+CREATE TABLE `default_volumes` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `well_id` INT NOT NULL,
   `field_engineer` CHAR(255),
@@ -871,5 +871,5 @@ CREATE TABLE `default_value` (
   `proppant_data` CHAR(255),
   `pulsing_parameters` CHAR(255),
   `pumping_summary` CHAR(255),
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`id`)
 );
