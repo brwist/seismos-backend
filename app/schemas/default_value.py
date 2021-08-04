@@ -5,18 +5,18 @@ class DeafultValueDataSchema(Schema):
     test_fields = fields.Str()
 
 
-class DefaultValuesResponseSchema(Schema):
+class DefaultVolumesResponseSchema(Schema):
     status = fields.Int()
     message = fields.Str()
     data = fields.Nested(DeafultValueDataSchema)
 
 
-class DefaultValueRequestSchema(Schema):
+class DefaultVolumesRequestSchema(Schema):
     project_id = fields.Int()
     well_id = fields.Int()
 
 
-class DefaultValueSchema(Schema):
+class DefaultVolumesSchema(Schema):
     field_engineer = fields.String()
     bht_temp = fields.String()
     bhp_temp = fields.String()

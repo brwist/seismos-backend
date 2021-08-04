@@ -7,16 +7,16 @@ from app.models import Well
 from app.schemas import (
     SuccessSchema,
     ErrorSchema,
-    DefaultValueSchema,
+    DefaultVolumesSchema,
     WellPathIdSchema,
 )
 
 
-class DefaultValueResource(Resource):
+class DefaultVolumesResource(Resource):
     @jwt_required()
     @swagger_decorator(
         path_schema=WellPathIdSchema,
-        response_schema={200: DefaultValueSchema, 401: ErrorSchema},
+        response_schema={200: DefaultVolumesSchema, 401: ErrorSchema},
         tag="Default Value"
     )
     def get(self, well_id):
@@ -29,7 +29,7 @@ class DefaultValueResource(Resource):
 
     @jwt_required()
     @swagger_decorator(
-        json_schema=DefaultValueSchema,
+        json_schema=DefaultVolumesSchema,
         path_schema=WellPathIdSchema,
         response_schema={200: SuccessSchema, 401: ErrorSchema},
         tag="Default Value",

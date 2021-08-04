@@ -31,7 +31,7 @@ from app.models import (
     ProjectCrew,
     Well,
     Formation,
-    DefaultValue,
+    DefaultVolumes,
 )
 
 from marshmallow.exceptions import ValidationError
@@ -230,7 +230,7 @@ class ProjectCreate(Resource):
                 estimated_gallons=wellEstim["gallons"],
             )
             well.save()
-            DefaultValue(well_id=well.id).save()
+            DefaultVolumes(well_id=well.id).save()
 
         # location entity
         country_name = CountryName(county_name=job_data["country_name"])

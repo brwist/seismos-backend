@@ -60,7 +60,7 @@ class Well(TimestampMixin, ModelMixin, db.Model):
     )
 
     default_value = db.relationship(
-        "DefaultValue",
+        "DefaultVolumes",
         foreign_keys=[id],
-        primaryjoin="Well.id == DefaultValue.well_id",
+        primaryjoin="Well.id == DefaultVolumes.well_id",
     )

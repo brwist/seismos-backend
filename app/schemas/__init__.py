@@ -13,7 +13,7 @@ from .daily_log import (
     DailyLogResponseSchema,
 )
 from .default_value import (
-    DefaultValueSchema,
-    DefaultValuesResponseSchema,
-    DefaultValueRequestSchema,
+    DefaultVolumesSchema,
+    DefaultVolumesResponseSchema,
+    DefaultVolumesRequestSchema,
 )

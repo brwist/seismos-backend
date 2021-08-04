@@ -3,9 +3,9 @@ from app import db
 from sqlalchemy.dialects.mysql import INTEGER
 
 
-class DefaultValue(ModelMixin, JsonModelMixin, db.Model):
+class DefaultVolumes(ModelMixin, JsonModelMixin, db.Model):
 
-    __tablename__ = "default_value"
+    __tablename__ = "default_volumes"
 
     id = db.Column(db.Integer, primary_key=True)
     well_id = db.Column(db.Integer, nullable=False)
