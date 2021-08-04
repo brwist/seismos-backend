@@ -10,6 +10,7 @@ from .well import Well
 from .job import JobInfo, JobType
 from .crew import Crew, ProjectCrew
 from .daily_log import DailyLog
+from .default_value import DefaultVolumes
 from .location import (
     LocationInfo,
     CountryName,
