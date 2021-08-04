@@ -48,9 +48,9 @@ class StageDataFluidParam(Schema):
 
 
 class FluidsInjected(Schema):
-    description = fields.Strign()
-    bbls = fields.Strign()
-    ppg = fields.Strign()
+    description = fields.String()
+    bbls = fields.String()
+    ppg = fields.String()
 
 
 class FluidsInjectedIntoFormation(Schema):

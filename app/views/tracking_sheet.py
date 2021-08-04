@@ -8,6 +8,7 @@ from app.schemas import (
     TrackingSheetSchema,
     TrackingSheetIdSchema,
     TrackingSheetStageSchema,
+    WellPathIdSchema,
 )
 
 
@@ -52,6 +53,7 @@ class CreateTrackingSheet(Resource):
     @jwt_required()
     @swagger_decorator(
         json_schema=TrackingSheetSchema,
+        path_schema=WellPathIdSchema,
         response_schema={200: SuccessSchema, 401: ErrorSchema},
         tag="Tracking Sheet",
     )
