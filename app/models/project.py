@@ -37,7 +37,7 @@ class Project(TimestampMixin, ModelMixin, db.Model):
     job_info = db.relationship(
         "JobInfo",
         foreign_keys=[id],
-        primaryjoin="Project.id == JobInfo.project_id"
+        primaryjoin="Project.id == JobInfo.project_id",
     )
 
     project_crew = db.relationship(

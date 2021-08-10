@@ -11,7 +11,7 @@ class PerforationIntervalInformation(Schema):
     top_perf = fields.String()
     bottom_perf = fields.String()
     plug_depth = fields.String()
-    n_clusters = fields.Int(),
+    n_clusters = fields.Int()
     perf_gun_description = fields.String()
     perf_daiameter = fields.String()
     spf = fields.String()
@@ -90,14 +90,14 @@ class PilsingParameters(Schema):
 
 
 class FracPulsesSchema(Schema):
-    start_time = fields.String()
-    end_time = fields.String()
+    start_time = fields.Int()
+    end_time = fields.Int()
     n_pulses = fields.Int()
 
 
 class StageDataSchema(Schema):
-    stage_start_time = fields.String()
-    stage_end_time = fields.String()
+    stage_start_time = fields.Int()
+    stage_end_time = fields.Int()
     opening_well = fields.String()
     isip = fields.String()
     fluid_parameters = fields.Nested(StageDataFluidParam)
@@ -109,7 +109,7 @@ class StageDataSchema(Schema):
 class TrackingSheetActiveData(Schema):
     pilsing_parameters = fields.Nested(PilsingParameters)
     pre_frac_pulses = fields.Nested(FracPulsesSchema)
-    post_frac_pulses: fields.Nested(FracPulsesSchema)
+    post_frac_pulses = fields.Nested(FracPulsesSchema)
 
 
 class TrackingSheetNotes(Schema):
@@ -133,3 +133,12 @@ class TrackingSheetIdSchema(Schema):
 
 class TrackingSheetStageSchema(Schema):
     stage = fields.Str(required=True)
+
+
+class TrackingSheetStageIdSchema(Schema):
+    stage = fields.Int()
+    sheet_id = fields.Int()
+
+
+class TrackingSheetStagesListResponse(Schema):
+    stages = fields.List(fields.Nested(TrackingSheetStageIdSchema))

@@ -9,7 +9,7 @@ from app.schemas import (
 )
 
 
-class OCReport(Resource):
+class QCReport(Resource):
     @jwt_required()
     @swagger_decorator(
         response_schema={200: OCReportSchema},
@@ -30,7 +30,7 @@ class OCReport(Resource):
         return {"msg": "Report approve"}
 
 
-class OCReportExport(Resource):
+class QCReportExport(Resource):
     @jwt_required()
     @swagger_decorator(
         json_schema=OCReportSchema,

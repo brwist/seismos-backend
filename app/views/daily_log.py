@@ -31,7 +31,6 @@ class DailyLogResource(Resource):
         logs = well.get_logs()
 
         resp = {
-            "status": 200,
             "message": "Daily log details",
             "logs": logs
         }
@@ -54,7 +53,8 @@ class DailyLogCreateResource(Resource):
             return {"msg": "Well not found"}, 401
 
         for log in req["logs"]:
-            log["date"] = datetime.fromtimestamp(log["date"])
+            timestamp = log["date"] // 1000
+            log["date"] = datetime.fromtimestamp(timestamp)
             log["well_id"] = req["well_id"]
             DailyLog(**log).save()
 

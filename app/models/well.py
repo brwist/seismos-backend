@@ -1,3 +1,4 @@
+from sqlalchemy.orm import backref
 from app.models.mixin_models import TimestampMixin, ModelMixin
 from app import db
 
@@ -32,6 +33,7 @@ class Well(TimestampMixin, ModelMixin, db.Model):
     lat = db.Column(db.Text)
     easting = db.Column(db.Text)
     northing = db.Column(db.Text)
+    long = db.Column(db.Text)
     estimated_surface_vol = db.Column(db.Float)
     estimated_bbls = db.Column(db.Float)
     estimated_gallons = db.Column(db.Float)
@@ -64,3 +66,22 @@ class Well(TimestampMixin, ModelMixin, db.Model):
         foreign_keys=[id],
         primaryjoin="Well.id == DefaultVolumes.well_id",
     )
+
+    tracking_sheet = db.relationship(
+        "TrackingSheet",
+        foreign_keys=[id],
+        primaryjoin="Well.id == TrackingSheet.well_id",
+        uselist=True,
+        backref=backref('well', uselist=False),
+        lazy=True,
+    )
+
+    def get_logs(self):
+        logs = []
+        for log in self.daily_logs:
+            logs.append({
+                "date": int(log.date.timestamp() * 1000),
+                "description": log.description,
+            })
+
+        return logs

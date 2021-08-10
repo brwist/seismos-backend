@@ -7,7 +7,6 @@ class DailyLogSchema(Schema):
 
 class DailyLogData(Schema):
     date = fields.Int()
-    time = fields.Str()
     description = fields.Str()
 
 
@@ -23,7 +22,6 @@ class DailyLogCreateResponseSchema(Schema):
 
 
 class DailyLogResponseSchema(Schema):
-    status = fields.Int()
     message = fields.Str()
     logs = fields.List(fields.Nested(DailyLogData))
 

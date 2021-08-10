@@ -33,13 +33,14 @@
         "formation": "test_formation",
         "lat": "test_lat",
         "easting": "test_easting",
-        "northing": "test_northing"
+        "northing": "test_northing",
+        "long": "test_long"
       }
     ],
     "wellVolumeValues": [
       [
         {
-            "type": "Casing",       
+            "type": "casing",       
             "od": 3.14,
             "wt": 3.14,
             "id":  3.14,
@@ -47,7 +48,7 @@
             "tol":  3.14  
         },
         {
-            "type": "Linear1",       
+            "type": "liner",       
             "od": 3.14,
             "wt": 3.14,
             "id":  3.14,
@@ -55,7 +56,7 @@
             "tol":  3.14
           },
           {
-            "type": "Linear2",       
+            "type": "liner_sec",       
             "od": 3.14,
             "wt": 3.14,
             "id":  3.14,

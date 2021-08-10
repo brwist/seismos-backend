@@ -776,6 +776,7 @@ CREATE TABLE `well`  (
   `lat` text NULL,
   `easting` text NULL,
   `northing` text NULL,
+  `long` text NULL,
   `estimated_surface_vol` float NULL,
   `estimated_bbls` float NULL,
   `estimated_gallons` float NULL,
@@ -845,7 +846,6 @@ CREATE TABLE `daily_log`  (
   `well_id` INT NOT NULL,
   `description` CHAR(255) NOT NULL,
   `date` DATETIME NOT NULL,
-  `time` CHAR(20) NOT NULL,
   PRIMARY KEY (`id`)
 );
 
@@ -871,5 +871,182 @@ CREATE TABLE `default_volumes` (
   `proppant_data` CHAR(255),
   `pulsing_parameters` CHAR(255),
   `pumping_summary` CHAR(255),
+  PRIMARY KEY (`id`)
+);
+
+
+DROP TABLE IF EXISTS seismos.`tracking_sheet`;
+CREATE TABLE `tracking_sheet` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `well_id` INT NOT NULL,
+  `stage` INT UNSIGNED NOT NULL,
+  `stage_tracking_id` INT UNSIGNED NOT NULL,
+  `perforation_interval_information_id` INT UNSIGNED NOT NULL,
+  `stage_data_id` INT UNSIGNED NOT NULL,
+  `active_data_id` INT UNSIGNED NOT NULL,
+  `notes_id`  INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`stage_tracking`;
+CREATE TABLE `stage_tracking` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `date` DATETIME,
+	`customer` CHAR(255),
+	`well` CHAR(255),
+	`stage` CHAR(255),
+	`bht_f` CHAR(255),
+	`bht_psi` CHAR(255),
+	`frac_design` CHAR(255),
+	`field_engineer_id` INT UNSIGNED,
+  `plug_type` CHAR(255),
+  `plug_seat_technique` CHAR(255),
+  `did_an_event_occur` CHAR(255),
+  `seismos_data_collection` CHAR(255),
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`field_engineer`;
+CREATE TABLE `field_engineer` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `days` CHAR(255),
+	`nights` CHAR(255),
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`perforation_interval_information`;
+CREATE TABLE `perforation_interval_information` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `top_perf` CHAR(255),
+	`bottom_perf` CHAR(255),
+	`plug_depth` CHAR(255) ,
+	`n_clusters` INT UNSIGNED,
+	`perf_gun_description` CHAR(255),
+	`perf_daiameter` CHAR(255),
+	`spf` CHAR(255),
+  `pumped_diverter` CHAR(255),
+	`diverter_type` CHAR(255),
+	`acid` CHAR(255),
+	`displacement_volume_id` INT UNSIGNED, 
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`displacement_volume`;
+CREATE TABLE `displacement_volume` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `top_perf` CHAR(255),
+  `bottom_perf` CHAR(255),
+  `plug` CHAR(255),
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`stage_data`;
+CREATE TABLE `stage_data` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `stage_start_time` CHAR(255),
+  `stage_end_time` CHAR(255),
+  `opening_well` CHAR(255),
+  `isip` CHAR(255),
+  `fluid_parameters_id` INT UNSIGNED,
+  `fluids_injected_into_formation_id` INT UNSIGNED,
+  `pumping_summary_id` INT UNSIGNED,
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`fluid_parameters`;
+CREATE TABLE `fluid_parameters` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `base_fluid_type` CHAR(255),
+  `base_fluid_density` CHAR(255),
+  `max_conc_density` CHAR(255),
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`fluids_injected_into_formation`;
+CREATE TABLE `fluids_injected_into_formation` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `last_description` CHAR(255),
+  `last_bbls` CHAR(255),
+  `last_ppg` CHAR(255),
+
+  `second_to_last_description` CHAR(255),
+  `second_to_last_bbls` CHAR(255),
+  `second_to_last_ppg` CHAR(255),
+
+  `third_to_last_description` CHAR(255),
+  `third_to_last_bbls` CHAR(255),
+  `third_to_last_ppg` CHAR(255),
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`propant_data`;
+CREATE TABLE `propant_data` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `stage_data_id` INT UNSIGNED,
+  `description` CHAR(255),
+  `specific_gravity` CHAR(255),
+  `bulk_density` CHAR(255),
+
+  PRIMARY KEY (`id`)
+);
+
+
+DROP TABLE IF EXISTS seismos.`pumping_summary`;
+CREATE TABLE `pumping_summary` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `max_prop_conc_design` CHAR(255),
+  `max_prop_conc_actual` CHAR(255),
+
+  `total_pad_volume_design` CHAR(255),
+  `total_pad_volume_actual` CHAR(255),
+
+  `total_clean_fluid_volume_design` CHAR(255),
+  `total_clean_fluid_volume_actual` CHAR(255),
+
+  `total_forty_seventy_design` CHAR(255),
+  `total_forty_seventy_actual` CHAR(255),
+
+  `total_sand_design` CHAR(255),
+  `total_sand_actual` CHAR(255),
+
+  `acid_volume_design` CHAR(255),
+  `acid_volume_actual` CHAR(255),
+
+  `flush_volume_design` CHAR(255),
+  `flush_volume_actual` CHAR(255),
+
+  `slurry_volume_design` CHAR(255),
+  `slurry_volume_actual` CHAR(255),
+
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`active_data`;
+CREATE TABLE `active_data` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `pilsing_parameters_wave_type` CHAR(255),
+  `pilsing_parameters_periods` CHAR(255),
+  `pilsing_parameters_freq` CHAR(255),
+  `pilsing_parameters_offset` CHAR(255),
+  `pilsing_parameters_amplitude` CHAR(255),
+  
+  `pre_frac_pulses_start_time` DATETIME,
+  `pre_frac_pulses_end_time` DATETIME,
+  `pre_frac_pulses_n_pulses` INT UNSIGNED,
+
+  `post_frac_pulses_start_time` DATETIME,
+  `post_frac_pulses_end_time` DATETIME,
+  `post_frac_pulses_n_pulses` INT UNSIGNED,
+
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`notes`;
+CREATE TABLE `notes` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `pre_frac_pulse` TEXT,
+  `post_frac_pulse` TEXT,
+  `other` TEXT,
+
   PRIMARY KEY (`id`)
 );
