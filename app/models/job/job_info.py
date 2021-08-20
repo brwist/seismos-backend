@@ -13,7 +13,7 @@ class JobInfo(TimestampMixin, ModelMixin, db.Model):
     job_type_id = db.Column(db.Integer)
     job_start_date = db.Column(db.DateTime)
     job_end_date = db.Column(db.DateTime)
-    project_id = db.Column(db.Integer)
+    project_id = db.Column(db.BigInteger)
 
     job_type = db.relationship(
         "JobType",

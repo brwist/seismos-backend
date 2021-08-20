@@ -30,10 +30,10 @@ class WellInfoSchema(Schema):
     well_api = fields.Str(required=True)
     #  ambiguity fields
     formation = fields.Str(required=True)
-    lat = fields.Str(required=True)
-    easting = fields.Str(required=True)
-    northing = fields.Str(required=True)
-    long = fields.Str(required=True)
+    surface_latitude = fields.Str(required=True)
+    surface_longitude = fields.Str(required=True)
+    bottom_hole_latitude = fields.Str(required=True)
+    bottom_hole_longitude = fields.Str(required=True)
 
 
 class WellVolumeSchema(Schema):

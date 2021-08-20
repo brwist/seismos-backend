@@ -20,8 +20,7 @@ from app.models import (
 )
 
 from app.schemas import (
-    SuccessSchema,
-    ErrorSchema,
+    MessageSchema,
     TrackingSheetSchema,
     TrackingSheetIdSchema,
     TrackingSheetStageSchema,
@@ -33,7 +32,7 @@ from app.schemas import (
 class TrackingSheetResource(Resource):
     @jwt_required()
     @swagger_decorator(
-        response_schema={200: TrackingSheetSchema, 401: ErrorSchema},
+        response_schema={200: TrackingSheetSchema, 401: MessageSchema},
         path_schema=TrackingSheetIdSchema,
         tag="Tracking Sheet",
     )
@@ -47,7 +46,7 @@ class TrackingSheetResource(Resource):
 
     @jwt_required()
     @swagger_decorator(
-        response_schema={200: SuccessSchema},
+        response_schema={200: MessageSchema},
         path_schema=TrackingSheetIdSchema,
         json_schema=TrackingSheetStageSchema,
         tag="Tracking Sheet",
@@ -61,7 +60,7 @@ class TrackingSheetResource(Resource):
 
     @jwt_required()
     @swagger_decorator(
-        response_schema={200: SuccessSchema},
+        response_schema={200: MessageSchema},
         path_schema=TrackingSheetIdSchema,
         json_schema=TrackingSheetSchema,
         tag="Tracking Sheet",
@@ -75,7 +74,7 @@ class TrackingSheetStageList(Resource):
     @jwt_required()
     @swagger_decorator(
         path_schema=WellPathIdSchema,
-        response_schema={200: TrackingSheetStagesListResponse, 401: ErrorSchema},
+        response_schema={200: TrackingSheetStagesListResponse, 401: MessageSchema},
         tag="Tracking Sheet",
     )
     def get(self, well_id):
@@ -100,7 +99,7 @@ class CreateTrackingSheet(Resource):
     @swagger_decorator(
         json_schema=TrackingSheetSchema,
         path_schema=WellPathIdSchema,
-        response_schema={201: SuccessSchema, 401: ErrorSchema},
+        response_schema={201: MessageSchema, 401: MessageSchema},
         tag="Tracking Sheet",
     )
     def post(self, well_id):
@@ -271,5 +270,8 @@ class CreateTrackingSheet(Resource):
             active_data_id=active_data_model.id,
             notes_id=notes.id,
         ).save()
+
+        well.num_stages += 1
+        well.save()
 
         return {"msg": "tracking sheet was created"}, 201

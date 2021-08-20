@@ -16,6 +16,7 @@ class TrackingSheet(ModelMixin, db.Model):
     stage_data_id = db.Column(INTEGER(unsigned=True), nullable=False)
     active_data_id = db.Column(INTEGER(unsigned=True), nullable=False)
     notes_id = db.Column(INTEGER(unsigned=True), nullable=False)
+    approved = db.Column(db.Boolean, default=False)
 
     stage_tracking = db.relationship(
         "StageTracking",

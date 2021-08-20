@@ -41,6 +41,15 @@ class StageTrackingShema(Schema):
     seismos_data_collection = fields.String()
 
 
+class QCStageDataShema(Schema):
+    stage_n = fields.Int()
+    stage_tracking = fields.Nested(StageTrackingShema)
+
+
+class QCReportSchema(Schema):
+    report = fields.List(fields.Nested(QCStageDataShema))
+
+
 class StageDataFluidParam(Schema):
     base_fluid_type = fields.String()
     base_fluid_density = fields.String()
@@ -104,6 +113,11 @@ class StageDataSchema(Schema):
     fluids_injected_into_formation = fields.Nested(FluidsInjectedIntoFormation)
     propant_data = fields.List(fields.Nested(PropantDataSchema))
     pumping_summary = fields.Nested(PumpingSummarySchema)
+
+
+class StageDataCreateSchema(Schema):
+    stage = fields.Int()
+    stage_data = fields.Nested(StageDataSchema)
 
 
 class TrackingSheetActiveData(Schema):

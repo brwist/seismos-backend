@@ -30,10 +30,10 @@ class Well(TimestampMixin, ModelMixin, db.Model):
     measured_depth = db.Column(db.Float)
     vertical_depth = db.Column(db.Float)
     vertical_depth_unit = db.Column(db.Text)
-    lat = db.Column(db.Text)
-    easting = db.Column(db.Text)
-    northing = db.Column(db.Text)
-    long = db.Column(db.Text)
+    surface_latitude = db.Column(db.Text)
+    surface_longitude = db.Column(db.Text)
+    bottom_hole_latitude = db.Column(db.Text)
+    bottom_hole_longitude = db.Column(db.Text)
     estimated_surface_vol = db.Column(db.Float)
     estimated_bbls = db.Column(db.Float)
     estimated_gallons = db.Column(db.Float)
@@ -62,9 +62,21 @@ class Well(TimestampMixin, ModelMixin, db.Model):
     )
 
     default_value = db.relationship(
-        "DefaultVolumes",
+        "DefaultVal",
         foreign_keys=[id],
-        primaryjoin="Well.id == DefaultVolumes.well_id",
+        primaryjoin="Well.id == DefaultVal.well_id",
+    )
+
+    default_advance_val = db.relationship(
+        "DefaultAdvanceVal",
+        foreign_keys=[id],
+        primaryjoin="Well.id == DefaultAdvanceVal.well_id",
+    )
+
+    default_param_val = db.relationship(
+        "DefaultParamVal",
+        foreign_keys=[id],
+        primaryjoin="Well.id == DefaultParamVal.well_id",
     )
 
     tracking_sheet = db.relationship(

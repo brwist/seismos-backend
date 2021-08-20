@@ -240,7 +240,7 @@ def test_default_volumes(client_with_user):
         assert project.pad.wells
         well = project.pad.wells[0]
         assert well
-        with open(f"{TEST_STATIC_ROOT}/default_volumes_create.json", "r") as f_json:
+        with open(f"{TEST_STATIC_ROOT}/create_default_volumes.json", "r") as f_json:
             default_values = json.load(f_json)
             assert default_values
             resp = client_with_user.put(

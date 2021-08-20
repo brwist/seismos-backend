@@ -12,7 +12,7 @@ from app.schemas import (
     ProjectReturnSchema,
     ProjectListSchema,
     CreateProjectSuccessSchema,
-    ErrorSchema,
+    MessageSchema,
 )
 
 
@@ -32,7 +32,6 @@ from app.models import (
     ProjectCrew,
     Well,
     Formation,
-    DefaultVolumes,
     User,
 )
 
@@ -42,7 +41,7 @@ from marshmallow.exceptions import ValidationError
 class ProjectGet(Resource):
     @jwt_required()
     @swagger_decorator(
-        response_schema={200: ProjectReturnSchema, 404: ErrorSchema},
+        response_schema={200: ProjectReturnSchema, 404: MessageSchema},
         path_schema=ProjectIdPathSchema,
         tag="Project",
     )
@@ -127,9 +126,6 @@ class ProjectCreate(Resource):
             operator_name=pad_data["operator_name"],
             service_company_name=pad_data["service_company_name"],
             wireline_company=pad_data["wireline_company"],
-            # TODO Why list? (Make clean up)
-            password=req["clientInfoValues"][0]["password"],
-            title=req["clientInfoValues"][0]["title"]
         )
 
         client.save()
@@ -215,10 +211,11 @@ class ProjectCreate(Resource):
                 formation_id=formation.id,
                 num_stages=well_info["num_stages"],
 
-                lat=well_info["lat"],
-                easting=well_info["easting"],
-                northing=well_info["northing"],
-                long=well_info["long"],
+                surface_latitude=well_info["surface_latitude"],
+                surface_longitude=well_info["surface_longitude"],
+
+                bottom_hole_latitude=well_info["bottom_hole_latitude"],
+                bottom_hole_longitude=well_info["bottom_hole_longitude"],
 
                 casing_od=casing["od"],
                 casing_wt=casing["wt"],
@@ -243,7 +240,7 @@ class ProjectCreate(Resource):
                 estimated_gallons=wellEstim["gallons"],
             )
             well.save()
-            DefaultVolumes(well_id=well.id).save()
+            # DefaultVolumes(well_id=well.id).save()
 
         # location entity
         country_name = CountryName(county_name=job_data["country_name"])
@@ -275,7 +272,7 @@ class ProjectCreate(Resource):
 class ProjectListGet(Resource):
     @jwt_required()
     @swagger_decorator(
-        response_schema={200: ProjectListSchema, 404: ErrorSchema},
+        response_schema={200: ProjectListSchema, 404: MessageSchema},
         tag="Project",
     )
     def get(self):
