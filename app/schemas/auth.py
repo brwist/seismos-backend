@@ -6,6 +6,12 @@ class UserLoginSchema(Schema):
     password = fields.String(required=True, description="Password for login")
 
 
+class UserRegisterSchema(Schema):
+    username = fields.String(required=True, description="Username for login")
+    email = fields.String(required=True, description="Email")
+    password = fields.String(required=True, description="Password for login")
+
+
 class UserSchema(Schema):
     id = fields.Int()
     username = fields.String()
@@ -35,3 +41,8 @@ class UserStatusResponseSchema(Schema):
     status = fields.Int()
     message = fields.Str()
     data = fields.Nested(UserStatusDataScheme)
+
+
+class UserUpdateSchema(Schema):
+    old_password = fields.Str()
+    new_password = fields.Str()

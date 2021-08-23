@@ -52,4 +52,4 @@ class UserProjects(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False)
-    project_id = db.Column(db.Integer, nullable=False)
+    project_id = db.Column(db.BigInteger, nullable=False)

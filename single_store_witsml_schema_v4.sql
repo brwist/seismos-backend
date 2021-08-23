@@ -1,224 +1,480 @@
 DROP DATABASE IF EXISTS seismos;
-CREATE DATABASE seismos;
+  CREATE DATABASE seismos;
 
 USE seismos;
 
 SET GLOBAL default_table_type = 'columnstore';
 
-DROP TABLE IF EXISTS seismos.`backside_pressure`;
-CREATE TABLE seismos.`backside_pressure`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `stage_id` int NOT NULL,
+
+DROP TABLE IF EXISTS `backside_pressure`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `backside_pressure` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) NOT NULL,
   `value` float NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`basin_name`;
-CREATE TABLE seismos.`basin_name`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `basin_name` text NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
 
-DROP TABLE IF EXISTS seismos.`chem_fluids`;
-CREATE TABLE seismos.`chem_fluids`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `stage_id` int NOT NULL,
-  `fluid_type_id` int NULL,
-  `chem_trade_name` text NULL,
-  `chem_name` text NULL,
-  `volume` float NULL,
-  `volume_unit` text NULL,
-  `volume_concentration` float NULL,
-  `volume_concentration_unit` text NULL,
-  `dry_total` float NULL,
-  `dry_total_unit` text NULL,
-  `dry_concentration` float NULL,
-  `dry_concentration_unit` text NULL,
-  `acid` float NULL,
-  `acid_unit` text NULL,
-  `clay_stabilizer` float NULL,
-  `clay_stabilizer_unit` text NULL,
-  `misc` text NULL,
-  `bulk_modulus` float NULL,
-  `bulk_modulus_unit` text NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+--
+-- Table structure for table `basin_name`
+--
 
-DROP TABLE IF EXISTS seismos.`clean`;
-CREATE TABLE seismos.`clean`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `stage_id` int NOT NULL,
-  `total_clean_rate` float NULL,
-  `total_clean_rate2` float NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+DROP TABLE IF EXISTS `basin_name`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `basin_name` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `basin_name` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`client`;
-CREATE TABLE seismos.`client`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `client_uuid` char(36) NOT NULL,
-  `client_name` text NULL,
-  `customer_field_rep_id` text NULL,
-  `project_id` int NULL,
-  `operator_name` text NULL,
-  `service_company_name` text NULL,
-  `wireline_company` text NULL,
-  `other_comments` text(200) NULL,
-  `password` char(50) NULL,
-  `title` char(50) NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
 
-DROP TABLE IF EXISTS seismos.`coil_tubing`;
-CREATE TABLE seismos.`coil_tubing`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `stage_id` int NOT NULL,
-  `pump_rate` float NULL,
-  `pump_rate_unit` text NULL,
-  `tubing_pressure` float NULL,
-  `tubing_pressure_unit` text NULL,
-  `depth` float NULL,
-  `depth_unit` text NULL,
-  `flowback_rate` float NULL,
-  `flowback_unit` text NULL,
-  `trip_in_out_rate` float NULL,
-  `trip_in_out_rate_unit` text NULL,
-  `weight_on_bit` float NULL DEFAULT NULL,
-  `weight_on_bit_unit` text NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
 
-DROP TABLE IF EXISTS seismos.`county_name`;
-CREATE TABLE seismos.`county_name`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `county_name` text NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+--
+-- Table structure for table `chem_fluids`
+--
 
-DROP TABLE IF EXISTS seismos.`crew`;
-CREATE TABLE seismos.`crew`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` text NOT NULL,
-  `phone_number` text NULL,
-  `role` enum('admin', 'manager', 'engineer') NULL,
-  `manager_id` int NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+DROP TABLE IF EXISTS `chem_fluids`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `chem_fluids` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) NOT NULL,
+  `fluid_type_id` int(11) DEFAULT NULL,
+  `chem_trade_name` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `chem_name` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `volume` float DEFAULT NULL,
+  `volume_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `volume_concentration` float DEFAULT NULL,
+  `volume_concentration_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `dry_total` float DEFAULT NULL,
+  `dry_total_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `dry_concentration` float DEFAULT NULL,
+  `dry_concentration_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `acid` float DEFAULT NULL,
+  `acid_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `clay_stabilizer` float DEFAULT NULL,
+  `clay_stabilizer_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `misc` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `bulk_modulus` float DEFAULT NULL,
+  `bulk_modulus_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`customer_field_rep`;
-CREATE TABLE seismos.`customer_field_rep`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` text NOT NULL,
-  `customer_field_rep_num` int NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+--
+-- Table structure for table `clean`
+--
 
-DROP TABLE IF EXISTS seismos.`equipment`;
-CREATE TABLE `equipment`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `trailer_id` int NULL,
-  `powerpack_id` int NULL,
-  `source_id` int NULL,
-  `accumulator_id` int NULL,
-  `hydrophones_id` int NULL,
-  `transducer_id` int NULL,
-  `hotspot_id` int NULL,
-  `computer_id` int NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+DROP TABLE IF EXISTS `clean`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `clean` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) NOT NULL,
+  `total_clean_rate` float DEFAULT NULL,
+  `total_clean_rate2` float DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`ff_parameter_set`;
-CREATE TABLE `ff_parameter_set`  (
-  `id` int NOT NULL,
-  `username` text NOT NULL,
-  `date_created` datetime NULL,
-  `shut_in_period_start` datetime NULL,
-  `sample_rate` float NULL,
-  `total_samples` float NULL,
-  `tvd` float NULL,
-  `viscosity` float NULL,
-  `compressibility_mpa` float NULL,
-  `poisson_ratio` float NULL,
-  `youngs_modulus_mpa` float NULL,
-  `volume_pumped` float NULL,
-  `proppant_volume_pumped_bbl` float NULL,
-  `average_injection_rate` float NULL,
-  `tectonic_component` float NULL,
-  `created_at` datetime NULL,
-  `updated_at` datetime NULL,
-  PRIMARY KEY (`id`)
-);
 
-DROP TABLE IF EXISTS seismos.`ff_processing_result`;
-CREATE TABLE `ff_processing_result`  (
-  `id` int NOT NULL,
-  `timestamp` datetime NULL,
-  `length` float NULL,
-  `width` float NULL,
-  `height` float NULL,
-  `conductivity` float NULL,
-  `minimum_stress` float NULL,
-  `minimun_stress_gradient` float NULL,
-  `net_pressure` float NULL,
-  `fracture_pressure_gradient` float NULL,
-  `reservoir_pressure` float NULL,
-  `reservoir_pressure_gradient` float NULL,
-  `pressure_match` float NULL,
-  `fracture_efficiency` float NULL,
-  `stress_shadow_pressure` float NULL,
-  `calculated_poisson_ratio` float NULL,
-  `stage_id` int NOT NULL,
-  `ff_parameter_id` int NOT NULL,
-  `nwb_region_size` float NULL,
-  `nwb_compressibility` float NULL,
-  `nwb_permeability` float NULL,
-  `ff_version` text NULL,
-  `created_at` datetime NULL,
-  `updated_at` datetime NULL,
-  PRIMARY KEY (`id`)
-);
+--
+-- Table structure for table `client`
+--
 
-DROP TABLE IF EXISTS seismos.`field_notes`;
-CREATE TABLE `field_notes`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `well_id` int NOT NULL,
-  `comment_timestamp` datetime NULL,
-  `comment_content` text NULL,
-  `comment_by` text NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+DROP TABLE IF EXISTS `client`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `client` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `client_uuid` char(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `client_name` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `customer_field_rep_id` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `project_id` bigint(11) DEFAULT NULL,
+  `operator_name` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `service_company_name` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `wireline_company` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `other_comments` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `client_uuid` (`client_uuid`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`fluid_type_lookup`;
-CREATE TABLE `fluid_type_lookup`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `value` int NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+
+--
+-- Table structure for table `coil_tubing`
+--
+
+DROP TABLE IF EXISTS `coil_tubing`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `coil_tubing` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) NOT NULL,
+  `pump_rate` float DEFAULT NULL,
+  `pump_rate_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `tubing_pressure` float DEFAULT NULL,
+  `tubing_pressure_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `depth` float DEFAULT NULL,
+  `depth_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `flowback_rate` float DEFAULT NULL,
+  `flowback_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `trip_in_out_rate` float DEFAULT NULL,
+  `trip_in_out_rate_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `weight_on_bit` float DEFAULT NULL,
+  `weight_on_bit_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+--
+-- Table structure for table `county_name`
+--
+
+DROP TABLE IF EXISTS `county_name`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `county_name` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `county_name` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `crew`
+--
+
+DROP TABLE IF EXISTS `crew`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `crew` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `name` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `phone_number` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `role` enum('admin','manager','engineer') CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `manager_id` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `customer_field_rep`
+--
+
+DROP TABLE IF EXISTS `customer_field_rep`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `customer_field_rep` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `name` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `customer_field_rep_num` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `default_advance_val`
+--
+
+DROP TABLE IF EXISTS `default_advance_val`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `default_advance_val` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `well_id` int(11) DEFAULT NULL,
+  `model` varchar(40) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `response` varchar(40) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `source` varchar(40) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `layer` int(11) DEFAULT NULL,
+  `total_width` float DEFAULT NULL,
+  `viscosity` float DEFAULT NULL,
+  `density` float DEFAULT NULL,
+  `compresssibility` float DEFAULT NULL,
+  `f_low_hz` float DEFAULT NULL,
+  `f_high_hz` float DEFAULT NULL,
+  `new_sample_rate` float DEFAULT NULL,
+  `data_sample_rate` float DEFAULT NULL,
+  `algorithm` varchar(40) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `grid_density` float DEFAULT NULL,
+  `weighting` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `wlevexp` float DEFAULT NULL,
+  `loop` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `method` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `tolerance` float DEFAULT NULL,
+  `interation` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `well_id` (`well_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `default_param_val`
+--
+
+DROP TABLE IF EXISTS `default_param_val`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `default_param_val` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `well_id` int(11) DEFAULT NULL,
+  `c1_min` float DEFAULT NULL,
+  `c2_min` float DEFAULT NULL,
+  `c1_max` float DEFAULT NULL,
+  `c2_max` float DEFAULT NULL,
+  `c3_min` float DEFAULT NULL,
+  `c3_max` float DEFAULT NULL,
+  `q_min` int(11) DEFAULT NULL,
+  `q_max` int(11) DEFAULT NULL,
+  `k_min` float DEFAULT NULL,
+  `k_max` float DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `well_id` (`well_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+-- Table structure for table `default_val`
+--
+
+DROP TABLE IF EXISTS `default_val`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `default_val` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `well_id` int(11) DEFAULT NULL,
+  `pres` float DEFAULT NULL,
+  `young` float DEFAULT NULL,
+  `overburden` float DEFAULT NULL,
+  `poisson` float DEFAULT NULL,
+  `eta_cp` int(11) DEFAULT NULL,
+  `fuildt` int(11) DEFAULT NULL,
+  `tect` float DEFAULT NULL,
+  `fuild_density` float DEFAULT NULL,
+  `diverter_time` float DEFAULT NULL,
+  `met_res` float DEFAULT NULL,
+  `ffkw_correction` int(11) DEFAULT NULL,
+  `k_mpa` int(11) DEFAULT NULL,
+  `nu_lim` int(11) DEFAULT NULL,
+  `per_red` int(11) DEFAULT NULL,
+  `start1` int(11) DEFAULT NULL,
+  `beta_ss` float DEFAULT NULL,
+  `st_lim` int(11) DEFAULT NULL,
+  `biot` int(11) DEFAULT NULL,
+  `shadow` int(11) DEFAULT NULL,
+  `fit_end_point` int(11) DEFAULT NULL,
+  `start2` int (11) DEFAULT NULL,
+  `ng` INT(11) DEFAULT NULL, /* Maybe we should change it in future */
+  `stage_ques` VARCHAR(255) DEFAULT NULL,
+  `breaker` VARCHAR(255) DEFAULT NULL,
+  `poisson_var` VARCHAR(255) DEFAULT NULL,
+  `poisson_method` INT(11) DEFAULT NULL,
+  `stress_shadow` VARCHAR(255) DEFAULT NULL,
+  `plotraw` VARCHAR(255) DEFAULT NULL,
+  `skip_losses` VARCHAR(255) DEFAULT NULL,
+  `use_wns` VARCHAR(255) DEFAULT NULL,
+  `use_wncuts` VARCHAR(255) DEFAULT NULL,
+  `fit_iterations` INT(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `well_id` (`well_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `equipment`
+--
+
+DROP TABLE IF EXISTS `equipment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `equipment` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `trailer_id` int(11) DEFAULT NULL,
+  `powerpack_id` int(11) DEFAULT NULL,
+  `source_id` int(11) DEFAULT NULL,
+  `accumulator_id` int(11) DEFAULT NULL,
+  `hydrophones_id` int(11) DEFAULT NULL,
+  `transducer_id` int(11) DEFAULT NULL,
+  `hotspot_id` int(11) DEFAULT NULL,
+  `computer_id` int(11) DEFAULT NULL,
+  `pressure_counter` double DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `ff_parameter_set`
+--
+
+DROP TABLE IF EXISTS `ff_parameter_set`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ff_parameter_set` (
+  `id` int(11) NOT NULL,
+  `username` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `date_created` datetime DEFAULT NULL,
+  `shut_in_period_start` datetime DEFAULT NULL,
+  `sample_rate` float DEFAULT NULL,
+  `total_samples` float DEFAULT NULL,
+  `tvd` float DEFAULT NULL,
+  `viscosity` float DEFAULT NULL,
+  `compressibility_mpa` float DEFAULT NULL,
+  `poisson_ratio` float DEFAULT NULL,
+  `youngs_modulus_mpa` float DEFAULT NULL,
+  `volume_pumped` float DEFAULT NULL,
+  `proppant_volume_pumped_bbl` float DEFAULT NULL,
+  `average_injection_rate` float DEFAULT NULL,
+  `tectonic_component` float DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `ff_processing_result`
+--
+
+DROP TABLE IF EXISTS `ff_processing_result`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ff_processing_result` (
+  `id` int(11) NOT NULL,
+  `timestamp` datetime DEFAULT NULL,
+  `length` float DEFAULT NULL,
+  `width` float DEFAULT NULL,
+  `height` float DEFAULT NULL,
+  `conductivity` float DEFAULT NULL,
+  `minimum_stress` float DEFAULT NULL,
+  `minimun_stress_gradient` float DEFAULT NULL,
+  `net_pressure` float DEFAULT NULL,
+  `fracture_pressure_gradient` float DEFAULT NULL,
+  `reservoir_pressure` float DEFAULT NULL,
+  `reservoir_pressure_gradient` float DEFAULT NULL,
+  `pressure_match` float DEFAULT NULL,
+  `fracture_efficiency` float DEFAULT NULL,
+  `stress_shadow_pressure` float DEFAULT NULL,
+  `calculated_poisson_ratio` float DEFAULT NULL,
+  `stage_id` int(11) NOT NULL,
+  `ff_parameter_id` int(11) NOT NULL,
+  `nwb_region_size` float DEFAULT NULL,
+  `nwb_compressibility` float DEFAULT NULL,
+  `nwb_permeability` float DEFAULT NULL,
+  `ff_version` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `field_notes`
+--
+
+DROP TABLE IF EXISTS `field_notes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `field_notes` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `well_id` int(11) NOT NULL,
+  `comment_timestamp` datetime DEFAULT NULL,
+  `comment_content` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `comment_by` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `well_id` (`well_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `fluid_type_lookup`
+--
+
+DROP TABLE IF EXISTS `fluid_type_lookup`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `fluid_type_lookup` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `value` int(11) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 DROP TABLE IF EXISTS seismos.`formation`;
 CREATE TABLE `formation`  (
@@ -229,595 +485,995 @@ CREATE TABLE `formation`  (
   PRIMARY KEY (`id`)
 );
 
-DROP TABLE IF EXISTS seismos.`formation_top`;
-CREATE TABLE `formation_top`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `well_id` int NOT NULL,
-  `measured_depth` float NULL,
-  `inclination` float NULL,
-  `azimuth` float NULL,
-  `X` float NULL,
-  `Y` float NULL,
-  `Z` float NULL,
-  `target_upper` float NULL,
-  `target_lower` float NULL,
-  `l1_upper` float NULL,
-  `l1_lower` float NULL,
-  `l2_upper` float NULL,
-  `l2_lower` float NULL,
-  `l3_upper` float NULL,
-  `l3_lower` float NULL,
-  `l4_upper` float NULL,
-  `l4_lower` float NULL,
-  `l5_upper` float NULL,
-  `l5_lower` float NULL,
-  `l6_upper` float NULL,
-  `l6_lower` float NULL,
-  `l7_upper` float NULL,
-  `l7_lower` float NULL,
-  `l8_upper` float NULL,
-  `l8_lower` float NULL,
-  `l9_upper` float NULL,
-  `l9_lower` float NULL,
-  `l10_upper` float NULL,
-  `l10_lower` float NULL,
-  `json_data` json NULL,
-  `created_at` datetime NULL,
-  `updated_at` datetime NULL,
-  PRIMARY KEY (`id`)
-);
 
-DROP TABLE IF EXISTS seismos.`formation_top_reference`;
-CREATE TABLE `formation_top_reference`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `formation_top_id` int NOT NULL,
-  `l1` text NULL,
-  `l2` text NULL,
-  `l3` text NULL,
-  `l4` text NULL,
-  `l5` text NULL,
-  `l6` text NULL,
-  `l7` text NULL,
-  `l8` text NULL,
-  `l9` text NULL,
-  `l10` text NULL,
-  `created_at` datetime NULL,
-  `updated_at` datetime NULL,
-  PRIMARY KEY (`id`)
-);
+--
+-- Table structure for table `formation_top`
+--
 
-DROP TABLE IF EXISTS seismos.`frac_design_lookup`;
-CREATE TABLE `frac_design_lookup`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `value` int NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+DROP TABLE IF EXISTS `formation_top`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `formation_top` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `well_id` int(11) NOT NULL,
+  `measured_depth` float DEFAULT NULL,
+  `inclination` float DEFAULT NULL,
+  `azimuth` float DEFAULT NULL,
+  `X` float DEFAULT NULL,
+  `Y` float DEFAULT NULL,
+  `Z` float DEFAULT NULL,
+  `target_upper` float DEFAULT NULL,
+  `target_lower` float DEFAULT NULL,
+  `l1_upper` float DEFAULT NULL,
+  `l1_lower` float DEFAULT NULL,
+  `l2_upper` float DEFAULT NULL,
+  `l2_lower` float DEFAULT NULL,
+  `l3_upper` float DEFAULT NULL,
+  `l3_lower` float DEFAULT NULL,
+  `l4_upper` float DEFAULT NULL,
+  `l4_lower` float DEFAULT NULL,
+  `l5_upper` float DEFAULT NULL,
+  `l5_lower` float DEFAULT NULL,
+  `l6_upper` float DEFAULT NULL,
+  `l6_lower` float DEFAULT NULL,
+  `l7_upper` float DEFAULT NULL,
+  `l7_lower` float DEFAULT NULL,
+  `l8_upper` float DEFAULT NULL,
+  `l8_lower` float DEFAULT NULL,
+  `l9_upper` float DEFAULT NULL,
+  `l9_lower` float DEFAULT NULL,
+  `l10_upper` float DEFAULT NULL,
+  `l10_lower` float DEFAULT NULL,
+  `additional` JSON COLLATE utf8_bin,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `well_id` (`well_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`geophysical_properties`;
-CREATE TABLE `geophysical_properties`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `well_id` int NOT NULL,
-  `measured_depth` float NULL,
-  `young_modulus` float NULL,
-  `poisson_ratio` float NULL,
-  `min_stress` float NULL,
-  `dynamic_horizontal_young_modulus` float NULL,
-  `static_horizontal_young_modulus` float NULL,
-  `static_vertical_young_modulus` float NULL,
-  `horizontal_poisson_ratio` float NULL,
-  `vertical_possion_ratio` float NULL,
-  `pore_pressure` float NULL,
-  `tensile_strength` float NULL,
-  `vertical_stress_gradient` float NULL,
-  `json_data` json NULL,
-  `created_at` datetime NULL,
-  `updated_at` datetime NULL,
-  PRIMARY KEY (`id`)
-);
 
-DROP TABLE IF EXISTS seismos.`job_info`;
-CREATE TABLE `job_info`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `job_id` text,
-  `job_name` text NOT NULL,
-  `afe_id` int NULL,
-  `job_start_date` datetime NULL,
-  `job_end_date` datetime NULL,
-  `job_type_id` int NULL,
-  `project_id` INT,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+--
+-- Table structure for table `formation_top_reference`
+--
 
-DROP TABLE IF EXISTS seismos.`job_type`;
-CREATE TABLE `job_type`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `value` text NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+DROP TABLE IF EXISTS `formation_top_reference`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `formation_top_reference` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `formation_top_id` int(11) NOT NULL,
+  `l1` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `l2` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `l3` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `l4` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `l5` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `l6` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `l7` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `l8` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `l9` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `l10` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`location_info`;
-CREATE TABLE `location_info`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `county_name_id` int NOT NULL,
-  `basin_name_id` int NOT NULL,
-  `state_id` int NOT NULL,
-  `job_info_id` int,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
 
-DROP TABLE IF EXISTS seismos.`mud_log`;
-CREATE TABLE `mud_log`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `well_id` int NOT NULL,
-  `measure_depth` float NULL,
-  `siltstone` float NULL,
-  `sand` float NULL,
-  `coal` float NULL,
-  `limestone` float NULL,
-  `dolomite` float NULL,
-  `salt` float NULL,
-  `chert` float NULL,
-  `chalk` float NULL,
-  `anhydrite` float NULL,
-  `shale` float NULL,
-  `gamma_ray` float NULL,
-  `clay` float NULL,
-  `marl` float NULL,
-  `rate_of_penetration` float NULL,
-  `rpm` float NULL,
-  `weight_on_bit` float NULL,
-  `total_gas` float NULL,
-  `methane` float NULL,
-  `ethane` float NULL,
-  `propane` float NULL,
-  `isobutane` float NULL,
-  `butane` float NULL,
-  `isopentane` float NULL,
-  `pentane` float NULL,
-  `json_data` json NULL,
-  `created_at` datetime NULL,
-  `updated_at` datetime NULL,
-  PRIMARY KEY (`id`)
-);
+--
+-- Table structure for table `frac_design_lookup`
+--
 
-DROP TABLE IF EXISTS seismos.`mwd_report`;
-CREATE TABLE `mwd_report`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `well_id` int NOT NULL,
-  `measured_depth` float NULL,
-  `gamma_ray` float NULL,
-  `created_at` datetime NULL,
-  `updated_at` datetime NULL,
-  PRIMARY KEY (`id`)
-);
+DROP TABLE IF EXISTS `frac_design_lookup`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `frac_design_lookup` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `value` int(11) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`nf_parameter_set`;
-CREATE TABLE `nf_parameter_set`  (
-  `id` int NOT NULL,
-  `creation_date` datetime NULL,
-  `c1_lower_bound` float NULL,
-  `c1_upper_bound` float NULL,
-  `c2_lower_bound` float NULL,
-  `c2_upper_bound` float NULL,
-  `c3_lower_bound` float NULL,
-  `c3_upper_bound` float NULL,
-  `direct_sources_start` datetime NULL,
-  `first_reflection_start` datetime NULL,
-  `direct_source_num_samples` int NULL,
-  `first_reflection_num_samples` int NULL,
-  `source_duration` float NULL,
-  `min_pulse_separation` float NULL,
-  `compressbility` float NULL,
-  `deconvolution_override` text NULL,
-  `deconvolution_noise_level` float NULL,
-  `nf_shot_finder_versaion` text NULL,
-  `nf_inversion_version` text NULL,
-  `shot_id` int NULL,
-  `created_at` datetime NULL,
-  `updated_at` datetime NULL,
-  PRIMARY KEY (`id`)
-);
+--
+-- Table structure for table `geophysical_properties`
+--
 
-DROP TABLE IF EXISTS seismos.`nf_processing_result`;
-CREATE TABLE `nf_processing_result`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `stage_id` int NOT NULL,
-  `timestamp` datetime NULL,
-  `user_id` text NULL,
-  `c0` float NULL,
-  `c1` float NULL,
-  `c2` float NULL,
-  `c3` float NULL,
-  `q0` float NULL,
-  `q1` float NULL,
-  `q2` float NULL,
-  `q3` float NULL,
-  `fit_error` float NULL,
-  `nf_param_id` int NULL,
-  `created_at` datetime NULL,
-  `updated_at` datetime NULL,
-  PRIMARY KEY (`id`)
-);
+DROP TABLE IF EXISTS `geophysical_properties`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `geophysical_properties` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `well_id` int(11) NOT NULL,
+  `measured_depth` float DEFAULT NULL,
+  `young_modulus` float DEFAULT NULL,
+  `poisson_ratio` float DEFAULT NULL,
+  `min_stress` float DEFAULT NULL,
+  `dynamic_horizontal_young_modulus` float DEFAULT NULL,
+  `static_horizontal_young_modulus` float DEFAULT NULL,
+  `static_vertical_young_modulus` float DEFAULT NULL,
+  `horizontal_poisson_ratio` float DEFAULT NULL,
+  `vertical_possion_ratio` float DEFAULT NULL,
+  `pore_pressure` float DEFAULT NULL,
+  `tensile_strength` float DEFAULT NULL,
+  `vertical_stress_gradient` float DEFAULT NULL,
+  `json_data` JSON COLLATE utf8_bin,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `well_id` (`well_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`pad`;
-CREATE TABLE `pad`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `pad_uuid` char(36) NOT NULL,
-  `project_id` int NOT NULL,
-  `pad_name` text NOT NULL,
-  `number_of_wells` int NULL,
-  `well_spacing` float NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
 
-DROP TABLE IF EXISTS seismos.`perforation`;
-CREATE TABLE `perforation`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `stage_id` int NOT NULL,
-  `order_num` int NULL,
-  `ordinal` text NULL,
-  `top_measured_depth` text NULL,
-  `bottom_measured_depth` text NULL,
-  `depth_unit` text NULL,
-  `shot_number` int NULL,
-  `shot_density` text NULL,
-  `shot_density_unit` text NULL,
-  `shot_count` text NULL,
-  `phasing` text NULL,
-  `conveyance_method` text NULL,
-  `charge_type` text NULL,
-  `charge_size` double NULL,
-  `charge_size_unit` text NULL,
-  `estimated_hole_diamter` text NULL,
-  `estimated_hole_diameter_unit` text NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+--
+-- Table structure for table `job_info`
+--
 
-DROP TABLE IF EXISTS seismos.`plug_depth_unit_lookup`;
-CREATE TABLE `plug_depth_unit_lookup`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `value` text NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+DROP TABLE IF EXISTS `job_info`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `job_info` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `job_id` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `job_name` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `afe_id` int(11) DEFAULT NULL,
+  `job_start_date` datetime DEFAULT NULL,
+  `job_end_date` datetime DEFAULT NULL,
+  `job_type_id` int(11) DEFAULT NULL,
+  `project_id` bigint(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`plug_name_lookup`;
-CREATE TABLE `plug_name_lookup`  (
-  `id` int NOT NULL AUTO_INCREMENT,
+
+--
+-- Table structure for table `job_type`
+--
+
+DROP TABLE IF EXISTS `job_type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `job_type` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `value` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `location_info`
+--
+
+DROP TABLE IF EXISTS `location_info`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `location_info` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `county_name_id` int(11) NOT NULL,
+  `basin_name_id` int(11) NOT NULL,
+  `state_id` int(11) NOT NULL,
+  `job_info_id` int(11) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`,`county_name_id`,`basin_name_id`,`state_id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`,`county_name_id`,`basin_name_id`,`state_id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `mud_log`
+--
+
+DROP TABLE IF EXISTS `mud_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `mud_log` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `well_id` int(11) NOT NULL,
+  `measure_depth` float DEFAULT NULL,
+  `siltstone` float DEFAULT NULL,
+  `sand` float DEFAULT NULL,
+  `coal` float DEFAULT NULL,
+  `limestone` float DEFAULT NULL,
+  `dolomite` float DEFAULT NULL,
+  `salt` float DEFAULT NULL,
+  `chert` float DEFAULT NULL,
+  `chalk` float DEFAULT NULL,
+  `anhydrite` float DEFAULT NULL,
+  `shale` float DEFAULT NULL,
+  `gamma_ray` float DEFAULT NULL,
+  `clay` float DEFAULT NULL,
+  `marl` float DEFAULT NULL,
+  `rate_of_penetration` float DEFAULT NULL,
+  `rpm` float DEFAULT NULL,
+  `weight_on_bit` float DEFAULT NULL,
+  `total_gas` float DEFAULT NULL,
+  `methane` float DEFAULT NULL,
+  `ethane` float DEFAULT NULL,
+  `propane` float DEFAULT NULL,
+  `isobutane` float DEFAULT NULL,
+  `butane` float DEFAULT NULL,
+  `isopentane` float DEFAULT NULL,
+  `pentane` float DEFAULT NULL,
+  `json_data` JSON COLLATE utf8_bin,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `well_id` (`well_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `mwd_report`
+--
+
+DROP TABLE IF EXISTS `mwd_report`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `mwd_report` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `well_id` int(11) NOT NULL,
+  `measured_depth` float DEFAULT NULL,
+  `gamma_ray` float DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `well_id` (`well_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `nf_parameter_set`
+--
+
+DROP TABLE IF EXISTS `nf_parameter_set`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `nf_parameter_set` (
+  `id` int(11) NOT NULL,
+  `creation_date` datetime DEFAULT NULL,
+  `c1_lower_bound` float DEFAULT NULL,
+  `c1_upper_bound` float DEFAULT NULL,
+  `c2_lower_bound` float DEFAULT NULL,
+  `c2_upper_bound` float DEFAULT NULL,
+  `c3_lower_bound` float DEFAULT NULL,
+  `c3_upper_bound` float DEFAULT NULL,
+  `direct_sources_start` datetime DEFAULT NULL,
+  `first_reflection_start` datetime DEFAULT NULL,
+  `direct_source_num_samples` int(11) DEFAULT NULL,
+  `first_reflection_num_samples` int(11) DEFAULT NULL,
+  `source_duration` float DEFAULT NULL,
+  `min_pulse_separation` float DEFAULT NULL,
+  `compressbility` float DEFAULT NULL,
+  `deconvolution_override` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `deconvolution_noise_level` float DEFAULT NULL,
+  `nf_shot_finder_versaion` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `nf_inversion_version` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `shot_id` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `nf_processing_result`
+--
+
+DROP TABLE IF EXISTS `nf_processing_result`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `nf_processing_result` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) NOT NULL,
+  `timestamp` datetime DEFAULT NULL,
+  `user_id` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `c0` float DEFAULT NULL,
+  `c1` float DEFAULT NULL,
+  `c2` float DEFAULT NULL,
+  `c3` float DEFAULT NULL,
+  `q0` float DEFAULT NULL,
+  `q1` float DEFAULT NULL,
+  `q2` float DEFAULT NULL,
+  `q3` float DEFAULT NULL,
+  `fit_error` float DEFAULT NULL,
+  `nf_param_id` int(11) DEFAULT NULL,
+  `connect_ops_risk` float DEFAULT NULL,
+  `connect_efficiency` float DEFAULT NULL,
+  `connect_condition` float DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+--
+-- Table structure for table `pad`
+--
+
+DROP TABLE IF EXISTS `pad`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `pad` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `pad_uuid` char(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `project_id` bigint(11) NOT NULL,
+  `pad_name` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `number_of_wells` int(11) DEFAULT NULL,
+  `well_spacing` float DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `pad_uuid` (`pad_uuid`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `perforation`
+--
+
+DROP TABLE IF EXISTS `perforation`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `perforation` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) NOT NULL,
+  `order_num` int(11) DEFAULT NULL,
+  `ordinal` float DEFAULT NULL,
+  `top_measured_depth` float DEFAULT NULL,
+  `bottom_measured_depth` float DEFAULT NULL,
+  `depth_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `shot_number` int(11) DEFAULT NULL,
+  `shot_density` float DEFAULT NULL,
+  `shot_density_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `shot_count` int(11) DEFAULT NULL,
+  `phasing` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `conveyance_method` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `charge_type` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `charge_size` double DEFAULT NULL,
+  `charge_size_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `estimated_hole_diamter` float DEFAULT NULL,
+  `estimated_hole_diameter_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `perf_plug_num` int(11) DEFAULT NULL,
+  `perf_start_time` datetime DEFAULT NULL,
+  `perf_end_time` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `plug_depth_unit_lookup`
+--
+
+DROP TABLE IF EXISTS `plug_depth_unit_lookup`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `plug_depth_unit_lookup` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `value` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `plug_name_lookup`
+--
+
+DROP TABLE IF EXISTS `plug_name_lookup`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `plug_name_lookup` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `value` float NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`project`;
-CREATE TABLE `project`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `project_uuid` char(36) NOT NULL,
-  `project_name` text NOT NULL,
-  `client_id` int NOT NULL,
-  `user_id` int NOT NULL,
-  `equipment_id` int NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
 
-DROP TABLE IF EXISTS seismos.`project_crew`;
-CREATE TABLE `project_crew`  (
-  `project_crew_id` int NOT NULL AUTO_INCREMENT,
-  `project_id` int NOT NULL,
-  `crew_id` int NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`project_crew_id`)
-);
+--
+-- Table structure for table `post_frac`
+--
 
-DROP TABLE IF EXISTS seismos.`proppant`;
-CREATE TABLE `proppant`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `stage_id` int NOT NULL,
-  `proppant_name_id` int NOT NULL,
-  `prop_mass` float NULL,
-  `mass_unit` text NULL,
-  `material` text NULL,
-  `mesh_size` float NULL,
-  `avg_concentration` float NULL,
-  `avg_concentration_unit` text NULL,
-  `max_concentration` float NULL,
-  `max_concentration_unit` text NULL,
-  `proppant_type_start_time` datetime NULL,
-  `proppant_end_start_time` datetime NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+DROP TABLE IF EXISTS `post_frac`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `post_frac` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) DEFAULT NULL,
+  `post_start_time` datetime DEFAULT NULL,
+  `post_end_time` datetime DEFAULT NULL,
+  `post_frac_num_pulse` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `post_frac_pulse_notes` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`proppant_lookup`;
-CREATE TABLE `proppant_lookup`  (
-  `id` int NOT NULL,
-  `proppant_name` text NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+--
+-- Table structure for table `pre_frac`
+--
 
-DROP TABLE IF EXISTS seismos.`pumpdown`;
-CREATE TABLE `pumpdown`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `stage_id` int NOT NULL,
-  `pressure` float NULL,
-  `rate` float NULL,
-  `total_pumdown_value` float NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+DROP TABLE IF EXISTS `pre_frac`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `pre_frac` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) DEFAULT NULL,
+  `pre_start_time` datetime DEFAULT NULL,
+  `pre_end_time` datetime DEFAULT NULL,
+  `pre_frac_num_pulse` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `pre_frac_pulse_notes` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`pumping`;
-CREATE TABLE `pumping`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `stage_id` int NOT NULL,
-  `total_slurry_volume` float NULL,
-  `total_clean_volume` float NULL,
-  `treating_pressure` float NULL,
-  `clean_rate` float NULL,
-  `slurry_rate` float NULL,
-  `surface_prop_conc` float NULL,
-  `bottom_prop_conc` float NULL,
-  `100_mesh` float NULL,
-  `30_50_mesh` float NULL,
-  `40_70_mesh` float NULL,
-  `20_40_mesh` float NULL,
-  `micro_prop` float NULL,
-  `bottom_pressure` float NULL,
-  `net_pressure` float NULL,
-  `backside_pressure` float NULL,
-  `friction_reducer` float NULL,
-  `gel` float NULL,
-  `crosslink` float NULL,
-  `created_at` datetime NULL,
-  `updated_at` datetime NULL,
-  PRIMARY KEY (`id`)
-);
+--
+-- Table structure for table `project`
+--
 
-DROP TABLE IF EXISTS seismos.`quality_control`;
-CREATE TABLE `quality_control`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `project_id` int NOT NULL,
-  `is_checked` bool NULL,
-  `checked_by` text NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+DROP TABLE IF EXISTS `project`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `project` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `project_uuid` char(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `project_name` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `client_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `equipment_id` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `project_uuid` (`project_uuid`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`slurry`;
-CREATE TABLE `slurry`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `stage_id` int NOT NULL,
-  `total_slurry_rate` float NULL,
-  `total_slurry_rate2` float NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
 
-DROP TABLE IF EXISTS seismos.`software`;
-CREATE TABLE `software`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `project_id` int NULL,
-  `inpute_app_version` float NULL,
-  `processing_version` float NULL,
-  `db_version` float NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+--
+-- Table structure for table `project_crew`
+--
 
-DROP TABLE IF EXISTS seismos.`stage`;
-CREATE TABLE `stage`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `stage_uuid` char(36) NOT NULL,
-  `well_id` int NULL,
-  `stage_number` integer NULL,
-  `number_of_cluster` integer NULL,
-  `stage_start_time` datetime NULL,
-  `stage_end_time` datetime NULL,
-  `plug_depth` float NULL,
-  `frac_design_id` integer NULL,
-  `calc_net_pressure_result` float NULL,
-  `observed_net_pressure` float NULL,
-  `inline_density` float NULL,
-  `blender_density` float NULL,
-  `calc_bh_density` float NULL,
-  `bottomhole_bhp` float NULL,
-  `bottomhole_bht` float NULL,
-  `frac_model_bhp` float NULL,
-  `total_pumpdown_volume` float NULL,
-  `formation_poisson_ratio` float NULL,
-  `formation_prgradient` double NULL,
-  `formation_overburden_num` double NULL,
-  `formation_pumping_fluid_viscosity` float NULL,
-  `formation_fluid_density` float NULL,
-  `formation_fluid_type` integer NULL,
-  `formation_tectonic_gradient` double NULL,
-  `formation_pore_pressure` float NULL,
-  `connect_ops_risk` float NULL,
-  `connect_efficiency` float NULL,
-  `connect_condition` float NULL,
-  `ses_data_colllection_id` integer NULL,
-  `ses_pressure_sensor` float NULL,
-  `ses_hydrophone_sensor_hi` float NULL,
-  `ses_hydrophone_sensor_low` float NULL,
-  `ses_pulse_trigger` datetime NULL,
-  `ses_wave_pulse_type` integer NULL,
-  `ses_pre_frac_pulse_notes` text NULL,
-  `ses_pre_frac_num_pulses` integer NULL,
-  `ses_pre_frac_start_time` datetime NULL,
-  `ses_pre_frac_end_time` datetime NULL,
-  `post_frac_start_time` datetime NULL,
-  `post_frac_end_time` datetime NULL,
-  `post_frac_num_pulses` integer NULL,
-  `digital_signal_flag` integer NULL,
-  `pressure_counter` double NULL,
-  `post_frac_pulse_notes` text NULL,
-  `other_notes` text NULL,
-  `num_reflections` integer NULL,
-  `plug_name` integer NULL,
-  `plug_ordinal` integer NULL,
-  `plug_top_measured_depth` float NULL,
-  `plug_type` integer NULL,
-  `plug_depth_unit_id` integer NULL,
-  `plug_diameter` float NULL,
-  `plug_diameter_unit` text NULL,
-  `plug_manufacturer` text NULL,
-  `plug_model` integer NULL,
-  `sleeve_name` text NULL,
-  `sleeve_ordinal` integer NULL,
-  `sleeve_top_measured_depth` float NULL,
-  `sleeve_bottom_measure_depth` float NULL,
-  `sleeve_depth_unit` text NULL,
-  `sleeve_port_size` float NULL,
-  `sleeve_port_size_unit` text NULL,
-  `sleeve_ball_size` float NULL,
-  `sleeve_ball_size_unit` text NULL,
-  `sleeve_seat_id` text NULL,
-  `sleeve_manufacturer` text NULL,
-  `sleeve_model` text NULL,
-  `sleeve_toe_shift_pressure` integer NULL,
-  `sleeve_toe_burst_pressure` integer NULL,
-  `created_at` datetime,
-  `updated_at` datetime,
-  PRIMARY KEY(`id`)
-);
+DROP TABLE IF EXISTS `project_crew`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `project_crew` (
+  `project_crew_id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(11) NOT NULL,
+  `crew_id` int(11) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`project_crew_id`) USING HASH,
+  KEY `project_id` (`project_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`project_crew_id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`state`;
-CREATE TABLE `state`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `value` text NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+--
+-- Table structure for table `proppant`
+--
 
-DROP TABLE IF EXISTS seismos.`survey_report`;
-CREATE TABLE `survey_report`  (
-  `id` int NOT NULL,
-  `well_id` int NOT NULL,
-  `measured_depth` float NULL,
-  `inclination` float NULL,
-  `azimuth` float NULL,
-  `tvd` float NULL,
-  `ns` float NULL,
-  `ew` float NULL,
-  `vs` float NULL,
-  `dls` float NULL,
-  `closure_direction` float NULL,
-  `dogleg_severity` float NULL,
-  `json_data` json NULL,
-  `created_at` datetime NULL,
-  `updated_at` datetime NULL,
-  PRIMARY KEY (`id`)
-);
+DROP TABLE IF EXISTS `proppant`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `proppant` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) NOT NULL,
+  `proppant_name_id` int(11) NOT NULL,
+  `prop_mass` float DEFAULT NULL,
+  `mass_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `material` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `mesh_size` float DEFAULT NULL,
+  `avg_concentration` float DEFAULT NULL,
+  `avg_concentration_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `max_concentration` float DEFAULT NULL,
+  `max_concentration_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `proppant_type_start_time` datetime DEFAULT NULL,
+  `proppant_end_start_time` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`treating_pressure`;
-CREATE TABLE `treating_pressure`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `stage_id` int NOT NULL,
-  `wellhead_pressure` float NULL,
-  `treating_pressure` float NULL,
-  `annulus_pressure` float NULL,
-  `calc_hydrostatic_pressure` float NULL,
-  `calc_bhp` float NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+--
+-- Table structure for table `proppant_lookup`
+--
 
-DROP TABLE IF EXISTS seismos.`well`;
-CREATE TABLE `well`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `well_uuid` char(36) NOT NULL,
-  `pad_id` int NOT NULL,
-  `well_name` text NULL,
-  `well_api` text NULL,
-  `formation_id` int NULL,
-  `num_stages` integer NULL,
-  `total_planned_stage` integer NULL,
-  `total_perfs` integer NULL,
-  `total_clusters` integer NULL,
-  `frac_system` text NULL,
-  `fluid_system` text NULL,
-  `well_start_time` datetime NULL,
-  `well_end_time` datetime NULL,
-  `bottom_hole_latitude` float NULL,
-  `bottom_hole_longitude` float NULL,
-  `surface_longitude` float NULL,
-  `surface_latitude` float NULL,
-  `lateral_length` float NULL,
-  `lateral_length_unit` text NULL,
-  `measured_depth` float NULL,
-  `vertical_depth` float NULL,
-  `vertical_depth_unit` text NULL,
-  `lat` text NULL,
-  `easting` text NULL,
-  `northing` text NULL,
-  `estimated_surface_vol` float NULL,
-  `estimated_bbls` float NULL,
-  `estimated_gallons` float NULL,
-  `casing_od` float NULL,
-  `casing_wt` float NULL,
-  `casing_id` float NULL,
-  `casing_depth_md` float NULL,
-  `casing_tol` float NULL,
-  `liner1_od` float NULL,
-  `liner1_wt` float NULL,
-  `liner1_id` float NULL,
-  `liner1_depth_md` float NULL,
-  `liner1_tol` float NULL,
-  `liner2_od` float NULL,
-  `liner2_wt` float NULL,
-  `liner2_id` float NULL,
-  `liner2_depth_md` float NULL,
-  `liner2_tol` float NULL,
-  `measured_depth_unit` text NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+DROP TABLE IF EXISTS `proppant_lookup`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `proppant_lookup` (
+  `id` int(11) NOT NULL,
+  `proppant_name` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS seismos.`wireline`;
-CREATE TABLE `wireline`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `stage_id` int NOT NULL,
-  `ccl` float NULL,
-  `current` float NULL,
-  `line_speed` float NULL,
-  `line_tension` float NULL,
-  `trigger_perfs` datetime NULL,
-  `weight` float NULL,
-  `depth` float NULL,
-  `voltage` float NULL,
-  `timestamp` datetime NULL,
-  `elapsed_time` datetime NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
+--
+-- Table structure for table `pumpdown`
+--
+
+DROP TABLE IF EXISTS `pumpdown`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `pumpdown` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) NOT NULL,
+  `pressure` float DEFAULT NULL,
+  `rate` float DEFAULT NULL,
+  `total_pumdown_value` float DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `pumping_2hz`
+--
+
+DROP TABLE IF EXISTS `pumping_2hz`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `pumping_2hz` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) NOT NULL,
+  `timestamp` datetime DEFAULT NULL,
+  `treating_pressure` float DEFAULT NULL,
+  `total_slurry_volume` float DEFAULT NULL,
+  `total_clean_volume` float DEFAULT NULL,
+  `slurry_rate` float DEFAULT NULL,
+  `clean_rate` float DEFAULT NULL,
+  `surface_prop_conc` float DEFAULT NULL,
+  `bottom_prop_conc` float DEFAULT NULL,
+  `bottom_pressure` float DEFAULT NULL,
+  `net_pressure` float DEFAULT NULL,
+  `backside_pressure` float DEFAULT NULL,
+  `friction_reducer` float DEFAULT NULL,
+  `gel` float DEFAULT NULL,
+  `crosslink` float DEFAULT NULL,
+  `additional_column` JSON COLLATE utf8_bin,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`,`stage_id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`,`stage_id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `quality_control`
+--
+
+DROP TABLE IF EXISTS `quality_control`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `quality_control` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(11) NOT NULL,
+  `is_checked` tinyint(1) DEFAULT NULL,
+  `checked_by` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `project_id` (`project_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `seismos_20hz_`
+--
+
+DROP TABLE IF EXISTS `seismos_20hz_`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `seismos_20hz_` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) NOT NULL,
+  `timestamp` datetime DEFAULT NULL,
+  `ses_data_colllection_id` int(11) DEFAULT NULL,
+  `ses_pressure_sensor` float NOT NULL,
+  `ses_hydrophone_sensor_hi` float NOT NULL,
+  `ses_hydrophone_sensor_low` float NOT NULL,
+  `ses_pulse_trigger` float NOT NULL,
+  `ses_wave_pulse_type` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `digital_signal_flag` int(11) DEFAULT NULL,
+  `other_notes` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `num_reflections` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `seismos_2hz_`
+--
+
+DROP TABLE IF EXISTS `seismos_2hz_`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `seismos_2hz_` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) NOT NULL,
+  `timestamp` datetime DEFAULT NULL,
+  `ses_data_colllection_id` int(11) DEFAULT NULL,
+  `ses_pressure_sensor` float NOT NULL,
+  `ses_hydrophone_sensor_hi` float NOT NULL,
+  `ses_hydrophone_sensor_low` float NOT NULL,
+  `ses_pulse_trigger` float NOT NULL,
+  `ses_wave_pulse_type` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `digital_signal_flag` int(11) DEFAULT NULL,
+  `other_notes` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `num_reflections` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `slurry`
+--
+
+DROP TABLE IF EXISTS `slurry`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `slurry` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) NOT NULL,
+  `total_slurry_rate` float DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `software`
+--
+
+DROP TABLE IF EXISTS `software`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `software` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(11) DEFAULT NULL,
+  `inpute_app_version` float DEFAULT NULL,
+  `processing_version` float DEFAULT NULL,
+  `db_version` float DEFAULT NULL,
+  `mqtt_version` float DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `project_id` (`project_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `stage`
+--
+
+DROP TABLE IF EXISTS `stage`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `stage` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_uuid` char(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `well_id` int(11) DEFAULT NULL,
+  `stage_number` int(11) DEFAULT NULL,
+  `number_of_cluster` int(11) DEFAULT NULL,
+  `stage_start_time` datetime DEFAULT NULL,
+  `stage_end_time` datetime DEFAULT NULL,
+  `plug_depth` float DEFAULT NULL,
+  `frac_design_id` int(11) DEFAULT NULL,
+  `calc_net_pressure_result` float DEFAULT NULL,
+  `observed_net_pressure` float DEFAULT NULL,
+  `inline_density` float DEFAULT NULL,
+  `blender_density` float DEFAULT NULL,
+  `calc_bh_density` float DEFAULT NULL,
+  `bottomhole_bhp` float DEFAULT NULL,
+  `bottomhole_bht` float DEFAULT NULL,
+  `frac_model_bhp` float DEFAULT NULL,
+  `total_pumpdown_volume` float DEFAULT NULL,
+  `poisson_ratio` float DEFAULT NULL,
+  `pr_gradient` double DEFAULT NULL,
+  `overburden_num` double DEFAULT NULL,
+  `pumping_fluid_viscosity` float DEFAULT NULL,
+  `pumping_fluid_density` float DEFAULT NULL,
+  `pumping_fluid_type` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `tectonic_gradient` double DEFAULT NULL,
+  `pore_pressure` float DEFAULT NULL,
+  `sleeve_name` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `sleeve_ordinal` int(11) DEFAULT NULL,
+  `sleeve_top_measured_depth` float DEFAULT NULL,
+  `sleeve_bottom_measure_depth` float DEFAULT NULL,
+  `sleeve_depth_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `sleeve_port_size` float DEFAULT NULL,
+  `sleeve_port_size_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `sleeve_ball_size` float DEFAULT NULL,
+  `sleeve_ball_size_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `sleeve_seat_id` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `sleeve_manufacturer` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `sleeve_model` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `sleeve_toe_shift_pressure` int(11) DEFAULT NULL,
+  `sleeve_toe_burst_pressure` int(11) DEFAULT NULL,
+  `additional` JSON COLLATE utf8_bin,
+  `approved` BOOLEAN DEFAULT FALSE,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_uuid` (`stage_uuid`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `stage_avg`
+--
+
+DROP TABLE IF EXISTS `stage_avg`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `stage_avg` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) NOT NULL,
+  `breakdown_pressure` float DEFAULT NULL,
+  `isip` float DEFAULT NULL,
+  `frac_gradient` float DEFAULT NULL,
+  `diverter` float DEFAULT NULL,
+  `acid` float DEFAULT NULL,
+  `open_well_pressure` float DEFAULT NULL,
+  `isip_5min` float DEFAULT NULL,
+  `isip_10min` float DEFAULT NULL,
+  `isip_15min` float DEFAULT NULL,
+  `time_to_max_rate` float DEFAULT NULL,
+  `avg_pressure` float DEFAULT NULL,
+  `max_pressure` float DEFAULT NULL,
+  `slickwater_volume` float DEFAULT NULL,
+  `total_slurry` float DEFAULT NULL,
+  `total_clean` float DEFAULT NULL,
+  `avg_rate` float DEFAULT NULL,
+  `max_rate` float DEFAULT NULL,
+  `100_mesh` float DEFAULT NULL,
+  `30_50_mesh` float DEFAULT NULL,
+  `40_70_mesh` float DEFAULT NULL,
+  `20_40_mesh` float DEFAULT NULL,
+  `micro_prop` float DEFAULT NULL,
+  `friction_reducer` float DEFAULT NULL,
+  `gel` float DEFAULT NULL,
+  `crosslink` float DEFAULT NULL,
+  `additional` JSON COLLATE utf8_bin,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+DROP TABLE IF EXISTS `state`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `state` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `value` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `id` (`id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `survey_report`
+--
+
+DROP TABLE IF EXISTS `survey_report`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `survey_report` (
+  `id` int(11) NOT NULL,
+  `well_id` int(11) NOT NULL,
+  `measured_depth` float DEFAULT NULL,
+  `inclination` float DEFAULT NULL,
+  `azimuth` float DEFAULT NULL,
+  `tvd` float DEFAULT NULL,
+  `ns` float DEFAULT NULL,
+  `ew` float DEFAULT NULL,
+  `vs` float DEFAULT NULL,
+  `dls` float DEFAULT NULL,
+  `closure_direction` float DEFAULT NULL,
+  `dogleg_severity` float DEFAULT NULL,
+  `additional` JSON COLLATE utf8_bin,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `well_id` (`well_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `treating_pressure`
+--
+
+DROP TABLE IF EXISTS `treating_pressure`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `treating_pressure` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) NOT NULL,
+  `wellhead_pressure` float DEFAULT NULL,
+  `treating_pressure` float DEFAULT NULL,
+  `annulus_pressure` float DEFAULT NULL,
+  `calc_hydrostatic_pressure` float DEFAULT NULL,
+  `calc_bhp` float DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `well`
+--
+
+DROP TABLE IF EXISTS `well`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `well` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `well_uuid` char(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `pad_id` int(11) NOT NULL,
+  `well_name` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `well_api` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `formation_id` int(11) DEFAULT NULL,
+  `num_stages` int(11) DEFAULT NULL,
+  `total_planned_stage` int(11) DEFAULT NULL,
+  `total_perfs` int(11) DEFAULT NULL,
+  `total_clusters` int(11) DEFAULT NULL,
+  `frac_system` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `fluid_system` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `well_start_time` datetime DEFAULT NULL,
+  `well_end_time` datetime DEFAULT NULL,
+  `bottom_hole_latitude` float DEFAULT NULL,
+  `bottom_hole_longitude` float DEFAULT NULL,
+  `surface_longitude` float DEFAULT NULL,
+  `surface_latitude` float DEFAULT NULL,
+  `lateral_length` float DEFAULT NULL,
+  `lateral_length_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `measured_depth` float DEFAULT NULL,
+  `vertical_depth` float DEFAULT NULL,
+  `vertical_depth_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `estimated_surface_vol` float DEFAULT NULL,
+  `estimated_bbls` float DEFAULT NULL,
+  `estimated_gallons` float DEFAULT NULL,
+  `casing_od` float DEFAULT NULL,
+  `casing_wt` float DEFAULT NULL,
+  `casing_id` float DEFAULT NULL,
+  `casing_depth_md` float DEFAULT NULL,
+  `casing_tol` float DEFAULT NULL,
+  `liner1_od` float DEFAULT NULL,
+  `liner1_wt` float DEFAULT NULL,
+  `liner1_id` float DEFAULT NULL,
+  `liner1_depth_md` float DEFAULT NULL,
+  `liner1_tol` float DEFAULT NULL,
+  `liner2_od` float DEFAULT NULL,
+  `liner2_wt` float DEFAULT NULL,
+  `liner2_id` float DEFAULT NULL,
+  `liner2_depth_md` float DEFAULT NULL,
+  `liner2_tol` float DEFAULT NULL,
+  `measured_depth_unit` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `well_uuid` (`well_uuid`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `wireline`
+--
+
+DROP TABLE IF EXISTS `wireline`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `wireline` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `stage_id` int(11) NOT NULL,
+  `ccl` float DEFAULT NULL,
+  `current` float DEFAULT NULL,
+  `line_speed` float DEFAULT NULL,
+  `line_tension` float DEFAULT NULL,
+  `trigger_perfs` datetime DEFAULT NULL,
+  `weight` float DEFAULT NULL,
+  `measured_depth` float DEFAULT NULL,
+  `voltage` float DEFAULT NULL,
+  `timestamp` datetime DEFAULT NULL,
+  `elapsed_time` datetime DEFAULT NULL,
+  `additional` JSON COLLATE utf8_bin,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `PRIMARY` (`id`) USING HASH,
+  KEY `stage_id` (`stage_id`) USING CLUSTERED COLUMNSTORE,
+  SHARD KEY `__SHARDKEY` (`id`)
+) AUTOSTATS_CARDINALITY_MODE=INCREMENTAL AUTOSTATS_HISTOGRAM_MODE=CREATE AUTOSTATS_SAMPLING=ON SQL_MODE='STRICT_ALL_TABLES';
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
 
 DROP TABLE IF EXISTS seismos.`user`;
 CREATE TABLE `user`  (
@@ -834,7 +1490,7 @@ DROP TABLE IF EXISTS seismos.`user_project`;
 CREATE TABLE `user_project`  (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
-  `project_id` int NOT NULL,
+  `project_id` bigint NOT NULL,
 
   PRIMARY KEY (`id`)
 );
@@ -845,6 +1501,208 @@ CREATE TABLE `daily_log`  (
   `well_id` INT NOT NULL,
   `description` CHAR(255) NOT NULL,
   `date` DATETIME NOT NULL,
-  `time` CHAR(20) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`default_volumes`;
+CREATE TABLE `default_volumes` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `well_id` INT NOT NULL,
+  `field_engineer` CHAR(255),
+  `bht_temp` CHAR(255),
+  `bhp_temp` CHAR(255),
+  `frac_design` CHAR(255),
+  `plug_type` CHAR(255),
+  `plug_seat_technique` CHAR(255),
+  `n_clusters` INT UNSIGNED,
+  `perf_gun` CHAR(255),
+  `description` CHAR(255),
+  `perf_diameter` CHAR(255),
+  `spf` CHAR(255),
+  `field` CHAR(255),
+  `acid` CHAR(255),
+  `base` CHAR(255),
+  `fluid_type` CHAR(255),
+  `proppant_data` CHAR(255),
+  `pulsing_parameters` CHAR(255),
+  `pumping_summary` CHAR(255),
+  PRIMARY KEY (`id`)
+);
+
+
+DROP TABLE IF EXISTS seismos.`tracking_sheet`;
+CREATE TABLE `tracking_sheet` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `well_id` INT NOT NULL,
+  `stage` INT UNSIGNED NOT NULL,
+  `approved` BOOLEAN DEFAULT FALSE,
+  `stage_tracking_id` INT UNSIGNED NOT NULL,
+  `perforation_interval_information_id` INT UNSIGNED NOT NULL,
+  `stage_data_id` INT UNSIGNED NOT NULL,
+  `active_data_id` INT UNSIGNED NOT NULL,
+  `notes_id`  INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`stage_tracking`;
+CREATE TABLE `stage_tracking` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `date` DATETIME,
+	`customer` CHAR(255),
+	`well` CHAR(255),
+	`stage` CHAR(255),
+	`bht_f` CHAR(255),
+	`bht_psi` CHAR(255),
+	`frac_design` CHAR(255),
+	`field_engineer_id` INT UNSIGNED,
+  `plug_type` CHAR(255),
+  `plug_seat_technique` CHAR(255),
+  `did_an_event_occur` CHAR(255),
+  `seismos_data_collection` CHAR(255),
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`field_engineer`;
+CREATE TABLE `field_engineer` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `days` CHAR(255),
+	`nights` CHAR(255),
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`perforation_interval_information`;
+CREATE TABLE `perforation_interval_information` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `top_perf` CHAR(255),
+	`bottom_perf` CHAR(255),
+	`plug_depth` CHAR(255) ,
+	`n_clusters` INT UNSIGNED,
+	`perf_gun_description` CHAR(255),
+	`perf_daiameter` CHAR(255),
+	`spf` CHAR(255),
+  `pumped_diverter` CHAR(255),
+	`diverter_type` CHAR(255),
+	`acid` CHAR(255),
+	`displacement_volume_id` INT UNSIGNED, 
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`displacement_volume`;
+CREATE TABLE `displacement_volume` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `top_perf` CHAR(255),
+  `bottom_perf` CHAR(255),
+  `plug` CHAR(255),
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`stage_data`;
+CREATE TABLE `stage_data` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `stage_start_time` CHAR(255),
+  `stage_end_time` CHAR(255),
+  `opening_well` CHAR(255),
+  `isip` CHAR(255),
+  `fluid_parameters_id` INT UNSIGNED,
+  `fluids_injected_into_formation_id` INT UNSIGNED,
+  `pumping_summary_id` INT UNSIGNED,
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`fluid_parameters`;
+CREATE TABLE `fluid_parameters` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `base_fluid_type` CHAR(255),
+  `base_fluid_density` CHAR(255),
+  `max_conc_density` CHAR(255),
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`fluids_injected_into_formation`;
+CREATE TABLE `fluids_injected_into_formation` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `last_description` CHAR(255),
+  `last_bbls` CHAR(255),
+  `last_ppg` CHAR(255),
+
+  `second_to_last_description` CHAR(255),
+  `second_to_last_bbls` CHAR(255),
+  `second_to_last_ppg` CHAR(255),
+
+  `third_to_last_description` CHAR(255),
+  `third_to_last_bbls` CHAR(255),
+  `third_to_last_ppg` CHAR(255),
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`propant_data`;
+CREATE TABLE `propant_data` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `stage_data_id` INT UNSIGNED,
+  `description` CHAR(255),
+  `specific_gravity` CHAR(255),
+  `bulk_density` CHAR(255),
+
+  PRIMARY KEY (`id`)
+);
+
+
+DROP TABLE IF EXISTS seismos.`pumping_summary`;
+CREATE TABLE `pumping_summary` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `max_prop_conc_design` CHAR(255),
+  `max_prop_conc_actual` CHAR(255),
+
+  `total_pad_volume_design` CHAR(255),
+  `total_pad_volume_actual` CHAR(255),
+
+  `total_clean_fluid_volume_design` CHAR(255),
+  `total_clean_fluid_volume_actual` CHAR(255),
+
+  `total_forty_seventy_design` CHAR(255),
+  `total_forty_seventy_actual` CHAR(255),
+
+  `total_sand_design` CHAR(255),
+  `total_sand_actual` CHAR(255),
+
+  `acid_volume_design` CHAR(255),
+  `acid_volume_actual` CHAR(255),
+
+  `flush_volume_design` CHAR(255),
+  `flush_volume_actual` CHAR(255),
+
+  `slurry_volume_design` CHAR(255),
+  `slurry_volume_actual` CHAR(255),
+
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`active_data`;
+CREATE TABLE `active_data` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `pilsing_parameters_wave_type` CHAR(255),
+  `pilsing_parameters_periods` CHAR(255),
+  `pilsing_parameters_freq` CHAR(255),
+  `pilsing_parameters_offset` CHAR(255),
+  `pilsing_parameters_amplitude` CHAR(255),
+  
+  `pre_frac_pulses_start_time` DATETIME,
+  `pre_frac_pulses_end_time` DATETIME,
+  `pre_frac_pulses_n_pulses` INT UNSIGNED,
+
+  `post_frac_pulses_start_time` DATETIME,
+  `post_frac_pulses_end_time` DATETIME,
+  `post_frac_pulses_n_pulses` INT UNSIGNED,
+
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS seismos.`notes`;
+CREATE TABLE `notes` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `pre_frac_pulse` TEXT,
+  `post_frac_pulse` TEXT,
+  `other` TEXT,
+
   PRIMARY KEY (`id`)
 );

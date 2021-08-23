@@ -6,7 +6,7 @@ from flasgger_marshmallow import swagger_decorator
 from app.models import DailyLog, Well
 
 from app.schemas import (
-    ErrorSchema,
+    MessageSchema,
     DailyLogCreateSchema,
     DailyLogCreateResponseSchema,
     DailyLogResponseSchema,
@@ -17,7 +17,7 @@ from app.schemas import (
 class DailyLogResource(Resource):
     @jwt_required()
     @swagger_decorator(
-        response_schema={200: DailyLogResponseSchema, 401: ErrorSchema},
+        response_schema={200: DailyLogResponseSchema, 401: MessageSchema},
         path_schema=WellPathIdSchema,
         tag="Daily log",
     )
@@ -31,7 +31,6 @@ class DailyLogResource(Resource):
         logs = well.get_logs()
 
         resp = {
-            "status": 200,
             "message": "Daily log details",
             "logs": logs
         }
@@ -43,7 +42,7 @@ class DailyLogCreateResource(Resource):
     @jwt_required()
     @swagger_decorator(
         json_schema=DailyLogCreateSchema,
-        response_schema={201: DailyLogCreateResponseSchema, 401: ErrorSchema},
+        response_schema={201: DailyLogCreateResponseSchema, 401: MessageSchema},
         tag="Daily log",
     )
     def post(self):
@@ -54,7 +53,8 @@ class DailyLogCreateResource(Resource):
             return {"msg": "Well not found"}, 401
 
         for log in req["logs"]:
-            log["date"] = datetime.fromtimestamp(log["date"])
+            timestamp = log["date"] // 1000
+            log["date"] = datetime.fromtimestamp(timestamp)
             log["well_id"] = req["well_id"]
             DailyLog(**log).save()
 

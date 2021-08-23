@@ -9,9 +9,10 @@ from uuid import uuid4
 from app.schemas import (
     ProjectSchema,
     ProjectIdPathSchema,
-    CreateProjectSuccessSchema,
-    ErrorSchema,
     ProjectReturnSchema,
+    ProjectListSchema,
+    CreateProjectSuccessSchema,
+    MessageSchema,
 )
 
 
@@ -31,6 +32,7 @@ from app.models import (
     ProjectCrew,
     Well,
     Formation,
+    User,
 )
 
 from marshmallow.exceptions import ValidationError
@@ -39,12 +41,13 @@ from marshmallow.exceptions import ValidationError
 class ProjectGet(Resource):
     @jwt_required()
     @swagger_decorator(
-        response_schema={200: ProjectReturnSchema, 404: ErrorSchema},
+        response_schema={200: ProjectReturnSchema, 404: MessageSchema},
         path_schema=ProjectIdPathSchema,
         tag="Project",
     )
     def get(self, project_id):
         """ Get project data"""
+        # TODO add user validation (if current user created project)
         project = Project.query.filter(Project.id == project_id).first()
         if not project:
             msg = f"Project with id: {project_id} not found"
@@ -123,9 +126,6 @@ class ProjectCreate(Resource):
             operator_name=pad_data["operator_name"],
             service_company_name=pad_data["service_company_name"],
             wireline_company=pad_data["wireline_company"],
-            # TODO Why list? (Make clean up)
-            password=req["clientInfoValues"][0]["password"],
-            title=req["clientInfoValues"][0]["title"]
         )
 
         client.save()
@@ -151,8 +151,8 @@ class ProjectCreate(Resource):
             job_type_id=job_type.id,
             job_id=job_data["job_id"],
             afe_id=job_data["afe_id"],
-            job_start_date=datetime.fromtimestamp(job_data["job_start_date"]),
-            job_end_date=datetime.fromtimestamp(job_data["job_end_date"]),
+            job_start_date=datetime.fromtimestamp(job_data["job_start_date"] // 1000),
+            job_end_date=datetime.fromtimestamp(job_data["job_end_date"] // 1000),
             project_id=project.id,
         )
 
@@ -178,17 +178,27 @@ class ProjectCreate(Resource):
             formation = Formation(value=well_info["formation"])
             formation.save()
 
-            casing, linear, linear_sec = {}, {}, {}
+            casing, liner, liner_sec = {}, {}, {}
             for well_values in req["wellVolumeValues"][i]:
-                if well_values["type"] == "Casing":
+                if well_values["type"] == "casing":
                     casing = well_values
-                elif well_values["type"] == "Linear1":
-                    linear = well_values
-                elif well_values["type"] == "Linear2":
-                    linear_sec = well_values
+                elif well_values["type"] == "liner":
+                    liner = well_values
+                elif well_values["type"] == "liner_sec":
+                    liner_sec = well_values
                 else:
                     raise ValidationError(
                         message=f'unsupported well value type: {well_values["type"]}'
+                    )
+
+            for values_type_name, values_type in {
+                "casing": casing,
+                "liner": liner,
+                "liner_sec": liner_sec,
+            }.items():
+                if not values_type:
+                    raise ValidationError(
+                        message=f'Missing well type: {values_type_name}'
                     )
 
             wellEstim = req["wellVolumeEstimationsValues"][i]
@@ -201,9 +211,11 @@ class ProjectCreate(Resource):
                 formation_id=formation.id,
                 num_stages=well_info["num_stages"],
 
-                lat=well_info["lat"],
-                easting=well_info["easting"],
-                northing=well_info["northing"],
+                surface_latitude=well_info["surface_latitude"],
+                surface_longitude=well_info["surface_longitude"],
+
+                bottom_hole_latitude=well_info["bottom_hole_latitude"],
+                bottom_hole_longitude=well_info["bottom_hole_longitude"],
 
                 casing_od=casing["od"],
                 casing_wt=casing["wt"],
@@ -211,23 +223,24 @@ class ProjectCreate(Resource):
                 casing_depth_md=casing["depth_md"],
                 casing_tol=casing["tol"],
 
-                liner1_od=linear["od"],
-                liner1_wt=linear["wt"],
-                liner1_id=linear["id"],
-                liner1_depth_md=linear["depth_md"],
-                liner1_tol=linear["tol"],
+                liner1_od=liner["od"],
+                liner1_wt=liner["wt"],
+                liner1_id=liner["id"],
+                liner1_depth_md=liner["depth_md"],
+                liner1_tol=liner["tol"],
 
-                liner2_od=linear_sec["od"],
-                liner2_wt=linear_sec["wt"],
-                liner2_id=linear_sec["id"],
-                liner2_depth_md=linear_sec["depth_md"],
-                liner2_tol=linear_sec["tol"],
+                liner2_od=liner_sec["od"],
+                liner2_wt=liner_sec["wt"],
+                liner2_id=liner_sec["id"],
+                liner2_depth_md=liner_sec["depth_md"],
+                liner2_tol=liner_sec["tol"],
 
                 estimated_surface_vol=wellEstim["surface_vol"],
                 estimated_bbls=wellEstim["bbls"],
                 estimated_gallons=wellEstim["gallons"],
             )
             well.save()
+            # DefaultVolumes(well_id=well.id).save()
 
         # location entity
         country_name = CountryName(county_name=job_data["country_name"])
@@ -254,3 +267,32 @@ class ProjectCreate(Resource):
                 }
             }
         }
+
+
+class ProjectListGet(Resource):
+    @jwt_required()
+    @swagger_decorator(
+        response_schema={200: ProjectListSchema, 404: MessageSchema},
+        tag="Project",
+    )
+    def get(self):
+        """ Get project data"""
+        user_id = get_jwt_identity()
+        user = User.query.filter(User.id == user_id).first()
+        if not user:
+            return {"msg": "Invalid user"}
+
+        user_projects = Project.query.filter(Project.user_id == user_id).all()
+        projects = []
+        for project in user_projects:
+            projects.append({
+                "id": project.id,
+                "project_name": project.project_name,
+                "job_name": project.job_info.job_name,
+                "job_id": project.job_info.job_id,
+                "created_date": project.created_at.strftime("%m/%d/%Y"),
+                "created_by": user.username,
+                "created_time": project.created_at.strftime("%H:%M:%S")
+            })
+
+        return {"projects": projects}
