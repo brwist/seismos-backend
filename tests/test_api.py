@@ -313,7 +313,7 @@ def test_tracking_sheet_crud(client_with_user):
                 resp = client_with_user.get(
                     f"/api/tracking-sheet/{stage['sheet_id']}",
                     headers={"Authorization": f"Bearer {access_token}"},
-                    json=payload,
                 )
 
                 assert resp.status_code == 200
+                assert resp.json
