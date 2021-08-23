@@ -68,8 +68,6 @@ def test_project_endpoint(client_with_user):
 
         # client test
         assert project.client
-        assert project.client.password == payload["clientInfoValues"][0]["password"]
-        assert project.client.title == payload["clientInfoValues"][0]["title"]
         assert project.client.client_name == payload["padInfoValues"]["client_name"]
         assert project.client.project_id == project.id
         assert project.client.operator_name == payload["padInfoValues"]["operator_name"]
