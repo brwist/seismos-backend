@@ -87,8 +87,8 @@ def test_project_endpoint(client_with_user):
         assert project.job_info.job_id == payload["jobInfoValues"]["job_id"]
         assert project.job_info.job_name == payload["jobInfoValues"]["job_name"]
         assert project.job_info.afe_id == payload["jobInfoValues"]["afe_id"]
-        assert int(project.job_info.job_start_date.timestamp()) == payload["jobInfoValues"]["job_start_date"]
-        assert int(project.job_info.job_end_date.timestamp()) == payload["jobInfoValues"]["job_end_date"]
+        assert int(project.job_info.job_start_date.timestamp()) == payload["jobInfoValues"]["job_start_date"] // 1000
+        assert int(project.job_info.job_end_date.timestamp()) == payload["jobInfoValues"]["job_end_date"] // 1000
         assert project.job_info.job_type
         assert project.job_info.job_type.value == payload["jobInfoValues"]["job_type"]
         assert project.job_info.location
@@ -99,6 +99,16 @@ def test_project_endpoint(client_with_user):
         # Crew test
         assert project.project_crew
         assert len(project.project_crew) == len(payload["crewInfoValues"])
+
+        # Project list test
+        resp = client_with_user.get(
+            "api/project/list",
+            headers={"Authorization": f"Bearer {access_token}"}
+        )
+
+        assert resp.status_code == 200
+        assert "projects" in resp.json
+        assert resp.json["projects"]
 
 
 def test_input_data_endpoint(client_with_user):
@@ -186,23 +196,33 @@ def test_daily_log(client_with_user):
             logs = json.load(json_f)
             assert logs
 
-            for log in logs:
-                assert log
-
             payload = {
                 "logs": logs,
                 "project_id": 0,
                 "well_id": well.id
             }
 
-        assert resp
+            resp = client_with_user.post(
+                "/api/daily-log",
+                headers={"Authorization": f"Bearer {access_token}"},
+                json=payload,
+            )
+            assert resp.status_code == 201
+
+            resp = client_with_user.get(
+                f"/api/daily-log/{well.id}",
+                headers={"Authorization": f"Bearer {access_token}"},
+            )
+            assert resp.status_code == 200
+            assert resp.json["logs"]
+            assert len(resp.json["logs"]) == len(logs)
 
 
-def test_default_value(client_with_user):
+def test_default_volumes(client_with_user):
     resp = client_with_user.post("/api/auth", json=USER_CREDS)
     access_token = resp.json["data"]["access_token"]
 
-    create_project_json_path = "tests/static/project_create.json"
+    create_project_json_path = f"{TEST_STATIC_ROOT}/project_create.json"
 
     with open(create_project_json_path, "r") as json_f:
         payload = json.load(json_f)
@@ -220,11 +240,11 @@ def test_default_value(client_with_user):
         assert project.pad.wells
         well = project.pad.wells[0]
         assert well
-        with open("tests/static/default_value_create.json", "r") as f_json:
+        with open(f"{TEST_STATIC_ROOT}/create_default_volumes.json", "r") as f_json:
             default_values = json.load(f_json)
             assert default_values
             resp = client_with_user.put(
-                f"/api/default-value/{well.id}",
+                f"/api/default-volumes/{well.id}",
                 headers={"Authorization": f"Bearer {access_token}"},
                 json=default_values,
             )
@@ -233,7 +253,7 @@ def test_default_value(client_with_user):
             assert resp.json["msg"] == "Well's default value has been updated"
 
             resp = client_with_user.get(
-                f"api/default-value/{well.id}",
+                f"api/default-volumes/{well.id}",
                 headers={"Authorization": f"Bearer {access_token}"}
             )
 
@@ -241,3 +261,54 @@ def test_default_value(client_with_user):
             for key, value in default_values.items():
                 assert key in resp.json
                 assert value == resp.json[key]
+
+
+def test_tracking_sheet_crud(client_with_user):
+    resp = client_with_user.post("/api/auth", json=USER_CREDS)
+    access_token = resp.json["data"]["access_token"]
+
+    create_project_json_path = f"{TEST_STATIC_ROOT}/project_create.json"
+
+    with open(create_project_json_path, "r") as json_f:
+        payload = json.load(json_f)
+        resp = client_with_user.post(
+            "/api/project",
+            headers={"Authorization": f"Bearer {access_token}"},
+            json=payload,
+        )
+
+        assert resp.status_code == 200
+        proj_id = resp.json["data"]["project"]["id"]
+        project = Project.query.filter(Project.id == proj_id).first()
+        assert project
+        assert project.pad.wells
+        well = project.pad.wells[0]
+        assert well
+
+        with open(f"{TEST_STATIC_ROOT}/create_tracking_sheet.json", "r") as f_json:
+            payload = json.load(f_json)
+            resp = client_with_user.post(
+                f"/api/tracking-sheet/create/{well.id}",
+                headers={"Authorization": f"Bearer {access_token}"},
+                json=payload,
+            )
+            assert resp.status_code == 201
+
+            resp = client_with_user.get(
+                f"/api/tracking-sheet/stage_list/{well.id}",
+                headers={"Authorization": f"Bearer {access_token}"},
+                json=payload,
+            )
+
+            assert resp.status_code == 200
+            assert "stages" in resp.json
+
+            for stage in resp.json["stages"]:
+                assert stage
+                resp = client_with_user.get(
+                    f"/api/tracking-sheet/{stage['sheet_id']}",
+                    headers={"Authorization": f"Bearer {access_token}"},
+                    json=payload,
+                )
+
+                assert resp.status_code == 200

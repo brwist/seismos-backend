@@ -16,6 +16,7 @@ class BaseConfig(object):
     JWT_SECRET_KEY = os.environ.get(
         "JWT_SECRET_KEY", "No secret key for JWT token"
     )
+    JWT_ACCESS_TOKEN_EXPIRES = 60 * 60 * 24
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_ENABLED = False

@@ -6,7 +6,7 @@ import flasgger
 import marshmallow
 from app.schemas import (
     InputFileSchema,
-    SuccessSchema,
+    MessageSchema,
     InputDataRequestSchema,
     DataInputResponseSchema,
 )
@@ -42,7 +42,7 @@ class InputData(Resource):
                     "content": {
                         "application/json": {
                             "schema": flasgger.marshmallow_apispec.schema2jsonschema(
-                                marshmallow.Schema.from_dict({**SuccessSchema().fields})
+                                marshmallow.Schema.from_dict({**MessageSchema().fields})
                             ),
                         }
                     }

@@ -7,7 +7,7 @@ class Project(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "project"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     project_uuid = db.Column(db.String(36), nullable=False)
     project_name = db.Column(db.Text, nullable=False)  # TODO make it string with fix max width
     client_id = db.Column(db.Integer, nullable=False)
@@ -37,7 +37,7 @@ class Project(TimestampMixin, ModelMixin, db.Model):
     job_info = db.relationship(
         "JobInfo",
         foreign_keys=[id],
-        primaryjoin="Project.id == JobInfo.project_id"
+        primaryjoin="Project.id == JobInfo.project_id",
     )
 
     project_crew = db.relationship(

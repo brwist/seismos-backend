@@ -1,0 +1,143 @@
+{
+	"stage": 1,
+	"stage_tracking": {
+	    "date": 2323232323,
+	    "customer": "test_customer",
+	    "well": "test_well",
+	    "stage": "test_stage",
+	    "bht_f": "test_bht_f",
+	    "bht_psi": "test_bht_psi",
+	    "frac_design": "test_frac_design",
+	    "field_engineer": {
+	        "days": "test_days",
+	        "nights": "test_nights"
+        },
+        
+        "plug_type": "test_plug_type",
+        "plug_seat_technique": "test_plug_seat_technique",
+        "did_an_event_occur": "test_did_an_event_occur",
+        "seismos_data_collection": "test_seismos_data_collection"
+    },
+	
+    "perforation_interval_information": {
+	    "top_perf": "test_top_perf",
+	    "bottom_perf": "test_bottom_perf",
+	    "plug_depth": "test_plug_depth",
+	    "n_clusters": 3,
+	    "perf_gun_description": "test_perf_gun_description",
+	    "perf_daiameter": "test_perf_daiameter",
+	    "spf": "test_spf",
+	    "pumped_diverter": "test_pumped_diverter",
+	    "diverter_type": "test_diverter_type",
+	    "acid": "test_acid",
+	    "displacement_volume": {
+	    	"top_perf": "test_top_perf",
+	    	"bottom_perf": "test_bottom_perf",
+	    	"plug": "test_plug"
+        }
+    },
+	
+    "stage_data": {
+	    "stage_start_time": 1628184300506,
+        "stage_end_time": 1628184100506,
+        "opening_well": "test_opening_well",
+        "isip": "test_isip",
+        "fluid_parameters": {
+	        "base_fluid_type": "test_base_fluid_type",
+            "base_fluid_density": "test_base_fluid_density",
+            "max_conc_density": "test_max_conc_density"
+        },
+        
+        "fluids_injected_into_formation": {
+	        "last": {
+	            "description": "test_description",
+                "bbls": "test_bbls",
+                "ppg": "test_bbls"
+            },
+
+	        "second_to_last": {
+		        "description": "test_description",
+                "bbls": "test_bbls",
+                "ppg": "test_bbls"
+            },
+        
+            "third_to_last": {
+		        "description": "test_description",
+                "bbls": "test_bbls",
+                "ppg": "test_ppg"
+            }
+        },
+
+        "propant_data": [
+	    {
+            "description": "test_description",
+            "specific_gravity": "test_specific_gravity",
+            "bulk_density": "test_bulk_density"
+        }
+        ],
+
+        "pumping_summary": {
+	        "max_prop_conc": {
+                "design": "test_design", 
+                "actual": "test_actual"
+            },
+
+            "total_pad_volume": {
+                "design": "test_design", 
+                "actual": "test_actual"
+            },
+            "total_clean_fluid_volume":  {
+                "design": "test_design", 
+                "actual": "test_actual"
+            },
+            "total_forty_seventy":  {
+                "design": "test_design", 
+                "actual": "test_actual"
+            },
+            "total_sand":  {
+                "design": "test_design", 
+                "actual": "test_actual"
+            },
+            "acid_volume":  {
+                "design": "test_design", 
+                "actual": "test_actual"
+            },
+            "flush_volume":  {
+                "design": "test_design", 
+                "actual": "test_actual"
+            },
+            "slurry_volume":  {
+                "design": "test_design", 
+                "actual": "test_actual"
+            }
+        }
+    },
+	
+    "active_data": {
+	    "pilsing_parameters": {
+	        "wave_type": "test_wave_type",
+            "periods": "test_periods",
+            "freq": "test_freq",
+            "offset": "test_offset",
+            "amplitude": "test_amplitude"
+        },
+        
+        "pre_frac_pulses": {
+            "start_time": 1625184300506,
+            "end_time": 1628174300506,
+            "n_pulses": 5
+        },
+        
+        "post_frac_pulses": {
+            "start_time": 1628184300506,
+            "end_time": 1628184300506,
+            "n_pulses": 5
+        }
+    },
+	
+    "notes": {
+		"pre_frac_pulse": "test_pre_frac_pulse",
+        "post_frac_pulse": "test_post_frac_pulse",
+        "other": "test_other"
+    }
+}
