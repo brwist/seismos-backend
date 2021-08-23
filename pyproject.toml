@@ -25,6 +25,7 @@ flask-apispec = "^0.11.0"
 Flask-Migrate = "^3.0.1"
 Flask-Cors = "^3.0.10"
 lasio = "^0.29"
+flake8 = "^3.9.2"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"
