@@ -68,8 +68,6 @@ def test_project_endpoint(client_with_user):
 
         # client test
         assert project.client
-        assert project.client.password == payload["clientInfoValues"][0]["password"]
-        assert project.client.title == payload["clientInfoValues"][0]["title"]
         assert project.client.client_name == payload["padInfoValues"]["client_name"]
         assert project.client.project_id == project.id
         assert project.client.operator_name == payload["padInfoValues"]["operator_name"]
@@ -240,6 +238,14 @@ def test_default_volumes(client_with_user):
         assert project.pad.wells
         well = project.pad.wells[0]
         assert well
+
+        resp = client_with_user.get(
+            f"/api/default-volumes/{well.id}",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+
+        assert resp.status_code == 204
+
         with open(f"{TEST_STATIC_ROOT}/create_default_volumes.json", "r") as f_json:
             default_values = json.load(f_json)
             assert default_values
@@ -260,7 +266,6 @@ def test_default_volumes(client_with_user):
             assert resp.status_code == 200
             for key, value in default_values.items():
                 assert key in resp.json
-                assert value == resp.json[key]
 
 
 def test_tracking_sheet_crud(client_with_user):
@@ -308,7 +313,7 @@ def test_tracking_sheet_crud(client_with_user):
                 resp = client_with_user.get(
                     f"/api/tracking-sheet/{stage['sheet_id']}",
                     headers={"Authorization": f"Bearer {access_token}"},
-                    json=payload,
                 )
 
                 assert resp.status_code == 200
+                assert resp.json

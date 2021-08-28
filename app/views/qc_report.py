@@ -54,8 +54,8 @@ class QCReportExport(Resource):
     @jwt_required()
     @swagger_decorator(
         response_schema={200: MessageSchema, 401: MessageSchema},
-        tag="OC Report",
+        tag="QC Report",
     )
     def post(self):
-        """ Export OC """
+        """ Export QC TODO """
         return {"msg": "OC export"}

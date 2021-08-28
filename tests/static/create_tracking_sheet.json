@@ -1,143 +1,131 @@
 {
-	"stage": 1,
-	"stage_tracking": {
-	    "date": 2323232323,
-	    "customer": "test_customer",
-	    "well": "test_well",
-	    "stage": "test_stage",
-	    "bht_f": "test_bht_f",
-	    "bht_psi": "test_bht_psi",
-	    "frac_design": "test_frac_design",
-	    "field_engineer": {
-	        "days": "test_days",
-	        "nights": "test_nights"
-        },
-        
-        "plug_type": "test_plug_type",
-        "plug_seat_technique": "test_plug_seat_technique",
-        "did_an_event_occur": "test_did_an_event_occur",
-        "seismos_data_collection": "test_seismos_data_collection"
-    },
-	
-    "perforation_interval_information": {
-	    "top_perf": "test_top_perf",
-	    "bottom_perf": "test_bottom_perf",
-	    "plug_depth": "test_plug_depth",
-	    "n_clusters": 3,
-	    "perf_gun_description": "test_perf_gun_description",
-	    "perf_daiameter": "test_perf_daiameter",
-	    "spf": "test_spf",
-	    "pumped_diverter": "test_pumped_diverter",
-	    "diverter_type": "test_diverter_type",
-	    "acid": "test_acid",
-	    "displacement_volume": {
-	    	"top_perf": "test_top_perf",
-	    	"bottom_perf": "test_bottom_perf",
-	    	"plug": "test_plug"
-        }
-    },
-	
-    "stage_data": {
-	    "stage_start_time": 1628184300506,
-        "stage_end_time": 1628184100506,
-        "opening_well": "test_opening_well",
-        "isip": "test_isip",
-        "fluid_parameters": {
-	        "base_fluid_type": "test_base_fluid_type",
-            "base_fluid_density": "test_base_fluid_density",
-            "max_conc_density": "test_max_conc_density"
-        },
-        
-        "fluids_injected_into_formation": {
-	        "last": {
-	            "description": "test_description",
-                "bbls": "test_bbls",
-                "ppg": "test_bbls"
-            },
-
-	        "second_to_last": {
-		        "description": "test_description",
-                "bbls": "test_bbls",
-                "ppg": "test_bbls"
-            },
-        
-            "third_to_last": {
-		        "description": "test_description",
-                "bbls": "test_bbls",
-                "ppg": "test_ppg"
-            }
-        },
-
-        "propant_data": [
-	    {
-            "description": "test_description",
-            "specific_gravity": "test_specific_gravity",
-            "bulk_density": "test_bulk_density"
-        }
-        ],
-
-        "pumping_summary": {
-	        "max_prop_conc": {
-                "design": "test_design", 
-                "actual": "test_actual"
-            },
-
-            "total_pad_volume": {
-                "design": "test_design", 
-                "actual": "test_actual"
-            },
-            "total_clean_fluid_volume":  {
-                "design": "test_design", 
-                "actual": "test_actual"
-            },
-            "total_forty_seventy":  {
-                "design": "test_design", 
-                "actual": "test_actual"
-            },
-            "total_sand":  {
-                "design": "test_design", 
-                "actual": "test_actual"
-            },
-            "acid_volume":  {
-                "design": "test_design", 
-                "actual": "test_actual"
-            },
-            "flush_volume":  {
-                "design": "test_design", 
-                "actual": "test_actual"
-            },
-            "slurry_volume":  {
-                "design": "test_design", 
-                "actual": "test_actual"
-            }
-        }
-    },
-	
     "active_data": {
-	    "pilsing_parameters": {
-	        "wave_type": "test_wave_type",
-            "periods": "test_periods",
-            "freq": "test_freq",
-            "offset": "test_offset",
-            "amplitude": "test_amplitude"
-        },
-        
-        "pre_frac_pulses": {
-            "start_time": 1625184300506,
-            "end_time": 1628174300506,
-            "n_pulses": 5
-        },
-        
-        "post_frac_pulses": {
-            "start_time": 1628184300506,
-            "end_time": 1628184300506,
-            "n_pulses": 5
-        }
+      "pilsing_parameters": {
+        "amplitude": "amplitude_value",
+        "freq": "freqs_value",
+        "offset": "offset_value",
+        "periods": "periods_value",
+        "wave_type": "wave_type_value"
+      },
+      "post_frac_pulses": {
+        "end_time": 10,
+        "n_pulses": 22,
+        "start_time": 1629729790256
+      },
+      "pre_frac_pulses": {
+        "end_time": 42,
+        "n_pulses": 5,
+        "start_time": 1629729790256
+      }
     },
-	
     "notes": {
-		"pre_frac_pulse": "test_pre_frac_pulse",
-        "post_frac_pulse": "test_post_frac_pulse",
-        "other": "test_other"
+      "other": "other_value",
+      "post_frac_pulse": "post_frac_pulse_value",
+      "pre_frac_pulse": "pre_frac_pulse_value"
+    },
+    "perforation_interval_information": {
+      "acid": "acid_value",
+      "bottom_perf": "bottom_perf_value",
+      "displacement_volume": {
+        "bottom_perf": "bottom_perf_value",
+        "plug": "plug_value",
+        "top_perf": "top_perf_value"
+      },
+      "diverter_type": "diverter_type_value",
+      "n_clusters": 234,
+      "perf_daiameter": "perf_daiameter_value",
+      "perf_gun_description": "perf_gun_description_value",
+      "plug_depth": "plug_depth_value",
+      "pumped_diverter": "pumped_diverter_value",
+      "spf": "spf_value",
+      "top_perf": "top_perf_value"
+    },
+    "stage": 0,
+    "stage_data": {
+      "fluid_parameters": {
+        "base_fluid_density": "base_fluid_density_value",
+        "base_fluid_type": "base_fluid_type_value",
+        "max_conc_density": "max_conc_density_value"
+      },
+      "fluids_injected_into_formation": {
+        "last": {
+          "bbls": "bbls_value",
+          "description": "description_value",
+          "ppg": "ppg_value"
+        },
+        "second_to_last": {
+          "bbls": "bbls_value",
+          "description": "description_value",
+          "ppg": "ppg_value"
+        },
+        "third_to_last": {
+          "bbls": "bbls_value",
+          "description": "description_value",
+          "ppg": "ppg_value"
+        }
+      },
+      "isip": "isip_value",
+      "opening_well": "opening_well_value",
+      "propant_data": [
+        {
+          "bulk_density": "bulk_density_value",
+          "description": "description_value",
+          "specific_gravity": "specific_gravity_value"
+        }
+      ],
+      "pumping_summary": {
+        "acid_volume": {
+          "actual": "actual_value",
+          "design": "design_value"
+        },
+        "flush_volume": {
+          "actual": "actual_value",
+          "design": "design_value"
+        },
+        "max_prop_conc": {
+          "actual": "actual_value",
+          "design": "design_value"
+        },
+        "slurry_volume": {
+          "actual": "actual_value",
+          "design": "design_value"
+        },
+        "total_clean_fluid_volume": {
+          "actual": "actual_value",
+          "design": "design_value"
+        },
+        "total_forty_seventy": {
+          "actual": "actual_value",
+          "design": "design_value"
+        },
+        "total_pad_volume": {
+          "actual": "actual_value",
+          "design": "design_value"
+        },
+        "total_sand": {
+          "actual": "actual_value",
+          "design": "design_value"
+        }
+      },
+      "stage_end_time": 1629729790256,
+      "stage_start_time": 1629729790256
+    },
+    "stage_tracking": {
+      "bht_f": "bht_f_value",
+      "bht_psi": "bht_psi_value",
+      "customer": "customer_value",
+      "date": 1629729790256,
+      "did_an_event_occur": "did_an_event_occur_value",
+      "field_engineer": {
+        "days": "days_value",
+        "nights": "nights_value"
+      },
+      "frac_design": "frac_design_value",
+      "plug_seat_technique": "plug_seat_technique_value",
+      "plug_type": "plug_type_value",
+      "seismos_data_collection": "seismos_data_collection_value",
+      "stage": "stage_value",
+      "well": "well_value"
     }
 }
+  

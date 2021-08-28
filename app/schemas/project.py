@@ -5,7 +5,7 @@ class JobInfoSchema(Schema):
     job_id = fields.Str(required=True)  # TODO Job id ambiguity
     job_name = fields.Str(required=True)
     job_type = fields.Str(required=True)
-    afe_id = fields.Str(required=True)
+    afe_id = fields.Int(required=True)
     country_name = fields.Str(required=True)
     basin_name = fields.Str(required=True)
     state = fields.Str(required=True)

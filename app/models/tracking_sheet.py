@@ -1,4 +1,3 @@
-from dateutil import parser as date_parser
 from app.models.mixin_models import ModelMixin
 from sqlalchemy.dialects.mysql import INTEGER
 from app import db
@@ -57,8 +56,8 @@ class TrackingSheet(ModelMixin, db.Model):
                 "specific_gravity": pr_data.specific_gravity
             })
 
-        stage_start_time = date_parser.parse(self.stage_data.stage_start_time).timestamp()
-        stage_end_time = date_parser.parse(self.stage_data.stage_end_time).timestamp()
+        stage_start_time = self.stage_data.stage_start_time.timestamp()
+        stage_end_time = self.stage_data.stage_end_time.timestamp()
 
         return {
             "stage": self.stage,

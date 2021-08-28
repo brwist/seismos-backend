@@ -23,7 +23,7 @@
     "transducer_id": 0
   },
   "jobInfoValues": {
-    "afe_id": "string",
+    "afe_id": 41,
     "basin_name": "string",
     "country_name": "string",
     "job_end_date": 0,
@@ -73,7 +73,23 @@
         "id": 0,
         "od": 0,
         "tol": 0,
-        "type": "string",
+        "type": "casing",
+        "wt": 0
+      },
+      {
+        "depth_md": 1,
+        "id": 0,
+        "od": 0,
+        "tol": 0,
+        "type": "liner",
+        "wt": 0
+      },
+      {
+        "depth_md": 2,
+        "id": 0,
+        "od": 0,
+        "tol": 0,
+        "type": "liner_sec",
         "wt": 0
       }
     ]
