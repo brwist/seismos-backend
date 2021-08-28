@@ -11,6 +11,7 @@ def client_with_user():
     with app.test_client() as client:
         app_ctx = app.app_context()
         app_ctx.push()
+        db.session.begin_nested()
         db.drop_all()
         db.create_all()
         user = User(
@@ -24,4 +25,5 @@ def client_with_user():
         user.delete()
         db.session.remove()
         db.drop_all()
+        db.session.rollback()
         app_ctx.pop()

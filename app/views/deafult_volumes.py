@@ -55,7 +55,6 @@ class DefaultVolumesResource(Resource):
 
         return {"msg": "Well's default value has been updated"}, 200
 
-
     @jwt_required()
     @swagger_decorator(
         path_schema=WellPathIdSchema,

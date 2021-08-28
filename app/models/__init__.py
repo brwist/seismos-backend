@@ -10,6 +10,12 @@ from .well import Well
 from .job import JobInfo, JobType
 from .crew import Crew, ProjectCrew
 from .daily_log import DailyLog
+from .qc_report import (
+    NFProcessingResult,
+    Stage,
+    StageAVG,
+    FFProcessingResult
+)
 from .default_volumes import (
     DefaultVal,
     DefaultAdvanceVal,
