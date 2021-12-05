@@ -1,5 +1,5 @@
 from sqlalchemy.orm import backref
-from app.models.mixin_models import TimestampMixin, ModelMixin
+from app.models.mixin_models import TimestampMixin, ModelMixin, uuid_string
 from app import db
 
 
@@ -8,11 +8,11 @@ class Well(TimestampMixin, ModelMixin, db.Model):
     __tablename__ = "well"
 
     id = db.Column(db.Integer, primary_key=True)
-    well_uuid = db.Column(db.String(36), nullable=False)
+    well_uuid = db.Column(db.String(36), nullable=False, default=uuid_string)
     pad_id = db.Column(db.Integer, nullable=False)
     well_name = db.Column(db.Text)
     well_api = db.Column(db.Text)
-    formation_id = db.Column(db.Integer)
+    formation = db.Column(db.String(255))
     num_stages = db.Column(db.Integer)
     total_planned_stage = db.Column(db.Integer)
     total_perfs = db.Column(db.Integer)
@@ -30,10 +30,6 @@ class Well(TimestampMixin, ModelMixin, db.Model):
     measured_depth = db.Column(db.Float)
     vertical_depth = db.Column(db.Float)
     vertical_depth_unit = db.Column(db.Text)
-    surface_latitude = db.Column(db.Text)
-    surface_longitude = db.Column(db.Text)
-    bottom_hole_latitude = db.Column(db.Text)
-    bottom_hole_longitude = db.Column(db.Text)
     estimated_surface_vol = db.Column(db.Float)
     estimated_bbls = db.Column(db.Float)
     estimated_gallons = db.Column(db.Float)
@@ -54,46 +50,60 @@ class Well(TimestampMixin, ModelMixin, db.Model):
     liner2_tol = db.Column(db.Float)
     measured_depth_unit = db.Column(db.Text)
 
-    daily_logs = db.relationship(
-        "DailyLog",
-        foreign_keys=[id],
-        primaryjoin="Well.id == DailyLog.well_id",
-        uselist=True
-    )
-
     default_value = db.relationship(
         "DefaultVal",
         foreign_keys=[id],
         primaryjoin="Well.id == DefaultVal.well_id",
+        cascade="all,delete",
     )
 
     default_advance_val = db.relationship(
         "DefaultAdvanceVal",
         foreign_keys=[id],
         primaryjoin="Well.id == DefaultAdvanceVal.well_id",
+        cascade="all,delete",
     )
 
     default_param_val = db.relationship(
         "DefaultParamVal",
         foreign_keys=[id],
         primaryjoin="Well.id == DefaultParamVal.well_id",
+        cascade="all,delete",
     )
 
-    tracking_sheet = db.relationship(
-        "TrackingSheet",
+    stages = db.relationship(
+        "Stage",
         foreign_keys=[id],
-        primaryjoin="Well.id == TrackingSheet.well_id",
+        primaryjoin="Well.id == Stage.well_id",
         uselist=True,
-        backref=backref('well', uselist=False),
-        lazy=True,
+        backref=backref("well", uselist=False),
+        cascade="all,delete",
+    )
+
+    daily_logs = db.relationship(
+        "FieldNotes",
+        foreign_keys=[id],
+        primaryjoin="Well.id == FieldNotes.well_id",
+        uselist=True,
+        cascade="all,delete",
     )
 
     def get_logs(self):
         logs = []
         for log in self.daily_logs:
             logs.append({
-                "date": int(log.date.timestamp() * 1000),
-                "description": log.description,
+                "date": int(log.comment_timestamp.timestamp() * 1000),
+                "description": log.comment_content,
             })
 
         return logs
+
+
+class FieldNotes(db.Model, ModelMixin, TimestampMixin):
+    __tablename__ = "field_notes"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    well_id = db.Column(db.Integer, nullable=False)
+    comment_timestamp = db.Column(db.DateTime)
+    comment_content = db.Column(db.Text)
+    comment_by = db.Column(db.Text)

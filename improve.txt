@@ -1,0 +1,18 @@
+Create table user
++ add user_id in project_table
++ replace phone number by shift (crew)
+
+==================================
++ designed_total_clean_fluid_vol float NULL (stage)
++ designed_pad_vol float NULL, (stage)
++ top_perf (perforation)
+
+Replace INT datatype by (BIGINT, DECIMAL) to increase maximum possible value
++ stage_end_time       (stage) 
++ post_frac_start_time (active data)
++ post_frac_end_time   (active data)
++ pre_frac_start_time  (active data)
++ pre_frac_end_time    (active data)
+
+To suboth:
+    layer - remove s

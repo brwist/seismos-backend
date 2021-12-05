@@ -1,10 +1,12 @@
 [
     {
-        "date": 1628172168252,
-        "description": "log_first"
+        "comment_timestamp": 1628172168252,
+        "comment_content": "log_first",
+        "comment_by": "test_user"
     },
     {
-        "date": 1628112168252,
-        "description": "log_second"
+        "comment_timestamp": 1628112168252,
+        "comment_content": "log_second",
+        "comment_by": "test_user"
     }
 ]

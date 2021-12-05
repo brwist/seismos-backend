@@ -1,11 +1,12 @@
 from marshmallow import Schema, fields
 
+
 class PathIdSchema(Schema):
     id = fields.Int()
 
 
-class WellPathIdSchema(Schema):
-    well_id = fields.Str()
+class WellPathUuidSchema(Schema):
+    well_uuid = fields.UUID(required=True, description="Unique identifier of well")
 
 
 class MessageSchema(Schema):

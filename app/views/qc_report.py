@@ -1,61 +1,62 @@
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from flask_restful import Resource
+from flask_restful import Resource, request
 from flasgger_marshmallow import swagger_decorator
-from app.models import Well
-
+from app.models import Well, Stage
 from app.schemas import (
     MessageSchema,
-    QCReportSchema,
-    WellPathIdSchema,
+    WellPathUuidSchema,
+    StagesUuidsSchema
 )
 
 
 class QCReport(Resource):
     @jwt_required()
     @swagger_decorator(
-        response_schema={200: QCReportSchema, 401: MessageSchema},
-        path_schema=WellPathIdSchema,
+        response_schema={401: MessageSchema},
+        path_schema=WellPathUuidSchema,
         tag="QC Report",
     )
-    def get(self, well_id):
+    def get(self, well_uuid):
         """ Get QC raport data"""
-        well = Well.query.filter(Well.id == well_id).first()
+        well = Well.query.filter(Well.well_uuid == well_uuid).first()
+        # current point
         if not well or well.pad.project.user_id != get_jwt_identity():
             return {"msg": "Well not found"}, 401
 
-        stages = []
-        for sheet in well.tracking_sheet:
-            stages.append({
-                "stage_n": sheet.stage,
-                "stage_tracking": {
-                    "date": sheet.stage_tracking.date.timestamp() * 1000,
-                    "customer": sheet.stage_tracking.customer,
-                    "well": sheet.stage_tracking.well,
-                    "stage": sheet.stage_tracking.stage,
-                    "bht_f": sheet.stage_tracking.bht_f,
-                    "bht_psi": sheet.stage_tracking.bht_psi,
-                    "frac_design": sheet.stage_tracking.frac_design,
-                    "field_engineer": {
-                        "days": sheet.stage_tracking.field_engineer.days,
-                        "nights": sheet.stage_tracking.field_engineer.nights
-                    },
+        report_fields = ["nf_processing_result", "stage_avg", "ff_processing_result"]
 
-                    "plug_type": sheet.stage_tracking.plug_type,
-                    "plug_seat_technique": sheet.stage_tracking.plug_seat_technique,
-                    "did_an_event_occur": sheet.stage_tracking.did_an_event_occur,
-                    "seismos_data_collection": sheet.stage_tracking.seismos_data_collection
-                },
-            })
+        report = {
+            "stages": well.num_stages,
+        }
 
-        return {"report": stages}, 200
+        for stage in well.stages:
+            report[stage.stage_number] = {"stage": stage.generate_report(True)}
+            for report_field in report_fields:
+                model_field = getattr(stage, report_field)
+                if model_field:
+                    report[stage.stage_number][report_field] = model_field.generate_report(True)
+
+        return {"report": report}, 200
 
 
-class QCReportExport(Resource):
+class QCReportApprove(Resource):
     @jwt_required()
     @swagger_decorator(
         response_schema={200: MessageSchema, 401: MessageSchema},
+        json_schema=StagesUuidsSchema,
         tag="QC Report",
     )
     def post(self):
-        """ Export QC TODO """
-        return {"msg": "OC export"}
+        """Approve stages"""
+        req = request.json_schema
+
+        for stage_id in req["stage_ids"]:
+            stage = Stage.query.filter(Stage.id == stage_id).first()
+
+            if not stage or stage.well.pad.project.user_id != get_jwt_identity():
+                return {"msg": "Stage with id {stage_id} not found"}, 401
+
+            stage.is_approved = 1
+            stage.save()
+
+        return {"msg": "Stages approved"}, 200

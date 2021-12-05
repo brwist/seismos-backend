@@ -1,131 +1,102 @@
 {
-    "active_data": {
-      "pilsing_parameters": {
-        "amplitude": "amplitude_value",
-        "freq": "freqs_value",
-        "offset": "offset_value",
-        "periods": "periods_value",
-        "wave_type": "wave_type_value"
+  "perforation_interval_information": {
+    "acid": 0,
+    "bottom_perf": 0,
+    "displacement_volume": {
+      "bottom_perf": "string",
+      "plug": "string",
+      "top_perf": "string"
+    },
+    "diverter_type": "string",
+    "n_clusters": 0,
+    "perf_daiameter": 0,
+    "perf_gun_description": "string",
+    "plug_depth": 0,
+    "pumped_diverter": "string",
+    "spf": "string",
+    "top_perf": 0
+  },
+  "stage": 0,
+  "stage_data": {
+    "fluid_parameters": {
+      "base_fluid_density": "string",
+      "base_fluid_type": "string",
+      "max_conc_density": "string"
+    },
+    "fluids_injected_into_formation": {
+      "last": {
+        "bbls": "string",
+        "description": "string",
+        "ppg": "string"
       },
-      "post_frac_pulses": {
-        "end_time": 10,
-        "n_pulses": 22,
-        "start_time": 1629729790256
+      "second_to_last": {
+        "bbls": "string",
+        "description": "string",
+        "ppg": "string"
       },
-      "pre_frac_pulses": {
-        "end_time": 42,
-        "n_pulses": 5,
-        "start_time": 1629729790256
+      "third_to_last": {
+        "bbls": "string",
+        "description": "string",
+        "ppg": "string"
       }
     },
-    "notes": {
-      "other": "other_value",
-      "post_frac_pulse": "post_frac_pulse_value",
-      "pre_frac_pulse": "pre_frac_pulse_value"
+    "isip": 0,
+    "opening_well": "string",
+    "proppant_data": [
+      {
+        "bulk_density": "string",
+        "description": "string",
+        "specific_gravity": "string"
+      }
+    ],
+    "pumping_summary": {
+      "acid_volume": {
+        "actual": 0,
+        "design": 0
+      },
+      "flush_volume": {
+        "actual": 0,
+        "design": 0
+      },
+      "max_prop_conc": {
+        "actual": 0,
+        "design": 0
+      },
+      "slurry_volume": {
+        "actual": 0,
+        "design": 0
+      },
+      "total_clean_fluid_volume": {
+        "actual": 0,
+        "design": 0
+      },
+      "proppant": {
+        "actual": 0,
+        "design": 0
+      },
+      "total_pad_volume": {
+        "actual": 0,
+        "design": 0
+      },
+      "total_proppant": {
+        "actual": 0,
+        "design": 0
+      }
     },
-    "perforation_interval_information": {
-      "acid": "acid_value",
-      "bottom_perf": "bottom_perf_value",
-      "displacement_volume": {
-        "bottom_perf": "bottom_perf_value",
-        "plug": "plug_value",
-        "top_perf": "top_perf_value"
-      },
-      "diverter_type": "diverter_type_value",
-      "n_clusters": 234,
-      "perf_daiameter": "perf_daiameter_value",
-      "perf_gun_description": "perf_gun_description_value",
-      "plug_depth": "plug_depth_value",
-      "pumped_diverter": "pumped_diverter_value",
-      "spf": "spf_value",
-      "top_perf": "top_perf_value"
-    },
-    "stage": 0,
-    "stage_data": {
-      "fluid_parameters": {
-        "base_fluid_density": "base_fluid_density_value",
-        "base_fluid_type": "base_fluid_type_value",
-        "max_conc_density": "max_conc_density_value"
-      },
-      "fluids_injected_into_formation": {
-        "last": {
-          "bbls": "bbls_value",
-          "description": "description_value",
-          "ppg": "ppg_value"
-        },
-        "second_to_last": {
-          "bbls": "bbls_value",
-          "description": "description_value",
-          "ppg": "ppg_value"
-        },
-        "third_to_last": {
-          "bbls": "bbls_value",
-          "description": "description_value",
-          "ppg": "ppg_value"
-        }
-      },
-      "isip": "isip_value",
-      "opening_well": "opening_well_value",
-      "propant_data": [
-        {
-          "bulk_density": "bulk_density_value",
-          "description": "description_value",
-          "specific_gravity": "specific_gravity_value"
-        }
-      ],
-      "pumping_summary": {
-        "acid_volume": {
-          "actual": "actual_value",
-          "design": "design_value"
-        },
-        "flush_volume": {
-          "actual": "actual_value",
-          "design": "design_value"
-        },
-        "max_prop_conc": {
-          "actual": "actual_value",
-          "design": "design_value"
-        },
-        "slurry_volume": {
-          "actual": "actual_value",
-          "design": "design_value"
-        },
-        "total_clean_fluid_volume": {
-          "actual": "actual_value",
-          "design": "design_value"
-        },
-        "total_forty_seventy": {
-          "actual": "actual_value",
-          "design": "design_value"
-        },
-        "total_pad_volume": {
-          "actual": "actual_value",
-          "design": "design_value"
-        },
-        "total_sand": {
-          "actual": "actual_value",
-          "design": "design_value"
-        }
-      },
-      "stage_end_time": 1629729790256,
-      "stage_start_time": 1629729790256
-    },
-    "stage_tracking": {
-      "bht_f": "bht_f_value",
-      "bht_psi": "bht_psi_value",
-      "customer": "customer_value",
-      "date": 1629729790256,
-      "did_an_event_occur": "did_an_event_occur_value",
-      "field_engineer": {
-        "days": "days_value",
-        "nights": "nights_value"
-      },
-      "frac_design": "frac_design_value",
-      "plug_seat_technique": "plug_seat_technique_value",
-      "plug_type": "plug_type_value",
-      "seismos_data_collection": "seismos_data_collection_value",
-      "stage": "stage_value",
-      "well": "well_value"
-    }
+    "stage_end_time": 0,
+    "stage_start_time": 0
+  },
+  "stage_tracking": {
+    "bht_f": 0,
+    "bht_psi": 0,
+    "customer": "string",
+    "date": 0,
+    "did_an_event_occur": "string",
+    "frac_design": "string",
+    "plug_seat_technique": "string",
+    "plug_type": "string",
+    "seismos_data_collection": "string",
+    "stage": "string",
+    "well": "string"
+  }
 }
-  

@@ -39,10 +39,10 @@ class Login(Resource):
             user_data = user.to_dict()
             access_token = create_access_token(identity=user.id)
 
-            user_projects = Project.query.filter(Project.user_id == user.id).all()
-            project_ids = []
+            user_projects = Project.query.all()
+            project_uuids = []
             for project in user_projects:
-                project_ids.append(project.id)
+                project_uuids.append(project.project_uuid)
 
             return {
                 "status": 200,
@@ -50,7 +50,7 @@ class Login(Resource):
                 "data": {
                     "access_token": access_token,
                     "user": user_data,
-                    "project_ids": project_ids,
+                    "projects": project_uuids,
                 },
             }
 
@@ -65,17 +65,17 @@ class Login(Resource):
         if not user:
             return {'error': True, 'err_str': 'User not found'}
 
-        user_projects = Project.query.filter(Project.user_id == user_id).all()
-        project_ids = []
+        user_projects = Project.query.all()
+        project_uuids = []
         for project in user_projects:
-            project_ids.append(project.id)
+            project_uuids.append(project.project_uuid)
 
         return {
             "status": 200,
             "message": "User details",
             "data": {
                 "user": user.to_dict(),
-                "project_ids": project_ids,
+                "project_uuids": project_uuids,
             }
         }
 
@@ -106,7 +106,7 @@ class UserResource(Resource):
                 "data": {
                     "access_token": access_token,
                     "user": user.to_dict(),
-                    "project_ids": [],
+                    "projects": [],
                 },
             }
 

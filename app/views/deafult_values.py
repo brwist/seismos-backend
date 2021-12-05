@@ -1,4 +1,4 @@
-from app.models.default_volumes import DefaultAdvanceVal
+from app.models.default_values import DefaultAdvanceVal
 from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
@@ -12,12 +12,12 @@ from app.models import (
 
 from app.schemas import (
     MessageSchema,
-    DefaultVolumesSchema,
-    WellPathIdSchema,
+    DefaultValuesSchema,
+    WellPathUuidSchema,
 )
 
 
-class DefaultVolumesResource(Resource):
+class DefaultValuesResource(Resource):
     category_class_map = {
         "default_value": DefaultVal,
         "default_advance_val": DefaultAdvanceVal,
@@ -26,18 +26,16 @@ class DefaultVolumesResource(Resource):
 
     @jwt_required()
     @swagger_decorator(
-        json_schema=DefaultVolumesSchema,
-        path_schema=WellPathIdSchema,
+        path_schema=WellPathUuidSchema,
+        json_schema=DefaultValuesSchema,
         response_schema={200: MessageSchema, 401: MessageSchema},
-        tag="Default Volumes",
+        tag="Default Values",
     )
-    def put(self, well_id):
+    def put(self, well_uuid):
         """ Create, update well default volumes """
-        well = Well.query.filter(Well.id == well_id).first()
+        well = Well.query.filter(Well.well_uuid == well_uuid).first()
         if not well or well.pad.project.user_id != get_jwt_identity():
-            return {
-                "msg": "Well not found",
-            }, 401
+            return {"msg": f"Well with uuid {well_uuid} not found"}, 401
 
         req = request.json_schema
 
@@ -57,23 +55,21 @@ class DefaultVolumesResource(Resource):
 
     @jwt_required()
     @swagger_decorator(
-        path_schema=WellPathIdSchema,
-        response_schema={200: DefaultVolumesSchema, 401: MessageSchema, 204: MessageSchema},
-        tag="Default Volumes"
+        path_schema=WellPathUuidSchema,
+        response_schema={200: DefaultValuesSchema, 401: MessageSchema, 204: MessageSchema},
+        tag="Default Values"
     )
-    def get(self, well_id):
-        well = Well.query.filter(Well.id == well_id).first()
-        if not well or well.pad.project.user_id != get_jwt_identity():
-            return {
-                "msg": "Well not found",
-            }, 401
+    def get(self, well_uuid):
+        well = Well.query.filter(Well.well_uuid == well_uuid).first()
+        if not well:
+            return {"msg": f"Well with uuid {well_uuid} not found"}, 401
 
-        default_volumes = {}
+        default_values = {}
         for default_valumes_field in self.category_class_map.keys():
 
             if not getattr(well, default_valumes_field):
                 return {"msg": "Default volumes not created for this well"}, 204
 
-            default_volumes[default_valumes_field] = getattr(well, default_valumes_field).to_json()
+            default_values[default_valumes_field] = getattr(well, default_valumes_field).to_json()
 
-        return default_volumes
+        return default_values

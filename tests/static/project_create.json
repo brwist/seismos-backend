@@ -9,7 +9,7 @@
   "crewInfoValues": [
     {
       "name": "string",
-      "phone_number": "string",
+      "shift": "string",
       "role": "string"
     }
   ],
@@ -25,9 +25,9 @@
   "jobInfoValues": {
     "afe_id": 41,
     "basin_name": "string",
-    "country_name": "string",
+    "county_name": "string",
     "job_end_date": 0,
-    "job_id": "string",
+    "job_id": 22,
     "job_name": "string",
     "job_start_date": 0,
     "job_type": "string",
@@ -38,14 +38,12 @@
     "customer_field_rep": "string",
     "operator_name": "string",
     "pad_name": "string",
-    "pad_uuid": "string",
     "rep_contact_number": 0,
     "service_company_name": "string",
     "wireline_company": "string"
   },
   "projectValues": {
     "project_name": "string",
-    "project_uuid": "string"
   },
   "wellInfoValues": [
     {

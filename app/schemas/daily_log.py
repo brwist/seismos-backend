@@ -6,13 +6,14 @@ class DailyLogSchema(Schema):
 
 
 class DailyLogData(Schema):
-    date = fields.Int()
+    # comment_timestamp = fields.Int()
+    # comment_content = fields.Str()
+    # comment_by = fields.Str()
     description = fields.Str()
+    date = fields.Int()
 
 
 class DailyLogCreateSchema(Schema):
-    project_id = fields.Int()
-    well_id = fields.Int()
     logs = fields.List(fields.Nested(DailyLogData))
 
 

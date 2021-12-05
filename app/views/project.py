@@ -1,21 +1,16 @@
 from datetime import datetime
 from flask import request
 from flask_restful import Resource
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, current_user
 from flasgger_marshmallow import swagger_decorator
-from uuid import uuid4
-
-
 from app.schemas import (
     ProjectSchema,
-    ProjectIdPathSchema,
+    ProjectUuidPathSchema,
     ProjectReturnSchema,
     ProjectListSchema,
     CreateProjectSuccessSchema,
     MessageSchema,
 )
-
-
 from app.models import (
     Project,
     JobInfo,
@@ -24,39 +19,37 @@ from app.models import (
     Client,
     Pad,
     LocationInfo,
-    CountryName,
+    CountyName,
     BasinName,
     State,
     CustomerFieldRep,
     Crew,
     ProjectCrew,
     Well,
-    Formation,
     User,
 )
 
 from marshmallow.exceptions import ValidationError
 
 
-class ProjectGet(Resource):
+class ProjectGeneral(Resource):
     @jwt_required()
     @swagger_decorator(
         response_schema={200: ProjectReturnSchema, 404: MessageSchema},
-        path_schema=ProjectIdPathSchema,
+        path_schema=ProjectUuidPathSchema,
         tag="Project",
     )
-    def get(self, project_id):
+    def get(self, project_uuid):
         """ Get project data"""
-        # TODO add user validation (if current user created project)
-        project = Project.query.filter(Project.id == project_id).first()
-        if not project:
-            msg = f"Project with id: {project_id} not found"
+        project = Project.query.filter(Project.project_uuid == project_uuid).first()
+        if not project or project.user_id != current_user.id:
+            msg = f"Project with uuid: {project_uuid} not found"
             return {"msg": msg}, 404
 
         wells = []
         for well in project.pad.wells:
             wells.append({
-                "id": well.id,
+                "uuid": well.well_uuid,
                 "well_name": well.well_name,
                 "num_stages": well.num_stages,
             })
@@ -66,12 +59,28 @@ class ProjectGet(Resource):
             "message": "Project details",
             "data": {
                 "project": {
-                    "id": project.id,
+                    "uuid": project.project_uuid,
                     "project_name": project.project_name,
                     "wells": wells
                 }
             }
         }
+
+    @jwt_required()
+    @swagger_decorator(
+        response_schema={200: MessageSchema, 404: MessageSchema},
+        path_schema=ProjectUuidPathSchema,
+        tag="Project",
+    )
+    def delete(self, project_uuid):
+        """ Delete project"""
+        project = Project.query.filter(Project.project_uuid == project_uuid).first()
+        if not project or project.user_id != current_user.id:
+            msg = f"Project with uuid: {project_uuid} not found"
+            return {"msg": msg}, 404
+
+        project.delete()
+        return {"msg": "Project deleted"}, 200
 
 
 class ProjectCreate(Resource):
@@ -83,6 +92,7 @@ class ProjectCreate(Resource):
     )
     def post(self):
         """ Create project """
+        user_id = get_jwt_identity()
         req = request.json_schema
         equip_req = req["equipmentValues"]
         equipment = Equipment(
@@ -97,14 +107,12 @@ class ProjectCreate(Resource):
         equipment.save()
 
         project_name = req["projectValues"]["project_name"]
-        project_uuid = req["projectValues"]["project_uuid"]
 
         project = Project(
             project_name=project_name,
-            project_uuid=project_uuid,
             client_id=0,
-            user_id=get_jwt_identity(),
-            equipment_id=equipment.id
+            equipment_id=equipment.id,
+            user_id=user_id,
         )
 
         project.save()
@@ -119,7 +127,6 @@ class ProjectCreate(Resource):
         customer_field_rep.save()
 
         client = Client(
-            client_uuid=str(uuid4()),
             client_name=pad_data["client_name"],
             customer_field_rep_id=customer_field_rep.id,
             project_id=project.id,
@@ -135,7 +142,6 @@ class ProjectCreate(Resource):
         pad = Pad(
             project_id=project.id,
             pad_name=pad_data["pad_name"],
-            pad_uuid=pad_data["pad_uuid"],
             number_of_wells=len(req["wellInfoValues"])
         )
 
@@ -143,8 +149,10 @@ class ProjectCreate(Resource):
 
         # Job data
         job_data = req["jobInfoValues"]
-        job_type = JobType(value=job_data["job_type"])
-        job_type.save()
+        job_type = JobType.query.filter(JobType.value == job_data["job_type"]).first()
+        if not job_type:
+            job_type = JobType(value=job_data["job_type"])
+            job_type.save()
 
         job = JobInfo(
             job_name=job_data["job_name"],
@@ -163,7 +171,7 @@ class ProjectCreate(Resource):
         for crew_data in crew_data_list:
             crew = Crew(
                 name=crew_data["name"],
-                phone_number=crew_data["phone_number"],
+                shift=crew_data["shift"],
                 role=crew_data["role"]
             )
 
@@ -175,8 +183,6 @@ class ProjectCreate(Resource):
         well_data_list = req["wellInfoValues"]
 
         for i, well_info in enumerate(well_data_list):
-            formation = Formation(value=well_info["formation"])
-            formation.save()
 
             casing, liner, liner_sec = {}, {}, {}
             for well_values in req["wellVolumeValues"][i]:
@@ -204,18 +210,14 @@ class ProjectCreate(Resource):
             wellEstim = req["wellVolumeEstimationsValues"][i]
 
             well = Well(
-                well_uuid=str(uuid4()),
                 pad_id=pad.id,
                 well_name=well_info["well_name"],
                 well_api=well_info["well_api"],
-                formation_id=formation.id,
+                formation=well_info["formation"],
                 num_stages=well_info["num_stages"],
 
                 surface_latitude=well_info["surface_latitude"],
                 surface_longitude=well_info["surface_longitude"],
-
-                bottom_hole_latitude=well_info["bottom_hole_latitude"],
-                bottom_hole_longitude=well_info["bottom_hole_longitude"],
 
                 casing_od=casing["od"],
                 casing_wt=casing["wt"],
@@ -240,19 +242,25 @@ class ProjectCreate(Resource):
                 estimated_gallons=wellEstim["gallons"],
             )
             well.save()
-            # DefaultVolumes(well_id=well.id).save()
 
         # location entity
-        country_name = CountryName(county_name=job_data["country_name"])
-        basin_name = BasinName(basin_name=job_data["basin_name"])
-        state = State(value=job_data["state"])
+        county_name = CountyName.query.filter(CountyName.county_name == job_data["county_name"]).first()
+        if not county_name:
+            county_name = CountyName(county_name=job_data["county_name"])
+            county_name.save()
 
-        country_name.save()
-        basin_name.save()
-        state.save()
+        basin_name = BasinName.query.filter(BasinName.basin_name == job_data["basin_name"]).first()
+        if not basin_name:
+            basin_name = BasinName(basin_name=job_data["basin_name"])
+            basin_name.save()
+
+        state = State.query.filter(State.value == job_data["state"]).first()
+        if not state:
+            state = State(value=job_data["state"])
+            state.save()
 
         LocationInfo(
-            county_name_id=country_name.id,
+            county_name_id=county_name.id,
             basin_name_id=basin_name.id,
             state_id=state.id,
             job_info_id=job.id,
@@ -263,7 +271,7 @@ class ProjectCreate(Resource):
             "message": "Project created successfully!",
             "data": {
                 "project": {
-                    "id": project.id,
+                    "uuid": project.project_uuid,
                 }
             }
         }
@@ -276,7 +284,7 @@ class ProjectListGet(Resource):
         tag="Project",
     )
     def get(self):
-        """ Get project data"""
+        """ Get project list"""
         user_id = get_jwt_identity()
         user = User.query.filter(User.id == user_id).first()
         if not user:
@@ -286,7 +294,7 @@ class ProjectListGet(Resource):
         projects = []
         for project in user_projects:
             projects.append({
-                "id": project.id,
+                "uuid": project.project_uuid,
                 "project_name": project.project_name,
                 "job_name": project.job_info.job_name,
                 "job_id": project.job_info.job_id,
@@ -295,4 +303,4 @@ class ProjectListGet(Resource):
                 "created_time": project.created_at.strftime("%H:%M:%S")
             })
 
-        return {"projects": projects}
+        return {"projects": projects}, 200

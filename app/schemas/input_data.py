@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, validate
 
 
 class InputFileSchema(Schema):
@@ -13,6 +13,7 @@ class InputFileSchema(Schema):
 class InputDataRequestSchema(Schema):
     project_id = fields.Int()
     well_id = fields.Int()
+
 
 class FileResponseSchema(Schema):
     file = fields.Str()
@@ -35,3 +36,18 @@ class DataInputResponseSchema(Schema):
     status = fields.Int()
     message = fields.Str()
     data = fields.Nested(DataInputDataSchema)
+
+
+class DataInputFileUploadSchema(Schema):
+    file = fields.Raw(type="file")
+
+
+class DataInputAreaPathSchema(Schema):
+    data_area = fields.Str(validate=validate.OneOf([
+        "hydrophone",
+        "pressure",
+        "pumping_data",
+        "survey",
+        "gamma_ray",
+        "mud_log",
+    ]))

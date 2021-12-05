@@ -6,6 +6,11 @@ from app.models import Project
 from uuid import uuid4
 
 
+STATIC_PATHS = {
+    "create_daily_log": f"{TEST_STATIC_ROOT}/daily_logs_create.json"
+}
+
+
 def test_auth(client_with_user):
     resp = client_with_user.post("/api/auth", json=USER_CREDS)
     assert resp
@@ -54,7 +59,6 @@ def test_project_endpoint(client_with_user):
         # project data test
         assert project
         assert project.project_name == payload["projectValues"]["project_name"]
-        assert project.project_uuid == payload["projectValues"]["project_uuid"]
 
         # equipment test
         assert project.equipment
@@ -90,7 +94,7 @@ def test_project_endpoint(client_with_user):
         assert project.job_info.job_type
         assert project.job_info.job_type.value == payload["jobInfoValues"]["job_type"]
         assert project.job_info.location
-        assert project.job_info.location.country_name.county_name == payload["jobInfoValues"]["country_name"]
+        assert project.job_info.location.county_name.county_name == payload["jobInfoValues"]["county_name"]
         assert project.job_info.location.basin_name.basin_name == payload["jobInfoValues"]["basin_name"]
         assert project.job_info.location.state.value == payload["jobInfoValues"]["state"]
 
@@ -161,111 +165,62 @@ def test_input_data_endpoint(client_with_user):
         assert resp.json["data"]["data_input"][field]["file"]
 
 
-def test_daily_log(client_with_user):
-    resp = client_with_user.post("/api/auth", json=USER_CREDS)
-    access_token = resp.json["data"]["access_token"]
+def test_daily_log(client_with_project):
+    well = client_with_project.project.pad.wells[0]
 
-    create_project_json_path = f"{TEST_STATIC_ROOT}/project_create.json"
+    with open(STATIC_PATHS["create_daily_log"], "r") as json_f:
+        logs = json.load(json_f)
+        assert logs
 
-    with open(create_project_json_path, "r") as json_f:
-        payload = json.load(json_f)
-        assert payload
-        resp = client_with_user.post(
-            "/api/project",
-            headers={"Authorization": f"Bearer {access_token}"},
+        payload = {
+            "logs": logs,
+        }
+
+        resp = client_with_project.post(
+            f"/api/daily-log/{well.id}",
+            headers={"Authorization": f"Bearer {client_with_project.token}"},
             json=payload,
         )
+        assert resp.status_code == 201
 
-        assert resp
+        resp = client_with_project.get(
+            f"/api/daily-log/{well.id}",
+            headers={"Authorization": f"Bearer {client_with_project.token}"},
+        )
         assert resp.status_code == 200
-
-        proj_id = resp.json["data"]["project"]["id"]
-        assert proj_id
-
-        project = Project.query.filter(Project.id == proj_id).first()
-        assert project
-        assert project.pad.wells
-        well = project.pad.wells[0]
-        assert well
-
-        create_logs_static_path = f"{TEST_STATIC_ROOT}/daily_logs_create.json"
-
-        with open(create_logs_static_path, "r") as json_f:
-            logs = json.load(json_f)
-            assert logs
-
-            payload = {
-                "logs": logs,
-                "project_id": 0,
-                "well_id": well.id
-            }
-
-            resp = client_with_user.post(
-                "/api/daily-log",
-                headers={"Authorization": f"Bearer {access_token}"},
-                json=payload,
-            )
-            assert resp.status_code == 201
-
-            resp = client_with_user.get(
-                f"/api/daily-log/{well.id}",
-                headers={"Authorization": f"Bearer {access_token}"},
-            )
-            assert resp.status_code == 200
-            assert resp.json["logs"]
-            assert len(resp.json["logs"]) == len(logs)
+        assert resp.json["logs"]
+        assert len(resp.json["logs"]) == len(logs)
 
 
-def test_default_volumes(client_with_user):
-    resp = client_with_user.post("/api/auth", json=USER_CREDS)
-    access_token = resp.json["data"]["access_token"]
+def test_default_values(client_with_project):
+    well_id = client_with_project.project.pad.wells[0].id
+    resp = client_with_project.get(
+        f"/api/default-values/{well_id}",
+        headers={"Authorization": f"Bearer {client_with_project.token}"},
+    )
 
-    create_project_json_path = f"{TEST_STATIC_ROOT}/project_create.json"
+    assert resp.status_code == 204
 
-    with open(create_project_json_path, "r") as json_f:
-        payload = json.load(json_f)
-        assert payload
-        resp = client_with_user.post(
-            "/api/project",
-            headers={"Authorization": f"Bearer {access_token}"},
-            json=payload,
+    with open(f"{TEST_STATIC_ROOT}/create_default_values.json", "r") as f_json:
+        default_values = json.load(f_json)
+        assert default_values
+        resp = client_with_project.post(
+            f"/api/default-values/{well_id}",
+            headers={"Authorization": f"Bearer {client_with_project.token}"},
+            json=default_values
         )
 
         assert resp.status_code == 200
-        proj_id = resp.json["data"]["project"]["id"]
-        project = Project.query.filter(Project.id == proj_id).first()
-        assert project
-        assert project.pad.wells
-        well = project.pad.wells[0]
-        assert well
+        assert resp.json["msg"] == "Well's default value has been updated"
 
-        resp = client_with_user.get(
-            f"/api/default-volumes/{well.id}",
-            headers={"Authorization": f"Bearer {access_token}"},
+        resp = client_with_project.get(
+            f"api/default-values/{well_id}",
+            headers={"Authorization": f"Bearer {client_with_project.token}"}
         )
 
-        assert resp.status_code == 204
-
-        with open(f"{TEST_STATIC_ROOT}/create_default_volumes.json", "r") as f_json:
-            default_values = json.load(f_json)
-            assert default_values
-            resp = client_with_user.put(
-                f"/api/default-volumes/{well.id}",
-                headers={"Authorization": f"Bearer {access_token}"},
-                json=default_values,
-            )
-
-            assert resp.status_code == 200
-            assert resp.json["msg"] == "Well's default value has been updated"
-
-            resp = client_with_user.get(
-                f"api/default-volumes/{well.id}",
-                headers={"Authorization": f"Bearer {access_token}"}
-            )
-
-            assert resp.status_code == 200
-            for key, value in default_values.items():
-                assert key in resp.json
+        assert resp.status_code == 200
+        for key, value in default_values.items():
+            assert key in resp.json
 
 
 def test_tracking_sheet_crud(client_with_user):
@@ -300,7 +255,7 @@ def test_tracking_sheet_crud(client_with_user):
             assert resp.status_code == 201
 
             resp = client_with_user.get(
-                f"/api/tracking-sheet/stage_list/{well.id}",
+                f"/api/tracking-sheet/stage_list/{well.well_uuid}",
                 headers={"Authorization": f"Bearer {access_token}"},
                 json=payload,
             )

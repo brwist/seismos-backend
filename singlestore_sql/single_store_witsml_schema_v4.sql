@@ -799,7 +799,7 @@ CREATE TABLE `nf_processing_result` (
   `q0` float DEFAULT NULL,
   `q1` float DEFAULT NULL,
   `q2` float DEFAULT NULL,
-  `q3` float DEFAULT NULL, 
+  `q3` float DEFAULT NULL,
   `fit_error` float DEFAULT NULL,
   `nf_param_id` int(11) DEFAULT NULL,
   `connect_ops_risk` float DEFAULT NULL,

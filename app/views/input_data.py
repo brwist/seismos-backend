@@ -1,60 +1,43 @@
+import os
 from flask import request
 from flask_jwt_extended import jwt_required
 from flask_restful import Resource
 from flasgger_marshmallow import swagger_decorator
-import flasgger
-import marshmallow
 from app.schemas import (
     InputFileSchema,
     MessageSchema,
     InputDataRequestSchema,
     DataInputResponseSchema,
+    DataInputFileUploadSchema,
+    DataInputAreaPathSchema
 )
+from app.service import azure_client
+
+
+STATIC_PATH = "static/filebuffer"
+# Create directory for files
+os.makedirs(STATIC_PATH, exist_ok=True)
 
 
 class InputData(Resource):
     @jwt_required()
-    @flasgger.swag_from(
-        {
-            "tags": ["Input data"],
-            "requestBody": {
-                "description": "Upload file with data input",
-                "required": True,
-                "content": {
-                    "multipart/form-data": {
-                        "schema": flasgger.marshmallow_apispec.schema2jsonschema(
-                            marshmallow.Schema.from_dict(
-                                {
-                                    **InputFileSchema().fields,
-                                }
-                            )
-                        ),
-                        "encoding": {
-                            "watchers": {"style": "form", "explode": True},
-                            "attachments": {"style": "form", "explode": True},
-                        },
-                    }
-                },
-            },
-            "responses": {
-                "204": {
-                    "description": "Success message",
-                    "content": {
-                        "application/json": {
-                            "schema": flasgger.marshmallow_apispec.schema2jsonschema(
-                                marshmallow.Schema.from_dict({**MessageSchema().fields})
-                            ),
-                        }
-                    }
-                },
-            },
-            "security": {"bearerAuth": []},  # TODO swagger not alow send JWT token
-        }
+    @swagger_decorator(
+        response_schema={200: MessageSchema, 400: MessageSchema},
+        file_form_schema=DataInputFileUploadSchema,
+        path_schema=DataInputAreaPathSchema,
+        tag="Input data"
     )
-    def post(self):
+    def post(self, data_area):
         """ Upload file into server """
+        if not request.files:
+            return {"msg": "File missing"}, 400
+
         f = request.files["file"]
-        f.save(f"static/{f.filename}")
+        filepath = f"{STATIC_PATH}/{f.filename}"
+        f.save(filepath)
+        azure_client.upload_file(data_area, filepath)
+        os.remove(filepath)
+
         return {"msg": "OK"}
 
     @jwt_required()

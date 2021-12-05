@@ -1,4 +1,5 @@
 {
+    "python.pythonPath": ".venv_poetry/seismos-3ggEgpDz-py3.8/bin/python",
     "python.testing.pytestArgs": [
         "tests"
     ],
@@ -14,5 +15,7 @@
             "database": "${workspaceFolder:seismos}/database-test.sqlite3"
         }
     ],
-    "sqltools.useNodeRuntime": true
+    "sqltools.useNodeRuntime": true,
+    "pythonTestExplorer.testFramework": "pytest",
+    "testExplorer.addToEditorContextMenu": true,
 }

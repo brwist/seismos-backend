@@ -5,6 +5,8 @@ import yaml
 from flask import request
 from marshmallow import fields
 from marshmallow.utils import _Missing
+import flasgger
+
 
 __all__ = []
 
@@ -71,6 +73,7 @@ def swagger_decorator(
     response_schema=None,
     tag="default",
     jwt_required=True,
+    file_form_schema=None,
 ):
     def decorator(func):
         def parse_simple_schema(c_schema, location):
@@ -218,6 +221,7 @@ def swagger_decorator(
                 or form_schema
                 or json_schema
                 or headers_schema
+                or file_form_schema
             ):
                 doc_dict["parameters"] = []
             if path_schema:
@@ -230,6 +234,7 @@ def swagger_decorator(
                 doc_dict["parameters"].extend(
                     parse_simple_schema(form_schema, "formData")
                 )
+
             if headers_schema:
                 doc_dict["parameters"].extend(
                     parse_simple_schema(headers_schema, "header")
@@ -245,6 +250,24 @@ def swagger_decorator(
                         }
                     }
                 }
+
+            if file_form_schema:
+                doc_dict["requestBody"] = {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": flasgger.marshmallow_apispec.schema2jsonschema(
+                                marshmallow.Schema.from_dict({
+                                    **file_form_schema().fields,
+                                })
+                            ),
+                            "encoding": {
+                                "watchers": {"style": "form", "explode": True},
+                                "attachments": {"style": "form", "explode": True},
+                            },
+                        }
+                    }
+                }
+            
             if response_schema:
                 doc_dict["responses"] = {}
                 for code, current_schema in response_schema.items():

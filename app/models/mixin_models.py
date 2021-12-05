@@ -1,5 +1,10 @@
 from datetime import datetime
+from uuid import uuid4
 from app import db
+
+
+def uuid_string():
+    return str(uuid4())
 
 
 class TimestampMixin():
@@ -8,7 +13,6 @@ class TimestampMixin():
 
 
 class ModelMixin(object):
-
     def save(self):
         # Save this model to the database.
         db.session.add(self)
@@ -26,11 +30,16 @@ class ModelMixin(object):
 
 
 class JsonModelMixin(object):
-
-    def to_json(self):
+    def to_json(self, remove_null=False):
         result = {}
 
-        for field in self.json_fields:
-            result[field] = getattr(self, field)
+        if not remove_null:
+            for field in self.json_fields:
+                result[field] = getattr(self, field)
+        else:
+            for field in self.json_fields:
+                value = getattr(self, field)
+                if value is not None:
+                    result[field] = getattr(self, field)
 
         return result

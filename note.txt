@@ -1,0 +1,25 @@
+Docker front end
+    docker build -t datasleek/seismos:seismos_client .
+    docker run -it -p 3000:3000 datasleek/seismos:amd64
+
+
+1635693617050 stage_start_time
+1635693611111 stage_end_time
+
+Timestamps:
+
+pre_start_time
+1633993501224
+2147483647
+
+pre_end_time
+1634166302558
+2147483647
+
+post_start_time
+1635289510424
+2147483647
+
+post_end_time
+1635462311758
+2147483647

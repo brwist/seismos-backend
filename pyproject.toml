@@ -26,6 +26,10 @@ Flask-Migrate = "^3.0.1"
 Flask-Cors = "^3.0.10"
 lasio = "^0.29"
 flake8 = "^3.9.2"
+azure-storage-blob = "^12.9.0"
+celery = "^5.2.1"
+redis = "^4.0.1"
+PyMySQL = "^1.0.2"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"

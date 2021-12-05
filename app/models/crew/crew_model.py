@@ -8,6 +8,6 @@ class Crew(TimestampMixin, ModelMixin, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text, nullable=False)
-    phone_number = db.Column(db.Text, nullable=False)
+    shift = db.Column(db.Text, nullable=False)
     role = db.Column(db.Enum('admin', 'manager', 'engineer'), nullable=False, default="N")
     manager_id = db.Column(db.Integer)

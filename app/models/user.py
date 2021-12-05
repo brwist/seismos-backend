@@ -20,7 +20,6 @@ class User(db.Model, ModelMixin):
 
     def to_dict(self):
         return {
-            'id': self.id,
             'username': self.username,
             'email': self.email,
             'created_at': self.created_at.timestamp(),
@@ -43,7 +42,7 @@ class User(db.Model, ModelMixin):
             return user
 
     def __repr__(self):
-        return f"<User: {self.username}>"
+        return f"<User: {self.username}, {self.email}>"
 
 
 class UserProjects(db.Model):
