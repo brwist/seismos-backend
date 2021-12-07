@@ -1246,7 +1246,7 @@ CREATE TABLE stage (
   `stage_number` integer NOT NULL,
   `number_of_cluster` integer NOT NULL DEFAULT 0,
   `stage_start_time` decimal(25, 10) NULL,
-  `stage_end_time` int NULL,
+  `stage_end_time` decimal(25, 10) NULL,
   `frac_design` varchar(35) NULL,
    designed_acid_vol float ,
    designed_proppant float ,

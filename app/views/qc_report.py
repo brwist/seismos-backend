@@ -19,7 +19,7 @@ class QCReport(Resource):
     def get(self, well_uuid):
         """ Get QC raport data"""
         well = Well.query.filter(Well.well_uuid == well_uuid).first()
-        # current point
+
         if not well or well.pad.project.user_id != get_jwt_identity():
             return {"msg": "Well not found"}, 401
 

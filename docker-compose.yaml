@@ -26,16 +26,16 @@ services:
       - redis
 
   seismos_backend_api:
-    image: simple2b/seismos_backend_api
-    build: .
+    image: datasleek/seismos_backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: always
     ports:
       - 127.0.0.1:5000:5000
     depends_on:
       - memsql
       - redis
-    volumes:
-      - ./:/app
     environment:
       - FLASK_APP=wsgi:app
       - FLASK_ENV=production

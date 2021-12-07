@@ -28,7 +28,7 @@ class Stage(TimestampMixin, ModelMixin, db.Model, QCReportDataModel):
     stage_number = db.Column(db.Integer)
     number_of_cluster = db.Column(db.Integer)
     stage_start_time = db.Column(db.Numeric(25, 10))
-    stage_end_time = db.Column(db.Integer)
+    stage_end_time = db.Column(db.Numeric(25, 10))
     plug_depth = db.Column(db.Float)
     calc_net_pressure_result = db.Column(db.Float)
     observed_net_pressure = db.Column(db.Float)
@@ -143,7 +143,7 @@ class Stage(TimestampMixin, ModelMixin, db.Model, QCReportDataModel):
         cascade="all,delete",
     )
 
-    proppant = db.relation(
+    proppant_data = db.relation(
         "Proppant",
         foreign_keys=[id],
         primaryjoin="Stage.id == Proppant.stage_id",
@@ -168,6 +168,7 @@ class Stage(TimestampMixin, ModelMixin, db.Model, QCReportDataModel):
     def generate_report(self, include_none=False):
         report = super().generate_report(include_none)
         report["stage_start_time"] = int(report["stage_start_time"])
+        report["stage_end_time"] = int(report["stage_end_time"])
         return report
 
     def to_json(self):
