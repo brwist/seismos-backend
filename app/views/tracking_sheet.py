@@ -95,9 +95,10 @@ def unpack_json_data(json_data, data_map):
                 if data_point in current_data_point:
                     current_data_point = current_data_point[data_point]
                     continue
+                current_data_point = {}
                 break
 
-            if current_data_point != json_data:
+            if current_data_point and current_data_point != json_data:
                 res[base_model][attr] = current_data_point
     return res
 
@@ -108,11 +109,12 @@ def parse_tracking_sheet_data(json_data):
 
 def unpack_proppant(json_data, stage_id):
     proppants = []
-    proppant_json = {
-        "stage_id": stage_id,
-        "actual_lbs": json_data["stage_data"]["pumping_summary"]["total_proppant"]["actual"],
-        "designed_lbs": json_data["stage_data"]["pumping_summary"]["total_proppant"]["design"],
-    }
+    total_proppant = json_data["stage_data"]["pumping_summary"]["total_proppant"]
+    proppant_json = {"stage_id": stage_id}
+
+    for field_db, field_json in {"actual_lbs": "actual", "designed_lbs": "design"}.items():
+        if field_json in total_proppant:
+            proppant_json[field_json] = total_proppant[field_json]
 
     for raw_proppant in json_data["stage_data"]["proppant_data"]:
         proppant = proppant_json.copy()
@@ -309,6 +311,22 @@ class TrackingSheetResource(Resource):
 
         return {"msg": "Stage updated"}
 
+    @jwt_required()
+    @swagger_decorator(
+        path_schema=TrackingSheetUuidSchema,
+        response_schema={200: MessageSchema, 401: MessageSchema},
+        tag="Tracking Sheet",
+    )
+    def delete(self, stage_uuid):
+        stage = Stage.query.filter(Stage.stage_uuid == stage_uuid).first()
+        if not stage or stage.well.pad.project.user_id != get_jwt_identity():
+            return {"msg": "Stage not found"}, 401
+
+        stage.delete()
+        stage.well.num_stages = len(stage.well.stages)
+        stage.well.save()
+        return {"msg": "Stage deleted"}
+
 
 class TrackingSheetStageList(Resource):
     @jwt_required()
@@ -351,7 +369,6 @@ class TrackingSheetCreateResource(Resource):
             return {"msg": f"Well with id {well_uuid} not found"}, 401
 
         req = request.json
-        stage_data = req["stage_data"]
 
         for stage in well.stages:
             if stage.stage_number == req["stage"]:
@@ -363,6 +380,8 @@ class TrackingSheetCreateResource(Resource):
         # save stage
         stage = Stage(**tracking_sheet_data[Stage])
         stage.save()
+        well.num_stages = len(well.stages)
+        well.save()
 
         # save fluids
         chem_fluids = ChemFluids(**tracking_sheet_data[ChemFluids])
@@ -385,107 +404,6 @@ class TrackingSheetCreateResource(Resource):
         for db_model in (Perforation, StageAVG):
             tracking_sheet_data[db_model]["stage_id"] = stage.id
             db_model(**tracking_sheet_data[db_model]).save()
-
-        return {"msg": "tracking sheet was created"}, 201
-
-        stage = Stage(
-            well_id=well.id,
-            bottomhole_bht=req["stage_tracking"]["bottomhole_bht"],
-            bottomhole_bhp=req["stage_tracking"]["bottomhole_bhp"],
-            frac_design=req["stage_tracking"]["frac_design"],
-            plug_type=req["stage_tracking"]["plug_type"],
-            plug_seat_technique=req["stage_tracking"]["plug_seat_technique"],
-            stage_event=req["stage_tracking"]["did_an_event_occur"],
-            data_collection=req["stage_tracking"]["seismos_data_collection"],
-
-            stage_number=req["stage"],
-            stage_start_time=stage_data["stage_start_time"],
-            stage_end_time=stage_data["stage_end_time"],
-
-            designed_max_prop=stage_data["pumping_summary"]["max_prop_conc"]["design"],
-            designed_pad_vol=stage_data["pumping_summary"]["total_pad_volume"]["design"],
-            designed_total_clean_fluid_vol=stage_data["pumping_summary"]["total_clean_fluid_volume"]["design"],
-            designed_flush_vol=stage_data["pumping_summary"]["flush_volume"]["design"],
-
-            diverter_type=req["perforation_interval_information"]["diverter_type"],
-            pumped_diverter=req["perforation_interval_information"]["pumped_diverter"],
-            designed_slurry_vol=stage_data["pumping_summary"]["slurry_volume"]["design"],
-
-            spf=req["perforation_interval_information"]["spf"],
-            plug_depth=req["perforation_interval_information"]["plug_depth"],
-            number_of_cluster=req["perforation_interval_information"]["n_clusters"],
-            is_acid=req["perforation_interval_information"]["acid"],
-            top_perf_Displacement_volume=req["perforation_interval_information"]["displacement_volume"]["top_perf"],
-            bottom_perf_Displacement_volume=req["perforation_interval_information"]["displacement_volume"]["bottom_perf"],
-            plug_displacement_volume=req["perforation_interval_information"]["displacement_volume"]["plug"],
-        ).save()
-
-        chem_fluids = ChemFluids(
-            stage_id=stage.id,
-            base_fluid_density=req["stage_data"]["fluid_parameters"]["base_fluid_density"],
-            base_fluid_type=req["stage_data"]["fluid_parameters"]["base_fluid_type"],
-            max_conc_density=req["stage_data"]["fluid_parameters"]["max_conc_density"],
-            design_acid_vol=req["stage_data"]["pumping_summary"]["acid_volume"]["design"],
-        ).save()
-
-        for fluid_item in req["stage_data"]["fluids_injected_into_formation"]:
-            fluid_item["chem_fluid_id"] = chem_fluids.id
-            FormationFuildInjection(**fluid_item).save()
-
-        Perforation(
-            stage_id=stage.id,
-            top_measured_depth=req["perforation_interval_information"]["top_measured_depth"],
-            bottom_measured_depth=req["perforation_interval_information"]["bottom_measured_depth"],
-            perf_gun_description=req["perforation_interval_information"]["perf_gun_description"],
-            estimated_hole_diameter=req["perforation_interval_information"]["perf_daiameter"],
-        ).save()
-
-        StageAVG(
-            stage_id=stage.id,
-
-            opening_well=req["stage_data"]["opening_well"],
-            max_prop_conc=req["stage_data"]["pumping_summary"]["max_prop_conc"]["actual"],
-            pad_vol=req["stage_data"]["pumping_summary"]["total_pad_volume"]["actual"],
-            total_clean=req["stage_data"]["pumping_summary"]["total_clean_fluid_volume"]["actual"],
-            acid=req["stage_data"]["pumping_summary"]["acid_volume"]["actual"],
-            flush_volume=stage_data["pumping_summary"]["flush_volume"]["actual"],
-            total_slurry=req["stage_data"]["pumping_summary"]["slurry_volume"]["actual"],
-            # isip=req["stage_data"]["isip"], disable
-        ).save()
-
-        # proppant data
-        for proppant in req["stage_data"]["proppant_data"]:
-            Proppant(
-                stage_id=stage.id,
-                bulk_density=proppant["bulk_density"],
-                proppant_name=proppant["description"],
-                specific_gravity=proppant["specific_gravity"],
-                total_pumped_lbs=proppant["amount_pumped"],
-                actual_lbs=req["stage_data"]["pumping_summary"]["total_proppant"]["actual"],
-                designed_lbs=req["stage_data"]["pumping_summary"]["total_proppant"]["design"],
-            ).save()
-
-        well.num_stages += 1
-        well.save()
-
-        active_data = {}
-        # unpack active data
-        for _, data in req["active_data"].items():
-            for field, value in data.items():
-                active_data[field] = value
-        for field, value in req["notes"].items():
-            active_data[field] = value
-        active_data["stage_id"] = stage.id
-
-        for time_field in (
-            "post_frac_start_time",
-            "post_frac_end_time",
-            "pre_frac_start_time",
-            "pre_frac_end_time",
-        ):
-            active_data[time_field] //= 1000
-
-        ActiveData(**active_data).save()
 
         return {"msg": "tracking sheet was created"}, 201
 

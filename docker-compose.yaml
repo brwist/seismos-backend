@@ -2,8 +2,10 @@ version: '3.7'
 services:
   front_end:
     image: datasleek/seismos:amd64
+    build: .
     ports:
       - "3000:3000"
+
 
   memsql:
     image: 'memsql/cluster-in-a-box'
@@ -20,7 +22,7 @@ services:
   worker:
     build: .
     image: &img worker
-    command: [poetry, run, celery, -A, worker_db_backup worker, -B, --loglevel=INFO]
+    command: ["poetry", "run", "celery", "-A", "worker_db_backup", "beat", "--loglevel=INFO"]
     depends_on:
       - memsql
       - redis

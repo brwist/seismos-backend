@@ -18,7 +18,7 @@ class PerforationIntervalInformation(Schema):
     pumped_diverter = fields.String()
     diverter_type = fields.String()
     acid = fields.String()
-    displacement_volume = fields.Nested(PerfInterInfoDisplacementSchema)
+    displacement_volume = fields.Nested(PerfInterInfoDisplacementSchema, required=True)
 
 
 class StageTrackingShema(Schema):
@@ -29,15 +29,6 @@ class StageTrackingShema(Schema):
     plug_seat_technique = fields.String()
     did_an_event_occur = fields.String()
     seismos_data_collection = fields.String()
-
-
-# # class QCStageDataShema(Schema):
-# #     stage_n = fields.Int()
-# #     stage_tracking = fields.Nested(StageTrackingShema)
-
-
-# # class QCReportSchema(Schema):
-# #     report = fields.List(fields.Nested(QCStageDataShema))
 
 
 class StageDataFluidParam(Schema):
@@ -65,14 +56,13 @@ class PumpingSummaryValuesSchema(Schema):
 
 
 class PumpingSummarySchema(Schema):
-    max_prop_conc = fields.Nested(PumpingSummaryValuesSchema)
-    total_pad_volume = fields.Nested(PumpingSummaryValuesSchema)
-    total_clean_fluid_volume = fields.Nested(PumpingSummaryValuesSchema)
-    proppant = fields.Nested(PumpingSummaryValuesSchema)
-    total_proppant = fields.Nested(PumpingSummaryValuesSchema)
-    acid_volume = fields.Nested(PumpingSummaryValuesSchema)
-    flush_volume = fields.Nested(PumpingSummaryValuesSchema)
-    slurry_volume = fields.Nested(PumpingSummaryValuesSchema)
+    max_prop_conc = fields.Nested(PumpingSummaryValuesSchema, required=True)
+    total_pad_volume = fields.Nested(PumpingSummaryValuesSchema, required=True)
+    total_clean_fluid_volume = fields.Nested(PumpingSummaryValuesSchema, required=True)
+    total_proppant = fields.Nested(PumpingSummaryValuesSchema, required=True)
+    acid_volume = fields.Nested(PumpingSummaryValuesSchema, required=True)
+    flush_volume = fields.Nested(PumpingSummaryValuesSchema, required=True)
+    slurry_volume = fields.Nested(PumpingSummaryValuesSchema, required=True)
 
 
 class PulsingParameters(Schema):
@@ -94,10 +84,10 @@ class StageDataSchema(Schema):
     stage_end_time = fields.Int()
     opening_well = fields.Int()
     # isip = fields.Float()
-    fluid_parameters = fields.Nested(StageDataFluidParam)
-    fluids_injected_into_formation = fields.List(fields.Nested(FluidsInjected))
-    proppant_data = fields.List(fields.Nested(ProppantDataSchema))
-    pumping_summary = fields.Nested(PumpingSummarySchema)
+    fluid_parameters = fields.Nested(StageDataFluidParam, required=True)
+    fluids_injected_into_formation = fields.List(fields.Nested(FluidsInjected), required=True)
+    proppant_data = fields.List(fields.Nested(ProppantDataSchema), required=True)
+    pumping_summary = fields.Nested(PumpingSummarySchema, required=True)
 
 
 # # class StageDataCreateSchema(Schema):
@@ -124,9 +114,9 @@ class PostFracPulsesSchema(Schema):
 
 
 class ActiveDataSchema(Schema):
-    pulsing_parameteres = fields.Nested(PulsingParameters)
-    pre_frac_pulses = fields.Nested(PreFracPulsesSchema)
-    post_frac_pulses = fields.Nested(PostFracPulsesSchema)
+    pulsing_parameteres = fields.Nested(PulsingParameters, required=True)
+    pre_frac_pulses = fields.Nested(PreFracPulsesSchema, required=True)
+    post_frac_pulses = fields.Nested(PostFracPulsesSchema, required=True)
 
 
 class NotesSchema(Schema):
@@ -136,12 +126,12 @@ class NotesSchema(Schema):
 
 
 class TrackingSheetSchema(Schema):
-    stage = fields.Int()
-    stage_tracking = fields.Nested(StageTrackingShema)
-    perforation_interval_information = fields.Nested(PerforationIntervalInformation)
-    stage_data = fields.Nested(StageDataSchema)
-    active_data = fields.Nested(ActiveDataSchema)
-    notes = fields.Nested(NotesSchema)
+    stage = fields.Int(required=True)
+    stage_tracking = fields.Nested(StageTrackingShema, required=True)
+    perforation_interval_information = fields.Nested(PerforationIntervalInformation, required=True)
+    stage_data = fields.Nested(StageDataSchema, required=True)
+    active_data = fields.Nested(ActiveDataSchema, required=True)
+    notes = fields.Nested(NotesSchema, required=True)
 
 
 class TrackingSheetUuidSchema(Schema):

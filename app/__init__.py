@@ -7,6 +7,8 @@ from flask_jwt_extended import JWTManager
 from flasgger import Swagger
 from flask_cors import CORS
 from flask_migrate import Migrate
+from .service import singlestore_client
+
 
 # instantiate extensions
 SWAGGER_TEMPLATE = {
@@ -62,5 +64,9 @@ def create_app(environment="development"):
     api.init_app(app)
     db.init_app(app)
     Migrate(app, db)
+    
+    singlestore_client.is_db_exists("seismos")
+    # db_log_filename = "_".join((environment, "db_log.txt"))
+    # with open(db_log_filename, "a+") as db_log_file:
 
     return app

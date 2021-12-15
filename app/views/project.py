@@ -214,7 +214,6 @@ class ProjectCreate(Resource):
                 well_name=well_info["well_name"],
                 well_api=well_info["well_api"],
                 formation=well_info["formation"],
-                num_stages=well_info["num_stages"],
 
                 surface_latitude=well_info["surface_latitude"],
                 surface_longitude=well_info["surface_longitude"],

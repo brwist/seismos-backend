@@ -13,7 +13,7 @@ class Well(TimestampMixin, ModelMixin, db.Model):
     well_name = db.Column(db.Text)
     well_api = db.Column(db.Text)
     formation = db.Column(db.String(255))
-    num_stages = db.Column(db.Integer)
+    num_stages = db.Column(db.Integer, default=0)
     total_planned_stage = db.Column(db.Integer)
     total_perfs = db.Column(db.Integer)
     total_clusters = db.Column(db.Integer)
@@ -76,7 +76,7 @@ class Well(TimestampMixin, ModelMixin, db.Model):
         foreign_keys=[id],
         primaryjoin="Well.id == Stage.well_id",
         uselist=True,
-        backref=backref("well", uselist=False),
+        # backref=backref("well", uselist=False),
         cascade="all,delete",
     )
 

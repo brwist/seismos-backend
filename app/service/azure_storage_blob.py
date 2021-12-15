@@ -20,7 +20,7 @@ for i, container_name in enumerate(CONTAINERS):
 class AzureClient():
     def __init__(self):
         self.client = BlobServiceClient.from_connection_string(CONNECT_URL)
-        self.create_containers()
+        # self.create_containers()
 
     def create_containers(self):
         for container_name in CONTAINERS:

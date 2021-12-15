@@ -45,3 +45,12 @@ class SinglestoreClient():
             return False
 
         return self.execute_cursor(check_is_db_exists)
+
+    def is_db_exists(self, db_name):
+        def callback(cursor):
+            cursor.execute("SHOW DATABASES;")
+            if not any(db["Database"] == db_name for db in cursor._rows):
+                return False
+            return True
+
+        return self.execute_cursor(callback)
