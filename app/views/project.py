@@ -239,6 +239,7 @@ class ProjectCreate(Resource):
                 estimated_surface_vol=wellEstim["surface_vol"],
                 estimated_bbls=wellEstim["bbls"],
                 estimated_gallons=wellEstim["gallons"],
+                num_stages=well_info["num_stages"],
             )
             well.save()
 

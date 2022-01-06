@@ -57,7 +57,7 @@ class DefaultAdvanceVal(Schema):
     source = fields.String(required=True)
     viscosity = fields.Float(required=True)
     density = fields.Float(required=True)
-    compresssibility = fields.Float(required=True)
+    compressibility = fields.Float(required=True)
     f_low_hz = fields.Float(required=True)
     f_high_hz = fields.Float(required=True)
     new_sample_rate = fields.Float(required=True)

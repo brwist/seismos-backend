@@ -1,4 +1,5 @@
 from marshmallow import Schema, fields
+from .base import MessageSchema
 
 
 class PerfInterInfoDisplacementSchema(Schema):
@@ -55,11 +56,15 @@ class PumpingSummaryValuesSchema(Schema):
     actual = fields.Float()
 
 
+class TotalProppantSummarySchema(Schema):
+    design = fields.Float()
+
+
 class PumpingSummarySchema(Schema):
     max_prop_conc = fields.Nested(PumpingSummaryValuesSchema, required=True)
     total_pad_volume = fields.Nested(PumpingSummaryValuesSchema, required=True)
     total_clean_fluid_volume = fields.Nested(PumpingSummaryValuesSchema, required=True)
-    total_proppant = fields.Nested(PumpingSummaryValuesSchema, required=True)
+    total_proppant = fields.Nested(TotalProppantSummarySchema, required=True)
     acid_volume = fields.Nested(PumpingSummaryValuesSchema, required=True)
     flush_volume = fields.Nested(PumpingSummaryValuesSchema, required=True)
     slurry_volume = fields.Nested(PumpingSummaryValuesSchema, required=True)
@@ -73,12 +78,6 @@ class PulsingParameters(Schema):
     offset = fields.Integer()
 
 
-# class FracPulsesSchema(Schema):
-#     start_time = fields.Int()
-#     end_time = fields.Int()
-#     n_pulses = fields.Int()
-
-
 class StageDataSchema(Schema):
     stage_start_time = fields.Int()
     stage_end_time = fields.Int()
@@ -88,17 +87,6 @@ class StageDataSchema(Schema):
     fluids_injected_into_formation = fields.List(fields.Nested(FluidsInjected), required=True)
     proppant_data = fields.List(fields.Nested(ProppantDataSchema), required=True)
     pumping_summary = fields.Nested(PumpingSummarySchema, required=True)
-
-
-# # class StageDataCreateSchema(Schema):
-# #     stage = fields.Int()
-# #     stage_data = fields.Nested(StageDataSchema)
-
-
-# class TrackingSheetNotes(Schema):
-#     pre_frac_pulses = fields.String()
-#     post_frac_pulses = fields.String()
-#     other = fields.String()
 
 
 class PreFracPulsesSchema(Schema):
@@ -181,3 +169,7 @@ class AddProppantFluidsSchema(Schema):
 class TrackingSheetUpdateSchema(TrackingSheetResponseSchema):
     remove = fields.Nested(RemoveTrackingSheetDataSchema)
     add = fields.Nested(AddProppantFluidsSchema)
+
+
+class TrackingSheetCreatedSchema(MessageSchema):
+    uuid = fields.String()

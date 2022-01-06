@@ -1,5 +1,5 @@
 #!/user/bin/env python
-
+from werkzeug.security import generate_password_hash
 from app import create_app, db, models
 from app.models import Well
 from worker_db_backup import make_db_restor
@@ -29,8 +29,6 @@ def db_restore():
 
 @app.shell_context_processor
 def get_context():
-
-    # TODO FluidItems table add?
     TABLES = [
         "Project", "Client", "CustomerFieldRep",
         "Pad", "Equipment", "Well",
@@ -83,7 +81,7 @@ def get_context():
 
     def create_user():
         username, password, email = "bobo", "1234", "bobo@gmail.com"
-        user = models.User(username=username, password=password, email=email)
+        user = models.User(username=username, password=generate_password_hash(password), email=email)
         user.save()
         print(f"User created: {username} {password} {email}")
 

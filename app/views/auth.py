@@ -1,6 +1,7 @@
 import re
 from flask import request
 from flask_restful import Resource
+from werkzeug.security import generate_password_hash
 from app.models import User, Project
 
 from app.schemas import (
@@ -94,7 +95,7 @@ class UserResource(Resource):
         user = User(
             username=request.json["username"],
             email=request.json["email"],
-            password=request.json["password"],
+            password=generate_password_hash(request.json["password"]),
         )
 
         user.save()

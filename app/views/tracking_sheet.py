@@ -20,7 +20,8 @@ from app.schemas import (
     TrackingSheetUuidSchema,
     WellPathUuidSchema,
     TrackingSheetStagesListResponse,
-    TrackingSheetUpdateSchema
+    TrackingSheetUpdateSchema,
+    TrackingSheetCreatedSchema
 )
 
 
@@ -43,6 +44,7 @@ TRACKINGSHEET_MAP = {
         "diverter_type": ("perforation_interval_information", "diverter_type"),
         "pumped_diverter": ("perforation_interval_information", "pumped_diverter",),
         "designed_slurry_vol": ("stage_data", "pumping_summary", "slurry_volume", "design"),
+        "designed_proppant": ("stage_data", "pumping_summary", "total_proppant", "design"),
         "spf": ("perforation_interval_information", "spf"),
         "plug_depth": ("perforation_interval_information", "plug_depth"),
         "number_of_cluster": ("perforation_interval_information", "n_clusters"),
@@ -98,7 +100,7 @@ def unpack_json_data(json_data, data_map):
                 current_data_point = {}
                 break
 
-            if current_data_point and current_data_point != json_data:
+            if current_data_point != {} and current_data_point != json_data:
                 res[base_model][attr] = current_data_point
     return res
 
@@ -109,12 +111,12 @@ def parse_tracking_sheet_data(json_data):
 
 def unpack_proppant(json_data, stage_id):
     proppants = []
-    total_proppant = json_data["stage_data"]["pumping_summary"]["total_proppant"]
     proppant_json = {"stage_id": stage_id}
+    total_proppant = json_data["stage_data"]["pumping_summary"]["total_proppant"]
 
-    for field_db, field_json in {"actual_lbs": "actual", "designed_lbs": "design"}.items():
+    for field_db, field_json in {"designed_lbs": "design"}.items():  # "actual_lbs": "actual",  removed
         if field_json in total_proppant:
-            proppant_json[field_json] = total_proppant[field_json]
+            proppant_json[field_db] = total_proppant[field_json]
 
     for raw_proppant in json_data["stage_data"]["proppant_data"]:
         proppant = proppant_json.copy()
@@ -148,7 +150,7 @@ def unpack_active_data(json_data, stage_id=None):
 class TrackingSheetResource(Resource):
     @jwt_required()
     @swagger_decorator(
-        response_schema={200: TrackingSheetResponseSchema, 401: MessageSchema},
+        # response_schema={200: TrackingSheetResponseSchema, 401: MessageSchema},
         path_schema=TrackingSheetUuidSchema,
         tag="Tracking Sheet",
     )
@@ -177,8 +179,9 @@ class TrackingSheetResource(Resource):
                 last_leaf = path[-1]
                 current_leaf[last_leaf] = getattr(unpacking_map[model], db_field)
 
-        response["stage_data"]["stage_start_time"] = int(response["stage_data"]["stage_start_time"])
-        response["stage_data"]["stage_end_time"] = int(response["stage_data"]["stage_end_time"])
+        for date_field in ("stage_start_time", "stage_end_time"):
+            if date_field in response["stage_data"] and response["stage_data"][date_field] is not None: 
+                response["stage_data"][date_field] = int(response["stage_data"][date_field])
 
         active_data_map = ({
             "post_frac_pulses": ("post_frac_end_time", "post_frac_num_pulse", "post_frac_start_time"),
@@ -205,10 +208,6 @@ class TrackingSheetResource(Resource):
             fluids_formation.append(fluid_item_data)
 
         response["stage_data"]["fluids_injected_into_formation"] = fluids_formation
-        total_proppant = {
-            "actual": 0,
-            "design": 0,
-        }
 
         # proppant data
         all_proppant = []
@@ -218,8 +217,6 @@ class TrackingSheetResource(Resource):
         }
 
         for proppant in stage.proppant_data:
-            total_proppant["actual"] = proppant.actual_lbs
-            total_proppant["design"] = proppant.designed_lbs
             proppant_data = {}
             for field in ("bulk_density", "specific_gravity", "id"):
                 proppant_data[field] = getattr(proppant, field)
@@ -228,7 +225,11 @@ class TrackingSheetResource(Resource):
                 proppant_data[json_field] = getattr(proppant, db_field)
             all_proppant.append(proppant_data)
 
-        response["stage_data"]["pumping_summary"]["total_proppant"] = total_proppant
+        response["stage_data"]["pumping_summary"]["total_proppant"] = {
+            "actual": stage.stage_avg.total_proppant_lbs,
+            "design": stage.designed_proppant,
+        }
+
         response["stage_data"]["proppant_data"] = all_proppant
         response["active_data"] = active_data
         return response, 200
@@ -242,10 +243,12 @@ class TrackingSheetResource(Resource):
     )
     def put(self, stage_uuid):
         req = request.json
-        stage = Stage.query.filter(Stage.stage_uuid == stage_uuid, Stage.stage_number == req["stage"]).first()
+        stage = Stage.query.filter(Stage.stage_uuid == stage_uuid).first()
         if not stage or stage.well.pad.project.user_id != get_jwt_identity():
             return {"msg": "Stage not found"}, 401
 
+        if "stage" in req and stage.stage_number != req["stage"] and Stage.query.filter(Stage.stage_number == req["stage"], Stage.well_id == stage.well_id).first():
+            return {"msg": f"Stage with number: {stage.stage_number} already exist"}, 401
         # update stage
         tracking_sheet_data = parse_tracking_sheet_data(req)
         for field, value in tracking_sheet_data[Stage].items():
@@ -290,24 +293,36 @@ class TrackingSheetResource(Resource):
             model_instance.save()
 
         # remove proppant data and fluids
-        for proppant_id in req["remove"]["proppant_data_ids"]:
-            proppant = Proppant.query.filter(Proppant.id == proppant_id, Proppant.stage_id == stage.id).first()
-            if proppant:
-                proppant.delete()
+        if "remove" in req:
+            for proppant_id in req["remove"]["proppant_data_ids"]:
+                proppant = Proppant.query.filter(Proppant.id == proppant_id, Proppant.stage_id == stage.id).first()
+                if proppant:
+                    proppant.delete()
 
         for fluids_id in req["remove"]["fluids_injected_into_formation_ids"]:
             fluid_model = FluidModel.query.filter(FluidModel.id == fluids_id, FluidModel.chem_fluid_id == stage.chem_fluids.id).first()
             if fluid_model:
                 fluid_model.delete()
 
-        for fluid_item in req["add"]["fluids_injected_into_formation"]:
-            fluid_item["chem_fluid_id"] = stage.chem_fluids.id
-            FormationFuildInjection(**fluid_item).save()
+        if "add" in req:
+            for fluid_item in req["add"]["fluids_injected_into_formation"]:
+                fluid_item["chem_fluid_id"] = stage.chem_fluids.id
+                FormationFuildInjection(**fluid_item).save()
 
-        req["stage_data"]["proppant_data"] = req["add"]["proppant"]
+        if "add" in req and "proppant" in req["add"]:
+            req["stage_data"]["proppant_data"] = req["add"]["proppant"]
+
         # save proppant
         for proppant_data in unpack_proppant(req, stage.id):
             Proppant(**proppant_data).save()
+
+        total_proppant = 0
+        stage = Stage.query.filter(Stage.id == stage.id).first()
+        for proppant in stage.proppant_data:
+            total_proppant += proppant.total_pumped_lbs
+
+        stage.stage_avg.total_proppant_lbs = total_proppant
+        stage.stage_avg.save()
 
         return {"msg": "Stage updated"}
 
@@ -323,7 +338,6 @@ class TrackingSheetResource(Resource):
             return {"msg": "Stage not found"}, 401
 
         stage.delete()
-        stage.well.num_stages = len(stage.well.stages)
         stage.well.save()
         return {"msg": "Stage deleted"}
 
@@ -358,7 +372,7 @@ class TrackingSheetCreateResource(Resource):
     @swagger_decorator(
         json_schema=TrackingSheetSchema,
         path_schema=WellPathUuidSchema,
-        response_schema={201: MessageSchema, 401: MessageSchema},
+        response_schema={201: TrackingSheetCreatedSchema, 401: MessageSchema},
         tag="Tracking Sheet",
     )
     def post(self, well_uuid):
@@ -369,6 +383,7 @@ class TrackingSheetCreateResource(Resource):
             return {"msg": f"Well with id {well_uuid} not found"}, 401
 
         req = request.json
+        db_model_requests = {}
 
         for stage in well.stages:
             if stage.stage_number == req["stage"]:
@@ -380,7 +395,10 @@ class TrackingSheetCreateResource(Resource):
         # save stage
         stage = Stage(**tracking_sheet_data[Stage])
         stage.save()
-        well.num_stages = len(well.stages)
+
+        if req["stage"] > well.num_stages:
+            well.num_stages = req["stage"]
+
         well.save()
 
         # save fluids
@@ -393,7 +411,9 @@ class TrackingSheetCreateResource(Resource):
             FormationFuildInjection(**fluid_item).save()
 
         # save proppant
+        total_proppant_lbs = 0
         for proppant_data in unpack_proppant(req, stage.id):
+            total_proppant_lbs += proppant_data["total_pumped_lbs"]
             Proppant(**proppant_data).save()
 
         # save active_data with notes
@@ -403,9 +423,15 @@ class TrackingSheetCreateResource(Resource):
         # save Perforation and StageAVG
         for db_model in (Perforation, StageAVG):
             tracking_sheet_data[db_model]["stage_id"] = stage.id
-            db_model(**tracking_sheet_data[db_model]).save()
+            db_model_requests[db_model] = db_model(**tracking_sheet_data[db_model])
+            # db_model(**tracking_sheet_data[db_model]).save()
 
-        return {"msg": "tracking sheet was created"}, 201
+        db_model_requests[StageAVG].total_proppant_lbs = total_proppant_lbs
+
+        for model in db_model_requests.values():
+            model.save()
+
+        return {"msg": "tracking sheet was created", "uuid": stage.stage_uuid}, 201
 
 
 # class TrackingSheetTestData(Resource):
