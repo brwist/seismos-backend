@@ -76,7 +76,7 @@ class Well(TimestampMixin, ModelMixin, db.Model):
         foreign_keys=[id],
         primaryjoin="Well.id == Stage.well_id",
         uselist=True,
-        # backref=backref("well", uselist=False),
+        backref=backref("well", uselist=False),
         cascade="all,delete",
     )
 

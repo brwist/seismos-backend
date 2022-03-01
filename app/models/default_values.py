@@ -67,7 +67,7 @@ class DefaultAdvanceVal(ModelMixin, JsonModelMixin, db.Model):
     source = db.Column(db.String(40))
     viscosity = db.Column(db.Float)
     density = db.Column(db.Float)
-    compresssibility = db.Column(db.Float)
+    compressibility = db.Column(db.Float)
     f_low_hz = db.Column(db.Float)
     f_high_hz = db.Column(db.Float)
     new_sample_rate = db.Column(db.Float)
@@ -85,7 +85,7 @@ class DefaultAdvanceVal(ModelMixin, JsonModelMixin, db.Model):
 
     json_fields = (
         "model", "response", "source",
-        "viscosity", "density", "compresssibility",
+        "viscosity", "density", "compressibility",
         "f_low_hz", "f_high_hz", "new_sample_rate",
         "data_sample_rate", "algorithm", "grid_density",
         "weighting", "wlevexp", "loop",
