@@ -10,7 +10,7 @@ class JobInfoSchema(Schema):
     basin_name = fields.Str(required=True)
     state = fields.Str(required=True)
     job_start_date = fields.Integer(required=True)
-    job_end_date = fields.Integer(required=True)
+    job_end_date = fields.Integer(required=False)
 
 
 class PadInfoSchema(Schema):
