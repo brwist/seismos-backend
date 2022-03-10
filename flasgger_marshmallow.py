@@ -358,7 +358,7 @@ def swagger_decorator(
                 return (
                     "request error: %s"
                     % "".join(
-                        [("%s: %s; " % (x, "".join(y))) for x, y in e.messages.items()]
+                        [("%s: %s; " % (str(x), "".join(y))) for x, y in e.messages.items()]
                     ),
                     400,
                 )
