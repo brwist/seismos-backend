@@ -8,4 +8,5 @@ class CustomerFieldRep(TimestampMixin, ModelMixin, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text, nullable=False)
+    email = db.Column(db.Text, nullable=True)
     customer_field_rep_num = db.Column(db.Integer)

@@ -15,8 +15,8 @@ class JobInfoSchema(Schema):
 
 class PadInfoSchema(Schema):
     pad_name = fields.Str(required=True)
-    client_name = fields.Str(required=True)
-    customer_field_rep = fields.Str(required=True)  # customer_field_rep -> name
+    customer_name = fields.Str(required=True)
+    customer_email = fields.Str(required=False)  # customer_field_rep -> name
     rep_contact_number = fields.Int(required=True)
     operator_name = fields.Str(required=True)
     service_company_name = fields.Str(required=True)

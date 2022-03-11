@@ -120,7 +120,8 @@ class ProjectCreate(Resource):
         # Pad data
         pad_data = req["padInfoValues"]
         customer_field_rep = CustomerFieldRep(
-            name=pad_data["customer_field_rep"],
+            name=pad_data["customer_name"],
+            email=pad_data["customer_email"],
             customer_field_rep_num=pad_data["rep_contact_number"]
         )
 
@@ -154,18 +155,13 @@ class ProjectCreate(Resource):
             job_type = JobType(value=job_data["job_type"])
             job_type.save()
 
-        if job_data.get('job_end_date', "") == "":
-          job_data["job_end_date"] = None
-        else:
-          job_data["job_end_date"]= datetime.fromtimestamp(job_data["job_end_date"] // 1000)
-          
         job = JobInfo(
             job_name=job_data["job_name"],
             job_type_id=job_type.id,
             job_id=job_data["job_id"],
             afe_id=job_data["afe_id"],
             job_start_date=datetime.fromtimestamp(job_data["job_start_date"] // 1000),
-            job_end_date=job_data["job_end_date"],
+            job_end_date=datetime.fromtimestamp(job_data["job_end_date"] // 1000),
             project_id=project.id,
         )
 
