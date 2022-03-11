@@ -155,13 +155,18 @@ class ProjectCreate(Resource):
             job_type = JobType(value=job_data["job_type"])
             job_type.save()
 
+        if job_data.get('job_end_date', "") == "":
+          job_data["job_end_date"] = None
+        else:
+          job_data["job_end_date"]= datetime.fromtimestamp(job_data["job_end_date"] // 1000)
+          
         job = JobInfo(
             job_name=job_data["job_name"],
             job_type_id=job_type.id,
             job_id=job_data["job_id"],
             afe_id=job_data["afe_id"],
             job_start_date=datetime.fromtimestamp(job_data["job_start_date"] // 1000),
-            job_end_date=datetime.fromtimestamp(job_data["job_end_date"] // 1000),
+            job_end_date=job_data["job_end_date"],
             project_id=project.id,
         )
 
