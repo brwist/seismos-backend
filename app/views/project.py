@@ -120,7 +120,8 @@ class ProjectCreate(Resource):
         # Pad data
         pad_data = req["padInfoValues"]
         customer_field_rep = CustomerFieldRep(
-            name=pad_data["customer_field_rep"],
+            name=pad_data["customer_name"],
+            email=pad_data["customer_email"],
             customer_field_rep_num=pad_data["rep_contact_number"]
         )
 
