@@ -128,7 +128,7 @@ class ProjectCreate(Resource):
         customer_field_rep.save()
 
         client = Client(
-            client_name=pad_data["client_name"],
+            client_name=pad_data["customer_name"],
             customer_field_rep_id=customer_field_rep.id,
             project_id=project.id,
             operator_name=pad_data["operator_name"],
