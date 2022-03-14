@@ -40,7 +40,7 @@ class ProjectGeneral(Resource):
         tag="Project",
     )
     def get(self, project_uuid):
-        """ Get project data"""
+        """Get project data"""
         project = Project.query.filter(Project.project_uuid == project_uuid).first()
         if not project or project.user_id != current_user.id:
             msg = f"Project with uuid: {project_uuid} not found"
@@ -48,11 +48,13 @@ class ProjectGeneral(Resource):
 
         wells = []
         for well in project.pad.wells:
-            wells.append({
-                "uuid": well.well_uuid,
-                "well_name": well.well_name,
-                "num_stages": well.num_stages,
-            })
+            wells.append(
+                {
+                    "uuid": well.well_uuid,
+                    "well_name": well.well_name,
+                    "num_stages": well.num_stages,
+                }
+            )
 
         return {
             "status": 200,
@@ -61,9 +63,9 @@ class ProjectGeneral(Resource):
                 "project": {
                     "uuid": project.project_uuid,
                     "project_name": project.project_name,
-                    "wells": wells
+                    "wells": wells,
                 }
-            }
+            },
         }
 
     @jwt_required()
@@ -73,7 +75,7 @@ class ProjectGeneral(Resource):
         tag="Project",
     )
     def delete(self, project_uuid):
-        """ Delete project"""
+        """Delete project"""
         project = Project.query.filter(Project.project_uuid == project_uuid).first()
         if not project or project.user_id != current_user.id:
             msg = f"Project with uuid: {project_uuid} not found"
@@ -91,7 +93,7 @@ class ProjectCreate(Resource):
         tag="Project",
     )
     def post(self):
-        """ Create project """
+        """Create project"""
         user_id = get_jwt_identity()
         req = request.json_schema
         equip_req = req["equipmentValues"]
@@ -119,12 +121,15 @@ class ProjectCreate(Resource):
 
         # Pad data
         pad_data = req["padInfoValues"]
+
+        if pad_data.get("customer_email", "") == "":
+            pad_data["customer_email"] = None
+
         customer_field_rep = CustomerFieldRep(
             name=pad_data["customer_name"],
             email=pad_data["customer_email"],
-            customer_field_rep_num=pad_data["rep_contact_number"]
+            customer_field_rep_num=pad_data["rep_contact_number"],
         )
-
         customer_field_rep.save()
 
         client = Client(
@@ -143,7 +148,7 @@ class ProjectCreate(Resource):
         pad = Pad(
             project_id=project.id,
             pad_name=pad_data["pad_name"],
-            number_of_wells=len(req["wellInfoValues"])
+            number_of_wells=len(req["wellInfoValues"]),
         )
 
         pad.save()
@@ -155,11 +160,13 @@ class ProjectCreate(Resource):
             job_type = JobType(value=job_data["job_type"])
             job_type.save()
 
-        if job_data.get('job_end_date', "") == "":
-          job_data["job_end_date"] = None
+        if job_data.get("job_end_date", "") == "":
+            job_data["job_end_date"] = None
         else:
-          job_data["job_end_date"]= datetime.fromtimestamp(job_data["job_end_date"] // 1000)
-          
+            job_data["job_end_date"] = datetime.fromtimestamp(
+                job_data["job_end_date"] // 1000
+            )
+
         job = JobInfo(
             job_name=job_data["job_name"],
             job_type_id=job_type.id,
@@ -176,9 +183,7 @@ class ProjectCreate(Resource):
         crew_data_list = req["crewInfoValues"]
         for crew_data in crew_data_list:
             crew = Crew(
-                name=crew_data["name"],
-                shift=crew_data["shift"],
-                role=crew_data["role"]
+                name=crew_data["name"], shift=crew_data["shift"], role=crew_data["role"]
             )
 
             crew.save()
@@ -210,7 +215,7 @@ class ProjectCreate(Resource):
             }.items():
                 if not values_type:
                     raise ValidationError(
-                        message=f'Missing well type: {values_type_name}'
+                        message=f"Missing well type: {values_type_name}"
                     )
 
             wellEstim = req["wellVolumeEstimationsValues"][i]
@@ -220,28 +225,23 @@ class ProjectCreate(Resource):
                 well_name=well_info["well_name"],
                 well_api=well_info["well_api"],
                 formation=well_info["formation"],
-
                 surface_latitude=well_info["surface_latitude"],
                 surface_longitude=well_info["surface_longitude"],
-
                 casing_od=casing["od"],
                 casing_wt=casing["wt"],
                 casing_id=casing["id"],
                 casing_depth_md=casing["depth_md"],
                 casing_tol=casing["tol"],
-
                 liner1_od=liner["od"],
                 liner1_wt=liner["wt"],
                 liner1_id=liner["id"],
                 liner1_depth_md=liner["depth_md"],
                 liner1_tol=liner["tol"],
-
                 liner2_od=liner_sec["od"],
                 liner2_wt=liner_sec["wt"],
                 liner2_id=liner_sec["id"],
                 liner2_depth_md=liner_sec["depth_md"],
                 liner2_tol=liner_sec["tol"],
-
                 estimated_surface_vol=wellEstim["surface_vol"],
                 estimated_bbls=wellEstim["bbls"],
                 estimated_gallons=wellEstim["gallons"],
@@ -250,12 +250,16 @@ class ProjectCreate(Resource):
             well.save()
 
         # location entity
-        county_name = CountyName.query.filter(CountyName.county_name == job_data["county_name"]).first()
+        county_name = CountyName.query.filter(
+            CountyName.county_name == job_data["county_name"]
+        ).first()
         if not county_name:
             county_name = CountyName(county_name=job_data["county_name"])
             county_name.save()
 
-        basin_name = BasinName.query.filter(BasinName.basin_name == job_data["basin_name"]).first()
+        basin_name = BasinName.query.filter(
+            BasinName.basin_name == job_data["basin_name"]
+        ).first()
         if not basin_name:
             basin_name = BasinName(basin_name=job_data["basin_name"])
             basin_name.save()
@@ -279,7 +283,7 @@ class ProjectCreate(Resource):
                 "project": {
                     "uuid": project.project_uuid,
                 }
-            }
+            },
         }
 
 
@@ -290,7 +294,7 @@ class ProjectListGet(Resource):
         tag="Project",
     )
     def get(self):
-        """ Get project list"""
+        """Get project list"""
         user_id = get_jwt_identity()
         user = User.query.filter(User.id == user_id).first()
         if not user:
@@ -299,14 +303,16 @@ class ProjectListGet(Resource):
         user_projects = Project.query.filter(Project.user_id == user_id).all()
         projects = []
         for project in user_projects:
-            projects.append({
-                "uuid": project.project_uuid,
-                "project_name": project.project_name,
-                "job_name": project.job_info.job_name,
-                "job_id": project.job_info.job_id,
-                "created_date": project.created_at.strftime("%m/%d/%Y"),
-                "created_by": user.username,
-                "created_time": project.created_at.strftime("%H:%M:%S")
-            })
+            projects.append(
+                {
+                    "uuid": project.project_uuid,
+                    "project_name": project.project_name,
+                    "job_name": project.job_info.job_name,
+                    "job_id": project.job_info.job_id,
+                    "created_date": project.created_at.strftime("%m/%d/%Y"),
+                    "created_by": user.username,
+                    "created_time": project.created_at.strftime("%H:%M:%S"),
+                }
+            )
 
         return {"projects": projects}, 200
