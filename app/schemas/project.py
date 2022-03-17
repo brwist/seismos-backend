@@ -82,7 +82,7 @@ class ProjectSchema(Schema):
     wellVolumeEstimationsValues = fields.List(fields.Nested(WellVolumeEstimationSchema))
     clientInfoValues = fields.List(fields.Nested(ClientInfoSchema))
     crewInfoValues = fields.List(fields.Nested(CrewInfoSchema))
-    equipmentValues = fields.Nested(EquipmentSchema)
+    equipmentValues = fields.List(fields.Nested(EquipmentSchema))
 
 
 class WellReturnData(Schema):
