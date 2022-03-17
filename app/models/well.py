@@ -9,6 +9,7 @@ class Well(TimestampMixin, ModelMixin, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     well_uuid = db.Column(db.String(36), nullable=False, default=uuid_string)
+    equipment_id = db.Column(db.Integer, nullable=False)
     pad_id = db.Column(db.Integer, nullable=False)
     well_name = db.Column(db.Text)
     well_api = db.Column(db.Text)
@@ -71,6 +72,13 @@ class Well(TimestampMixin, ModelMixin, db.Model):
         cascade="all,delete",
     )
 
+    equipment = db.relationship(
+        "Equipment",
+        foreign_keys=[equipment_id],
+        primaryjoin="Well.equipment_id == Equipment.id",
+        cascade="all,delete",
+    )
+
     stages = db.relationship(
         "Stage",
         foreign_keys=[id],
@@ -91,10 +99,12 @@ class Well(TimestampMixin, ModelMixin, db.Model):
     def get_logs(self):
         logs = []
         for log in self.daily_logs:
-            logs.append({
-                "date": int(log.comment_timestamp.timestamp() * 1000),
-                "description": log.comment_content,
-            })
+            logs.append(
+                {
+                    "date": int(log.comment_timestamp.timestamp() * 1000),
+                    "description": log.comment_content,
+                }
+            )
 
         return logs
 

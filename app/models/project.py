@@ -12,14 +12,6 @@ class Project(TimestampMixin, ModelMixin, db.Model):
     project_uuid = db.Column(db.String(36), nullable=False, default=uuid_string)
     project_name = db.Column(db.Text, nullable=False)
     client_id = db.Column(db.Integer, nullable=False)
-    equipment_id = db.Column(db.Integer)
-
-    equipment = db.relationship(
-        "Equipment",
-        foreign_keys=[equipment_id],
-        primaryjoin="Project.equipment_id == Equipment.id",
-        cascade="all,delete",
-    )
 
     client = db.relationship(
         "Client",

@@ -96,24 +96,12 @@ class ProjectCreate(Resource):
         """Create project"""
         user_id = get_jwt_identity()
         req = request.json_schema
-        equip_req = req["equipmentValues"]
-        equipment = Equipment(
-            trailer_id=equip_req["trailers_id"],
-            powerpack_id=equip_req["powerpack_id"],
-            source_id=equip_req["source_id"],
-            accumulator_id=equip_req["accumulator_id"],
-            hydrophones_id=equip_req["hydrophones_id"],
-            hotspot_id=equip_req["hotspot_id"],
-            transducer_id=equip_req["transducer_id"],
-        )
-        equipment.save()
 
         project_name = req["projectValues"]["project_name"]
 
         project = Project(
             project_name=project_name,
             client_id=0,
-            equipment_id=equipment.id,
             user_id=user_id,
         )
 
@@ -194,6 +182,18 @@ class ProjectCreate(Resource):
         well_data_list = req["wellInfoValues"]
 
         for i, well_info in enumerate(well_data_list):
+            # equipment
+            equip = req["equipmentValues"][i]
+            equipment = Equipment(
+                trailer_id=equip["trailers_id"],
+                powerpack_id=equip["powerpack_id"],
+                source_id=equip["source_id"],
+                accumulator_id=equip["accumulator_id"],
+                hydrophones_id=equip["hydrophones_id"],
+                hotspot_id=equip["hotspot_id"],
+                transducer_id=equip["transducer_id"],
+            )
+            equipment.save()
 
             casing, liner, liner_sec = {}, {}, {}
             for well_values in req["wellVolumeValues"][i]:
@@ -221,6 +221,7 @@ class ProjectCreate(Resource):
             wellEstim = req["wellVolumeEstimationsValues"][i]
 
             well = Well(
+                equipment_id=equipment.id,
                 pad_id=pad.id,
                 well_name=well_info["well_name"],
                 well_api=well_info["well_api"],
