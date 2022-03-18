@@ -11,6 +11,7 @@ from .input_data import InputData
 from .daily_log import DailyLogResource
 from .deafult_values import DefaultValuesResource
 from .db_restore import DatabaseRestore
+from .sync_cloud import SyncCloud
 
 ENDPOINTS_MAP = {
     Login: "/auth",
@@ -27,4 +28,5 @@ ENDPOINTS_MAP = {
     DailyLogResource: "/daily-log/<well_uuid>",
     DefaultValuesResource: "/default-values/<well_uuid>",
     DatabaseRestore: "/admin/db_restore/<backup_index>",
+    SyncCloud: "/sync-cloud/<project_uuid>",
 }
