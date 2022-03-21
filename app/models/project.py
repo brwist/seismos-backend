@@ -40,6 +40,6 @@ class Project(TimestampMixin, ModelMixin, db.Model):
         "ProjectCrew",
         foreign_keys=[id],
         primaryjoin="Project.id == ProjectCrew.project_id",
-        uselist=True,
+        backref=backref("project", uselist=False),
         cascade="all,delete",
     )
