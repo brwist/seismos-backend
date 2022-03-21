@@ -56,15 +56,11 @@ class PumpingSummaryValuesSchema(Schema):
     actual = fields.Float()
 
 
-class TotalProppantSummarySchema(Schema):
-    design = fields.Float()
-
-
 class PumpingSummarySchema(Schema):
     max_prop_conc = fields.Nested(PumpingSummaryValuesSchema, required=True)
     total_pad_volume = fields.Nested(PumpingSummaryValuesSchema, required=True)
     total_clean_fluid_volume = fields.Nested(PumpingSummaryValuesSchema, required=True)
-    total_proppant = fields.Nested(TotalProppantSummarySchema, required=True)
+    total_proppant = fields.Nested(PumpingSummaryValuesSchema, required=True)
     acid_volume = fields.Nested(PumpingSummaryValuesSchema, required=True)
     flush_volume = fields.Nested(PumpingSummaryValuesSchema, required=True)
     slurry_volume = fields.Nested(PumpingSummaryValuesSchema, required=True)
@@ -84,7 +80,9 @@ class StageDataSchema(Schema):
     opening_well = fields.Int()
     # isip = fields.Float()
     fluid_parameters = fields.Nested(StageDataFluidParam, required=True)
-    fluids_injected_into_formation = fields.List(fields.Nested(FluidsInjected), required=True)
+    fluids_injected_into_formation = fields.List(
+        fields.Nested(FluidsInjected), required=True
+    )
     proppant_data = fields.List(fields.Nested(ProppantDataSchema), required=True)
     pumping_summary = fields.Nested(PumpingSummarySchema, required=True)
 
@@ -116,7 +114,9 @@ class NotesSchema(Schema):
 class TrackingSheetSchema(Schema):
     stage = fields.Int(required=True)
     stage_tracking = fields.Nested(StageTrackingShema, required=True)
-    perforation_interval_information = fields.Nested(PerforationIntervalInformation, required=True)
+    perforation_interval_information = fields.Nested(
+        PerforationIntervalInformation, required=True
+    )
     stage_data = fields.Nested(StageDataSchema, required=True)
     active_data = fields.Nested(ActiveDataSchema, required=True)
     notes = fields.Nested(NotesSchema, required=True)
