@@ -39,12 +39,8 @@ def upgrade():
         sa.Column(
             "pre_frac_end_time", sa.Numeric(precision=25, scale=10), nullable=True
         ),
-        sa.Column(
-            "pre_frac_num_pulse", sa.Numeric(precision=25, scale=10), nullable=True
-        ),
-        sa.Column(
-            "post_frac_num_pulse", sa.Numeric(precision=25, scale=10), nullable=True
-        ),
+        sa.Column("pre_frac_num_pulse", sa.Integer(), nullable=True),
+        sa.Column("post_frac_num_pulse", sa.Integer(), nullable=True),
         sa.Column("pre_frac_pulse_note", sa.String(length=255), nullable=True),
         sa.Column("post_frac_pulse_note", sa.String(length=255), nullable=True),
         sa.Column("additional_note", sa.String(length=255), nullable=True),
