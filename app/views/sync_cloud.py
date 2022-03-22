@@ -8,7 +8,7 @@ import pandas as pd
 from flask_jwt_extended import jwt_required
 from flask_restful import Resource
 from flasgger_marshmallow import swagger_decorator
-from app.models import Project, LocationInfo, Well
+from app.models import Project, LocationInfo, Well, Stage
 from app.schemas import MessageSchema, SyncCloudRequestScehma
 
 load_dotenv()
@@ -36,9 +36,12 @@ class SyncCloud(Resource):
             query = query.format(",".join(columns), ("%s," * (len(columns) - 1)) + "%s")
             for data in reader:
                 # print("query: ", query)
+                for i in range(len(data)):
+                    if data[i] == "":
+                        data[i] = None
                 # print("values: ", data)
                 result = connection.execute(query, data)
-                print("query result: ", result.rowcount)
+                print(tableName + " table query result: ", result.rowcount)
 
     def get(self, project_uuid):
         # Connect to managed store
@@ -61,7 +64,7 @@ class SyncCloud(Resource):
                 (LocationInfo.job_info_id == project.job_info.id)
             ).first()
             well = Well.query.filter((Well.pad_id == project.pad.id)).first()
-            # stage = Stage.query.filter((Stage.well_id == well.id)).first()
+            stage = Stage.query.filter((Stage.well_id == well.id)).first()
 
             if project:
                 # Get default system path
@@ -93,15 +96,6 @@ class SyncCloud(Resource):
                     "default_val",
                     "default_param_val",
                     "default_advance_val",
-                    # "stage",
-                    # "proppant",
-                    # "perforation",
-                    # "chem_fluids",
-                    # "stage_avg",
-                    # "ff_processing_result",
-                    # "nf_processing_result",
-                    # "active_data",
-                    # "formation_fluid_injection",
                 ]
                 queries = [
                     "SELECT * FROM project WHERE project_uuid=%(id)s",
@@ -124,15 +118,6 @@ class SyncCloud(Resource):
                     "SELECT * FROM default_val WHERE well_id=%(id)s",
                     "SELECT * FROM default_param_val WHERE well_id=%(id)s",
                     "SELECT * FROM default_advance_val WHERE well_id=%(id)s",
-                    # "SELECT * FROM stage WHERE well_id=%(id)s",
-                    # "SELECT * FROM proppant WHERE stage_id=%(id)s",
-                    # "SELECT * FROM perforation WHERE stage_id=%(id)s",
-                    # "SELECT * FROM chem_fluids WHERE stage_id=%(id)s",
-                    # "SELECT * FROM stage_avg WHERE stage_id=%(id)s",
-                    # "SELECT * FROM ff_processing_result WHERE stage_id=%(id)s",
-                    # "SELECT * FROM nf_processing_result WHERE stage_id=%(id)s",
-                    # "SELECT * FROM active_data WHERE stage_id=%(id)s",
-                    # "SELECT * FROM formation_fluid_injection WHERE chem_fluid_id=%(id)s",
                 ]
                 ids = [
                     project_uuid,
@@ -155,16 +140,49 @@ class SyncCloud(Resource):
                     well.id,
                     well.id,
                     well.id,
-                    # well.id,
-                    # stage.id,
-                    # stage.id,
-                    # stage.id,
-                    # stage.id,
-                    # stage.id,
-                    # stage.id,
-                    # stage.id,
-                    # stage.chem_fluids.id,
                 ]
+
+                if stage:
+                    tableNames.extend(
+                        [
+                            "stage",
+                            "proppant",
+                            "perforation",
+                            "chem_fluids",
+                            "stage_avg",
+                            "ff_processing_result",
+                            "nf_processing_result",
+                            "active_data",
+                            "formation_fluid_injection",
+                        ]
+                    )
+                    queries.extend(
+                        [
+                            "SELECT * FROM stage WHERE well_id=%(id)s",
+                            "SELECT * FROM proppant WHERE stage_id=%(id)s",
+                            "SELECT * FROM perforation WHERE stage_id=%(id)s",
+                            "SELECT * FROM chem_fluids WHERE stage_id=%(id)s",
+                            "SELECT * FROM stage_avg WHERE stage_id=%(id)s",
+                            "SELECT * FROM ff_processing_result WHERE stage_id=%(id)s",
+                            "SELECT * FROM nf_processing_result WHERE stage_id=%(id)s",
+                            "SELECT * FROM active_data WHERE stage_id=%(id)s",
+                            "SELECT * FROM formation_fluid_injection WHERE chem_fluid_id=%(id)s",
+                        ]
+                    )
+                    ids.extend(
+                        [
+                            well.id,
+                            stage.id,
+                            stage.id,
+                            stage.id,
+                            stage.id,
+                            stage.id,
+                            stage.id,
+                            stage.id,
+                            stage.chem_fluids.id,
+                        ]
+                    )
+
                 # Connect to local DB
                 localEngine = create_engine(DATABASE_URL, pool_recycle=3600)
                 localConn = localEngine.connect()
