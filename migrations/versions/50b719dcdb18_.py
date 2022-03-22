@@ -267,7 +267,7 @@ def upgrade():
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
-        "formation_fuild_injection",
+        "formation_fluid_injection",
         sa.Column("id", sa.BigInteger(), autoincrement=True, nullable=False),
         sa.Column("chem_fluid_id", sa.Integer(), nullable=False),
         sa.Column("bbls", sa.Integer(), nullable=True),
@@ -620,7 +620,7 @@ def downgrade():
     op.drop_table("location_info")
     op.drop_table("job_type")
     op.drop_table("job_info")
-    op.drop_table("formation_fuild_injection")
+    op.drop_table("formation_fluid_injection")
     op.drop_table("field_notes")
     op.drop_table("ff_processing_result")
     op.drop_table("equipment")

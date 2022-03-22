@@ -32,10 +32,10 @@ class ChemFluids(ModelMixin, db.Model, TimestampMixin, JsonModelMixin):
     max_conc_density = db.Column(db.Float)
     design_acid_vol = db.Column(db.Integer)
 
-    formation_fuild_injection = db.relation(
-        "FormationFuildInjection",
+    formation_fluid_injection = db.relation(
+        "FormationFluidInjection",
         foreign_keys=[id],
-        primaryjoin="ChemFluids.id == FormationFuildInjection.chem_fluid_id",
+        primaryjoin="ChemFluids.id == FormationFluidInjection.chem_fluid_id",
         uselist=True,
         cascade="all,delete",
     )
@@ -65,7 +65,7 @@ class ChemFluids(ModelMixin, db.Model, TimestampMixin, JsonModelMixin):
         "design_acid_vol",
     )
 
-    json_list_fields = ("formation_fuild_injection",)
+    json_list_fields = ("formation_fluid_injection",)
 
     def to_json(self, remove_none=False):
         res = super().to_json(remove_none)
@@ -78,8 +78,8 @@ class ChemFluids(ModelMixin, db.Model, TimestampMixin, JsonModelMixin):
 
 
 # FluidsItem
-class FormationFuildInjection(ModelMixin, db.Model, JsonModelMixin):
-    __tablename__ = "formation_fuild_injection"
+class FormationFluidInjection(ModelMixin, db.Model, JsonModelMixin):
+    __tablename__ = "formation_fluid_injection"
 
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     chem_fluid_id = db.Column(db.Integer, nullable=False)

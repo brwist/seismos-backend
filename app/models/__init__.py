@@ -8,12 +8,7 @@ from .project import Project
 from .well import Well, FieldNotes
 from .job import JobInfo, JobType
 from .crew import Crew, ProjectCrew
-from .qc_report import (
-    NFProcessingResult,
-    Stage,
-    StageAVG,
-    FFProcessingResult
-)
+from .qc_report import NFProcessingResult, Stage, StageAVG, FFProcessingResult
 from .default_values import (
     DefaultVal,
     DefaultAdvanceVal,
@@ -27,7 +22,7 @@ from .location import (
 )
 from .tracking_sheet import (
     ChemFluids,
-    FormationFuildInjection,
+    FormationFluidInjection,
     Perforation,
     Proppant,
     ActiveData,
