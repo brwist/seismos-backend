@@ -7,7 +7,7 @@ from app.models import (
     Stage,
     StageAVG,
     ChemFluids,
-    FormationFuildInjection,
+    FormationFluidInjection,
     Perforation,
     Proppant,
     ActiveData,
@@ -283,7 +283,7 @@ class TrackingSheetResource(Resource):
 
         # fluids formation
         fluids_formation = []
-        for fluid_item_model in stage.chem_fluids.formation_fuild_injection:
+        for fluid_item_model in stage.chem_fluids.formation_fluid_injection:
             fluid_item_data = {}
             for fluid_field in ("id", "bbls", "description", "ppg"):
                 fluid_item_data[fluid_field] = getattr(fluid_item_model, fluid_field)
@@ -352,11 +352,11 @@ class TrackingSheetResource(Resource):
         stage.chem_fluids.save()
 
         # updae formation_fuild_injection
-        FluidModel = FormationFuildInjection
+        FluidModel = FormationFluidInjection
         for fluid_item in req["stage_data"]["fluids_injected_into_formation"]:
             if fluid_item.get("id", "") == "":
                 fluid_item["chem_fluid_id"] = stage.chem_fluids.id
-                FormationFuildInjection(**fluid_item).save()
+                FormationFluidInjection(**fluid_item).save()
             else:
                 fluid_model = FluidModel.query.filter(
                     FluidModel.id == fluid_item["id"],
@@ -513,7 +513,7 @@ class TrackingSheetCreateResource(Resource):
 
         for fluid_item in req["stage_data"]["fluids_injected_into_formation"]:
             fluid_item["chem_fluid_id"] = chem_fluids.id
-            FormationFuildInjection(**fluid_item).save()
+            FormationFluidInjection(**fluid_item).save()
 
         # save proppant
         total_proppant_lbs = 0
