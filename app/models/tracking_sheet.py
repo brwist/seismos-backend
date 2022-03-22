@@ -41,14 +41,28 @@ class ChemFluids(ModelMixin, db.Model, TimestampMixin, JsonModelMixin):
     )
 
     json_fields = (
-        "fluid_type_name", "chem_trade_name", "chem_name",
-        "volume", "volume_unit", "volume_concentration",
-        "volume_concentration_unit", "dry_total", "dry_total_unit",
-        "dry_concentration", "dry_concentration_unit", "acid",
-        "acid_unit", "clay_stabilizer", "clay_stabilizer_unit",
-        "misc", "bulk_modulus", "bulk_modulus_unit",
-        "base_fluid_density", "base_fluid_type", "max_conc_density",
-        "design_acid_vol"
+        "fluid_type_name",
+        "chem_trade_name",
+        "chem_name",
+        "volume",
+        "volume_unit",
+        "volume_concentration",
+        "volume_concentration_unit",
+        "dry_total",
+        "dry_total_unit",
+        "dry_concentration",
+        "dry_concentration_unit",
+        "acid",
+        "acid_unit",
+        "clay_stabilizer",
+        "clay_stabilizer_unit",
+        "misc",
+        "bulk_modulus",
+        "bulk_modulus_unit",
+        "base_fluid_density",
+        "base_fluid_type",
+        "max_conc_density",
+        "design_acid_vol",
     )
 
     json_list_fields = ("formation_fuild_injection",)
@@ -104,13 +118,27 @@ class Perforation(ModelMixin, db.Model, TimestampMixin, JsonModelMixin):
     perf_gun_description = db.Column(db.String(255))
 
     json_fields = (
-        "order_num", "ordinal", "top_measured_depth",
-        "bottom_measured_depth", "depth_unit", "shot_number",
-        "shot_density", "shot_density_unit", "shot_count",
-        "phasing", "conveyance_method", "charge_type",
-        "charge_size", "charge_size_unit", "estimated_hole_diameter",
-        "estimated_hole_diameter_unit", "perf_plug_num", "perf_start_time",
-        "perf_end_time", "bottom_perf", "perf_gun_description",
+        "order_num",
+        "ordinal",
+        "top_measured_depth",
+        "bottom_measured_depth",
+        "depth_unit",
+        "shot_number",
+        "shot_density",
+        "shot_density_unit",
+        "shot_count",
+        "phasing",
+        "conveyance_method",
+        "charge_type",
+        "charge_size",
+        "charge_size_unit",
+        "estimated_hole_diameter",
+        "estimated_hole_diameter_unit",
+        "perf_plug_num",
+        "perf_start_time",
+        "perf_end_time",
+        "bottom_perf",
+        "perf_gun_description",
     )
 
 
@@ -138,17 +166,23 @@ class Proppant(ModelMixin, db.Model, TimestampMixin, JsonModelMixin):
     proppant_end_start_time = db.Column(db.DateTime)
 
     json_fields = (
-        "proppant_name", "prop_mass", "mass_unit",
-        "material", "mesh_size", "avg_concentration",
-        "avg_concentration_unit", "max_concentration", "max_concentration_unit",
-        "bulk_density", "specific_gravity", "actual_lbs",
-        "designed_lbs", "total_pumped_lbs"
+        "proppant_name",
+        "prop_mass",
+        "mass_unit",
+        "material",
+        "mesh_size",
+        "avg_concentration",
+        "avg_concentration_unit",
+        "max_concentration",
+        "max_concentration_unit",
+        "bulk_density",
+        "specific_gravity",
+        "actual_lbs",
+        "designed_lbs",
+        "total_pumped_lbs",
     )
 
-    datetime_fields = (
-        "proppant_type_start_time",
-        "proppant_end_start_time"
-    )
+    datetime_fields = ("proppant_type_start_time", "proppant_end_start_time")
 
     def to_json(self):
         data = super().to_json()
@@ -168,10 +202,10 @@ class ActiveData(ModelMixin, db.Model):
     offset = db.Column(db.Integer, nullable=False, default=0)
     period = db.Column(db.Integer, nullable=False, default=0)
     wave_type = db.Column(db.String(50))
-    post_frac_start_time = db.Column(db.Integer)
-    post_frac_end_time = db.Column(db.Integer)
-    pre_frac_start_time = db.Column(db.Integer)
-    pre_frac_end_time = db.Column(db.Integer)
+    post_frac_start_time = db.Column(db.Numeric(25, 10))
+    post_frac_end_time = db.Column(db.Numeric(25, 10))
+    pre_frac_start_time = db.Column(db.Numeric(25, 10))
+    pre_frac_end_time = db.Column(db.Numeric(25, 10))
     pre_frac_num_pulse = db.Column(db.Integer)
     post_frac_num_pulse = db.Column(db.Integer)
     pre_frac_pulse_note = db.Column(db.String(255))
