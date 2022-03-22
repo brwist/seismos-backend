@@ -39,12 +39,14 @@ class StageDataFluidParam(Schema):
 
 
 class FluidsInjected(Schema):
+    id = fields.Int()
     description = fields.String()
     bbls = fields.Integer()
     ppg = fields.Float()
 
 
 class ProppantDataSchema(Schema):
+    id = fields.Int()
     description = fields.String()
     specific_gravity = fields.Float()
     bulk_density = fields.Integer()
@@ -88,14 +90,14 @@ class StageDataSchema(Schema):
 
 
 class PreFracPulsesSchema(Schema):
-    pre_frac_start_time = fields.Integer()
-    pre_frac_end_time = fields.Integer()
+    pre_frac_start_time = fields.Int()
+    pre_frac_end_time = fields.Int()
     pre_frac_num_pulse = fields.Integer()
 
 
 class PostFracPulsesSchema(Schema):
-    post_frac_start_time = fields.Integer()
-    post_frac_end_time = fields.Integer()
+    post_frac_start_time = fields.Int()
+    post_frac_end_time = fields.Int()
     post_frac_num_pulse = fields.Integer()
 
 
@@ -167,8 +169,13 @@ class AddProppantFluidsSchema(Schema):
 
 
 class TrackingSheetUpdateSchema(TrackingSheetResponseSchema):
+    stage = fields.Int()
+    stage_tracking = fields.Nested(StageTrackingShema)
+    perforation_interval_information = fields.Nested(PerforationIntervalInformation)
+    stage_data = fields.Nested(StageDataSchema)
+    active_data = fields.Nested(ActiveDataSchema)
+    notes = fields.Nested(NotesSchema)
     remove = fields.Nested(RemoveTrackingSheetDataSchema)
-    add = fields.Nested(AddProppantFluidsSchema)
 
 
 class TrackingSheetCreatedSchema(MessageSchema):

@@ -21,7 +21,7 @@ from app.schemas import (
     WellPathUuidSchema,
     TrackingSheetStagesListResponse,
     TrackingSheetUpdateSchema,
-    TrackingSheetCreatedSchema
+    TrackingSheetCreatedSchema,
 )
 
 
@@ -34,24 +34,69 @@ TRACKINGSHEET_MAP = {
         "plug_seat_technique": ("stage_tracking", "plug_seat_technique"),
         "stage_event": ("stage_tracking", "did_an_event_occur"),
         "data_collection": ("stage_tracking", "seismos_data_collection"),
-        "stage_number": ("stage", ),
+        "stage_number": ("stage",),
         "stage_start_time": ("stage_data", "stage_start_time"),
         "stage_end_time": ("stage_data", "stage_end_time"),
-        "designed_max_prop": ("stage_data", "pumping_summary", "max_prop_conc", "design"),
-        "designed_pad_vol": ("stage_data", "pumping_summary", "total_pad_volume", "design"),
-        "designed_total_clean_fluid_vol": ("stage_data", "pumping_summary", "total_clean_fluid_volume", "design"),
-        "designed_flush_vol": ("stage_data", "pumping_summary", "flush_volume", "design"),
+        "designed_max_prop": (
+            "stage_data",
+            "pumping_summary",
+            "max_prop_conc",
+            "design",
+        ),
+        "designed_pad_vol": (
+            "stage_data",
+            "pumping_summary",
+            "total_pad_volume",
+            "design",
+        ),
+        "designed_total_clean_fluid_vol": (
+            "stage_data",
+            "pumping_summary",
+            "total_clean_fluid_volume",
+            "design",
+        ),
+        "designed_flush_vol": (
+            "stage_data",
+            "pumping_summary",
+            "flush_volume",
+            "design",
+        ),
         "diverter_type": ("perforation_interval_information", "diverter_type"),
-        "pumped_diverter": ("perforation_interval_information", "pumped_diverter",),
-        "designed_slurry_vol": ("stage_data", "pumping_summary", "slurry_volume", "design"),
-        "designed_proppant": ("stage_data", "pumping_summary", "total_proppant", "design"),
+        "pumped_diverter": (
+            "perforation_interval_information",
+            "pumped_diverter",
+        ),
+        "designed_slurry_vol": (
+            "stage_data",
+            "pumping_summary",
+            "slurry_volume",
+            "design",
+        ),
+        "designed_proppant": (
+            "stage_data",
+            "pumping_summary",
+            "total_proppant",
+            "design",
+        ),
         "spf": ("perforation_interval_information", "spf"),
         "plug_depth": ("perforation_interval_information", "plug_depth"),
         "number_of_cluster": ("perforation_interval_information", "n_clusters"),
         "is_acid": ("perforation_interval_information", "acid"),
-        "top_perf_Displacement_volume": ("perforation_interval_information", "displacement_volume", "top_perf"),
-        "bottom_perf_Displacement_volume": ("perforation_interval_information", "displacement_volume", "bottom_perf"),
-        "plug_displacement_volume": ("perforation_interval_information", "displacement_volume", "plug"),
+        "top_perf_Displacement_volume": (
+            "perforation_interval_information",
+            "displacement_volume",
+            "top_perf",
+        ),
+        "bottom_perf_Displacement_volume": (
+            "perforation_interval_information",
+            "displacement_volume",
+            "bottom_perf",
+        ),
+        "plug_displacement_volume": (
+            "perforation_interval_information",
+            "displacement_volume",
+            "plug",
+        ),
     },
     ChemFluids: {
         "base_fluid_density": ("stage_data", "fluid_parameters", "base_fluid_density"),
@@ -59,23 +104,39 @@ TRACKINGSHEET_MAP = {
         "max_conc_density": ("stage_data", "fluid_parameters", "max_conc_density"),
         "design_acid_vol": ("stage_data", "pumping_summary", "acid_volume", "design"),
     },
-
     Perforation: {
-        "top_measured_depth": ("perforation_interval_information", "top_measured_depth"),
-        "bottom_measured_depth": ("perforation_interval_information", "bottom_measured_depth"),
-        "perf_gun_description": ("perforation_interval_information", "perf_gun_description"),
-        "estimated_hole_diameter": ("perforation_interval_information", "perf_daiameter"),
+        "top_measured_depth": (
+            "perforation_interval_information",
+            "top_measured_depth",
+        ),
+        "bottom_measured_depth": (
+            "perforation_interval_information",
+            "bottom_measured_depth",
+        ),
+        "perf_gun_description": (
+            "perforation_interval_information",
+            "perf_gun_description",
+        ),
+        "estimated_hole_diameter": (
+            "perforation_interval_information",
+            "perf_daiameter",
+        ),
     },
     StageAVG: {
         "opening_well": ("stage_data", "opening_well"),
         "max_prop_conc": ("stage_data", "pumping_summary", "max_prop_conc", "actual"),
         "pad_vol": ("stage_data", "pumping_summary", "total_pad_volume", "actual"),
-        "total_clean": ("stage_data", "pumping_summary", "total_clean_fluid_volume", "actual"),
+        "total_clean": (
+            "stage_data",
+            "pumping_summary",
+            "total_clean_fluid_volume",
+            "actual",
+        ),
         "acid": ("stage_data", "pumping_summary", "acid_volume", "actual"),
         "flush_volume": ("stage_data", "pumping_summary", "flush_volume", "actual"),
         "total_slurry": ("stage_data", "pumping_summary", "slurry_volume", "actual"),
         # isip: ("stage_data", "isip") disable
-    }
+    },
 }
 
 PROPPANT_MAP = {
@@ -114,7 +175,9 @@ def unpack_proppant(json_data, stage_id):
     proppant_json = {"stage_id": stage_id}
     total_proppant = json_data["stage_data"]["pumping_summary"]["total_proppant"]
 
-    for field_db, field_json in {"designed_lbs": "design"}.items():  # "actual_lbs": "actual",  removed
+    for field_db, field_json in {
+        "designed_lbs": "design"
+    }.items():  # "actual_lbs": "actual",  removed
         if field_json in total_proppant:
             proppant_json[field_db] = total_proppant[field_json]
 
@@ -155,7 +218,7 @@ class TrackingSheetResource(Resource):
         tag="Tracking Sheet",
     )
     def get(self, stage_uuid):
-        """ Get Tracking sheet """
+        """Get Tracking sheet"""
         stage = Stage.query.filter(Stage.stage_uuid == stage_uuid).first()
         if not stage or stage.well.pad.project.user_id != get_jwt_identity():
             return {"msg": "Stage not found"}, 401
@@ -180,14 +243,33 @@ class TrackingSheetResource(Resource):
                 current_leaf[last_leaf] = getattr(unpacking_map[model], db_field)
 
         for date_field in ("stage_start_time", "stage_end_time"):
-            if date_field in response["stage_data"] and response["stage_data"][date_field] is not None: 
-                response["stage_data"][date_field] = int(response["stage_data"][date_field])
+            if (
+                date_field in response["stage_data"]
+                and response["stage_data"][date_field] is not None
+            ):
+                response["stage_data"][date_field] = int(
+                    response["stage_data"][date_field]
+                )
 
-        active_data_map = ({
-            "post_frac_pulses": ("post_frac_end_time", "post_frac_num_pulse", "post_frac_start_time"),
-            "pre_frac_pulses": ("pre_frac_end_time", "pre_frac_num_pulse", "pre_frac_start_time"),
-            "pulsing_parameteres": ("amplitude", "frequency", "offset", "period", "wave_type"),
-        })
+        active_data_map = {
+            "post_frac_pulses": (
+                "post_frac_end_time",
+                "post_frac_num_pulse",
+                "post_frac_start_time",
+            ),
+            "pre_frac_pulses": (
+                "pre_frac_end_time",
+                "pre_frac_num_pulse",
+                "pre_frac_start_time",
+            ),
+            "pulsing_parameteres": (
+                "amplitude",
+                "frequency",
+                "offset",
+                "period",
+                "wave_type",
+            ),
+        }
 
         active_data = {}
         for resp_field, db_fields in active_data_map.items():
@@ -213,7 +295,7 @@ class TrackingSheetResource(Resource):
         all_proppant = []
         proppant_map = {
             "proppant_name": "description",
-            "total_pumped_lbs": "amount_pumped"
+            "total_pumped_lbs": "amount_pumped",
         }
 
         for proppant in stage.proppant_data:
@@ -247,8 +329,16 @@ class TrackingSheetResource(Resource):
         if not stage or stage.well.pad.project.user_id != get_jwt_identity():
             return {"msg": "Stage not found"}, 401
 
-        if "stage" in req and stage.stage_number != req["stage"] and Stage.query.filter(Stage.stage_number == req["stage"], Stage.well_id == stage.well_id).first():
-            return {"msg": f"Stage with number: {stage.stage_number} already exist"}, 401
+        if (
+            "stage" in req
+            and stage.stage_number != req["stage"]
+            and Stage.query.filter(
+                Stage.stage_number == req["stage"], Stage.well_id == stage.well_id
+            ).first()
+        ):
+            return {
+                "msg": f"Stage with number: {stage.stage_number} already exist"
+            }, 401
         # update stage
         tracking_sheet_data = parse_tracking_sheet_data(req)
         for field, value in tracking_sheet_data[Stage].items():
@@ -264,18 +354,34 @@ class TrackingSheetResource(Resource):
         # updae formation_fuild_injection
         FluidModel = FormationFuildInjection
         for fluid_item in req["stage_data"]["fluids_injected_into_formation"]:
-            fluid_model = FluidModel.query.filter(FluidModel.id == fluid_item["id"], FluidModel.chem_fluid_id == stage.chem_fluids.id).first()
-            if fluid_model:
-                del fluid_item["id"]
+            if fluid_item.get("id", "") == "":
+                fluid_item["chem_fluid_id"] = stage.chem_fluids.id
+                FormationFuildInjection(**fluid_item).save()
+            else:
+                fluid_model = FluidModel.query.filter(
+                    FluidModel.id == fluid_item["id"],
+                    FluidModel.chem_fluid_id == stage.chem_fluids.id,
+                ).first()
                 for field, value in fluid_item.items():
                     setattr(fluid_model, field, value)
                 fluid_model.save()
 
         # update proppant
         for raw_proppant in req["stage_data"]["proppant_data"]:
-            proppant_id = raw_proppant["id"]
-            proppant = Proppant.query.filter(Proppant.id == proppant_id, Proppant.stage_id == stage.id).first()
-            if proppant:
+            if raw_proppant.get("id", "") == "":
+                proppant = Proppant(
+                    stage_id=stage.id,
+                    bulk_density=raw_proppant["bulk_density"],
+                    proppant_name=raw_proppant["description"],
+                    specific_gravity=raw_proppant["specific_gravity"],
+                    total_pumped_lbs=raw_proppant["amount_pumped"],
+                )
+                proppant.save()
+            else:
+                proppant_id = raw_proppant["id"]
+                proppant = Proppant.query.filter(
+                    Proppant.id == proppant_id, Proppant.stage_id == stage.id
+                ).first()
                 for db_field, json_field in PROPPANT_MAP.items():
                     setattr(proppant, db_field, raw_proppant[json_field])
                 proppant.save()
@@ -287,7 +393,9 @@ class TrackingSheetResource(Resource):
         stage.active_data.save()
 
         # update Perforation and StageAVG
-        for db_model, model_instance in ({Perforation: stage.perforation, StageAVG: stage.stage_avg}).items():
+        for db_model, model_instance in (
+            {Perforation: stage.perforation, StageAVG: stage.stage_avg}
+        ).items():
             for field, value in tracking_sheet_data[db_model].items():
                 setattr(model_instance, field, value)
             model_instance.save()
@@ -295,26 +403,19 @@ class TrackingSheetResource(Resource):
         # remove proppant data and fluids
         if "remove" in req:
             for proppant_id in req["remove"]["proppant_data_ids"]:
-                proppant = Proppant.query.filter(Proppant.id == proppant_id, Proppant.stage_id == stage.id).first()
+                proppant = Proppant.query.filter(
+                    Proppant.id == proppant_id, Proppant.stage_id == stage.id
+                ).first()
                 if proppant:
                     proppant.delete()
 
         for fluids_id in req["remove"]["fluids_injected_into_formation_ids"]:
-            fluid_model = FluidModel.query.filter(FluidModel.id == fluids_id, FluidModel.chem_fluid_id == stage.chem_fluids.id).first()
+            fluid_model = FluidModel.query.filter(
+                FluidModel.id == fluids_id,
+                FluidModel.chem_fluid_id == stage.chem_fluids.id,
+            ).first()
             if fluid_model:
                 fluid_model.delete()
-
-        if "add" in req:
-            for fluid_item in req["add"]["fluids_injected_into_formation"]:
-                fluid_item["chem_fluid_id"] = stage.chem_fluids.id
-                FormationFuildInjection(**fluid_item).save()
-
-        if "add" in req and "proppant" in req["add"]:
-            req["stage_data"]["proppant_data"] = req["add"]["proppant"]
-
-        # save proppant
-        for proppant_data in unpack_proppant(req, stage.id):
-            Proppant(**proppant_data).save()
 
         total_proppant = 0
         stage = Stage.query.filter(Stage.id == stage.id).first()
@@ -357,10 +458,12 @@ class TrackingSheetStageList(Resource):
 
         stages = []
         for stage in well.stages:
-            stages.append({
-                "uuid": stage.stage_uuid,
-                "stage_n": stage.stage_number,
-            })
+            stages.append(
+                {
+                    "uuid": stage.stage_uuid,
+                    "stage_n": stage.stage_number,
+                }
+            )
 
         return {
             "stages": stages,
@@ -376,7 +479,7 @@ class TrackingSheetCreateResource(Resource):
         tag="Tracking Sheet",
     )
     def post(self, well_uuid):
-        """ Create tracking sheet """
+        """Create tracking sheet"""
         well = Well.query.filter(Well.well_uuid == well_uuid).first()
 
         if not well or well.pad.project.user_id != get_jwt_identity():
@@ -387,7 +490,9 @@ class TrackingSheetCreateResource(Resource):
 
         for stage in well.stages:
             if stage.stage_number == req["stage"]:
-                return {"msg": f"Stage with number: {stage.stage_number} already exist"}, 401
+                return {
+                    "msg": f"Stage with number: {stage.stage_number} already exist"
+                }, 401
 
         tracking_sheet_data = parse_tracking_sheet_data(req)
         tracking_sheet_data[Stage]["well_id"] = well.id
