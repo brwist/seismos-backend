@@ -199,14 +199,6 @@ def unpack_active_data(json_data, stage_id=None):
     if stage_id:
         active_data["stage_id"] = stage_id
 
-    for time_field in (
-        "post_frac_start_time",
-        "post_frac_end_time",
-        "pre_frac_start_time",
-        "pre_frac_end_time",
-    ):
-        if time_field in active_data:
-            active_data[time_field] //= 1000
     return active_data
 
 
@@ -275,7 +267,17 @@ class TrackingSheetResource(Resource):
         for resp_field, db_fields in active_data_map.items():
             active_data[resp_field] = {}
             for field in db_fields:
-                active_data[resp_field][field] = getattr(stage.active_data, field)
+                if field in (
+                    "post_frac_end_time",
+                    "post_frac_start_time",
+                    "pre_frac_end_time",
+                    "pre_frac_start_time",
+                ):
+                    active_data[resp_field][field] = int(
+                        getattr(stage.active_data, field)
+                    )
+                else:
+                    active_data[resp_field][field] = getattr(stage.active_data, field)
 
         response["notes"] = {}
         for field in ("additional_note", "post_frac_pulse_note", "pre_frac_pulse_note"):
