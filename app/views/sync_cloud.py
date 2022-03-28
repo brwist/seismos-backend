@@ -43,7 +43,7 @@ class SyncCloud(Resource):
                 result = connection.execute(query, data)
                 print(tableName + " table query result: ", result.rowcount)
 
-    def get(self, project_uuid):
+    def get(self, project_uuid, well_uuid):
         # Connect to managed store
         sqlEngine = create_engine(CLOUD_DB_URL, pool_recycle=3600)
         connection = sqlEngine.connect()
@@ -63,7 +63,9 @@ class SyncCloud(Resource):
             location_info = LocationInfo.query.filter(
                 (LocationInfo.job_info_id == project.job_info.id)
             ).first()
-            well = Well.query.filter((Well.pad_id == project.pad.id)).first()
+            well = Well.query.filter(
+                Well.pad_id == project.pad.id, Well.well_uuid == well_uuid
+            ).first()
             stage = Stage.query.filter((Stage.well_id == well.id)).first()
 
             if project:
