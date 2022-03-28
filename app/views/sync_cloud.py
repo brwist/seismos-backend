@@ -30,18 +30,43 @@ class SyncCloud(Resource):
 
     def importCSVToStore(cls, path, tableName, connection):
         with open(path, "r") as f:
-            reader = csv.reader(f)
-            columns = next(reader)
-            query = "insert into " + tableName + "({0}) values ({1})"
-            query = query.format(",".join(columns), ("%s," * (len(columns) - 1)) + "%s")
-            for data in reader:
-                # print("query: ", query)
-                for i in range(len(data)):
-                    if data[i] == "":
-                        data[i] = None
-                # print("values: ", data)
-                result = connection.execute(query, data)
-                print(tableName + " table query result: ", result.rowcount)
+            # validate if data is already synced or not
+            df = pd.read_csv(path)
+            is_validated = True
+            if df.shape[0] > 0:
+                if "id" in df.columns:
+                    squery = "select * from ({0}) where id=({1})"
+                    squery = squery.format(tableName, df["id"].values[0])
+                    result = connection.execute(squery)
+                    if result.rowcount > 0:
+                        is_validated = False
+                else:
+                    squery = "select * from ({0}) where project_crew_id=({1})"
+                    squery = squery.format(
+                        "project_crew", df["project_crew_id"].values[0]
+                    )
+                    result = connection.execute(squery)
+                    if result.rowcount > 0:
+                        is_validated = False
+            else:
+                is_validated = False
+
+            if is_validated:
+                # prepare sql query
+                reader = csv.reader(f)
+                columns = next(reader)
+                query = "insert into ({0}) ({1}) values ({2})"
+                query = query.format(
+                    tableName, ",".join(columns), ("%s," * (len(columns) - 1)) + "%s"
+                )
+                for data in reader:
+                    # print("query: ", query)
+                    for i in range(len(data)):
+                        if data[i] == "":
+                            data[i] = None
+
+                    result = connection.execute(query, data)
+                    print(tableName + " table query result: ", result.rowcount)
 
     def get(self, project_uuid, well_uuid):
         # Connect to managed store
