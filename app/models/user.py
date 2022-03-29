@@ -11,7 +11,7 @@ class User(db.Model, ModelMixin):
 
     __tablename__ = "user"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(150), nullable=False)
     password = db.Column(db.String(255), nullable=False)
@@ -48,6 +48,6 @@ class UserProjects(db.Model):
 
     __tablename__ = "project_user"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False)
     project_id = db.Column(db.BigInteger, nullable=False)

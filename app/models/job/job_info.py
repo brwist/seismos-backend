@@ -6,7 +6,7 @@ class JobInfo(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "job_info"
 
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(db.BigInteger, primary_key=True, nullable=False)
     job_id = db.Column(db.Integer)
     job_name = db.Column(db.Text, nullable=False)
     afe_id = db.Column(db.Integer)

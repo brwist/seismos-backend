@@ -6,5 +6,5 @@ class JobType(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "job_type"
 
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(db.BigInteger, primary_key=True, nullable=False)
     value = db.Column(db.Text)
