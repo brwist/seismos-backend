@@ -1,4 +1,5 @@
 from sqlalchemy.orm import backref
+from sqlalchemy.dialects.mysql import JSON, TINYINT
 from app.models.mixin_models import TimestampMixin, ModelMixin, uuid_string
 from app import db
 
@@ -7,8 +8,8 @@ class Well(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "well"
 
-    id = db.Column(db.Integer, primary_key=True)
-    well_uuid = db.Column(db.String(36), nullable=False, default=uuid_string)
+    id = db.Column(db.Integer, autoincrement=True)
+    well_uuid = db.Column(db.String(36), primary_key=True, default=uuid_string)
     equipment_id = db.Column(db.Integer, nullable=False)
     pad_id = db.Column(db.Integer, nullable=False)
     well_name = db.Column(db.Text)
@@ -112,8 +113,22 @@ class Well(TimestampMixin, ModelMixin, db.Model):
 class FieldNotes(db.Model, ModelMixin, TimestampMixin):
     __tablename__ = "field_notes"
 
-    id = db.Column(db.BigInteger, primary_key=True)
-    well_id = db.Column(db.Integer, nullable=False)
+    id = db.Column(db.BigInteger, autoincrement=True)
+    well_id = db.Column(db.Integer, primary_key=True)
     comment_timestamp = db.Column(db.DateTime)
     comment_content = db.Column(db.Text)
     comment_by = db.Column(db.Text)
+
+
+class FileMetadata(db.Model, ModelMixin, TimestampMixin):
+    __tablename__ = "file_metadata"
+
+    id = db.Column(db.BigInteger, autoincrement=True)
+    well_id = db.Column(db.Integer, primary_key=True)
+    meta_data_json = db.Column(JSON)
+    file_name = db.Column(db.Text)
+    file_path = db.Column(db.Text)
+    file_type = db.Column(db.Text)
+    error = db.Column(db.Text)
+    is_active = db.Column(TINYINT)
+    loaded_by = db.Column(db.Text)

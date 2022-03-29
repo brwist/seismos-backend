@@ -7,7 +7,7 @@ class Pad(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "pad"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     pad_uuid = db.Column(db.String(36), nullable=False, default=uuid_string)
     project_id = db.Column(db.BigInteger, nullable=False)
     pad_name = db.Column(db.Text, nullable=False)

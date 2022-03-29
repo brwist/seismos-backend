@@ -93,7 +93,7 @@ class FormationFluidInjection(ModelMixin, db.Model, JsonModelMixin):
 class Perforation(ModelMixin, db.Model, TimestampMixin, JsonModelMixin):
     __tablename__ = "perforation"
 
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     stage_id = db.Column(db.Integer)
     order_num = db.Column(db.Integer)
     ordinal = db.Column(db.Float)
@@ -195,19 +195,45 @@ class Proppant(ModelMixin, db.Model, TimestampMixin, JsonModelMixin):
 
 
 class ActiveData(ModelMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    stage_id = db.Column(db.Integer, nullable=False)
+    __tablename__ = "active_data"
+
+    id = db.Column(db.Integer, autoincrement=True)
+    stage_id = db.Column(db.Integer, primary_key=True, nullable=False)
     amplitude = db.Column(db.Integer, nullable=False, default=0)
     frequency = db.Column(db.Float, nullable=False, default=0)
     offset = db.Column(db.Integer, nullable=False, default=0)
     period = db.Column(db.Integer, nullable=False, default=0)
     wave_type = db.Column(db.String(50))
-    post_frac_start_time = db.Column(db.Numeric(25, 10))
-    post_frac_end_time = db.Column(db.Numeric(25, 10))
-    pre_frac_start_time = db.Column(db.Numeric(25, 10))
-    pre_frac_end_time = db.Column(db.Numeric(25, 10))
+    post_frac_start_time = db.Column(db.DateTime)
+    post_frac_end_time = db.Column(db.DateTime)
+    pre_frac_start_time = db.Column(db.DateTime)
+    pre_frac_end_time = db.Column(db.DateTime)
     pre_frac_num_pulse = db.Column(db.Integer)
     post_frac_num_pulse = db.Column(db.Integer)
     pre_frac_pulse_note = db.Column(db.String(255))
     post_frac_pulse_note = db.Column(db.String(255))
     additional_note = db.Column(db.String(255))
+
+
+class PostFrac(TimestampMixin, ModelMixin, db.Model):
+
+    __tablename__ = "post_frac"
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    stage_id = db.Column(db.Integer)
+    post_start_time = db.Column(db.DateTime)
+    post_end_time = db.Column(db.DateTime)
+    post_frac_num_pulse = db.Column(db.Text)
+    post_frac_pulse_notes = db.Column(db.Text)
+
+
+class PreFrac(TimestampMixin, ModelMixin, db.Model):
+
+    __tablename__ = "pre_frac"
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    stage_id = db.Column(db.Integer)
+    pre_start_time = db.Column(db.DateTime)
+    pre_end_time = db.Column(db.DateTime)
+    pre_frac_num_pulse = db.Column(db.Text)
+    pre_frac_pulse_notes = db.Column(db.Text)

@@ -1,5 +1,10 @@
 from sqlalchemy.dialects.mysql import JSON, TINYINT
-from app.models.mixin_models import TimestampMixin, ModelMixin, JsonModelMixin, uuid_string
+from app.models.mixin_models import (
+    TimestampMixin,
+    ModelMixin,
+    JsonModelMixin,
+    uuid_string,
+)
 from app import db
 
 
@@ -27,8 +32,8 @@ class Stage(TimestampMixin, ModelMixin, db.Model, QCReportDataModel):
     well_id = db.Column(db.Integer)
     stage_number = db.Column(db.Integer)
     number_of_cluster = db.Column(db.Integer, default=0)
-    stage_start_time = db.Column(db.Numeric(25, 10))
-    stage_end_time = db.Column(db.Numeric(25, 10))
+    stage_start_time = db.Column(db.DateTime)
+    stage_end_time = db.Column(db.DateTime)
     plug_depth = db.Column(db.Float)
     calc_net_pressure_result = db.Column(db.Float)
     observed_net_pressure = db.Column(db.Float)
@@ -167,7 +172,9 @@ class Stage(TimestampMixin, ModelMixin, db.Model, QCReportDataModel):
         return data
 
 
-class NFProcessingResult(TimestampMixin, ModelMixin, db.Model, QCReportDataModel, JsonModelMixin):
+class NFProcessingResult(
+    TimestampMixin, ModelMixin, db.Model, QCReportDataModel, JsonModelMixin
+):
     __tablename__ = "nf_processing_result"
 
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
@@ -189,20 +196,37 @@ class NFProcessingResult(TimestampMixin, ModelMixin, db.Model, QCReportDataModel
     connect_condition = db.Column(db.Float)
 
     to_report = [
-        "c0", "c1", "c2", "c3",
-        "q0", "q1", "q2", "q3",
-        "fit_error", "nf_param_id",
+        "c0",
+        "c1",
+        "c2",
+        "c3",
+        "q0",
+        "q1",
+        "q2",
+        "q3",
+        "fit_error",
+        "nf_param_id",
         "connect_ops_risk",
         "connect_efficiency",
         "connect_condition",
     ]
 
     json_fields = (
-        "timestamp", "user_id", "c0",
-        "c1", "c2", "c3",
-        "q0", "q1", "q2",
-        "q3", "fit_error", "nf_param_id",
-        "connect_ops_risk", "connect_efficiency", "connect_condition",
+        "timestamp",
+        "user_id",
+        "c0",
+        "c1",
+        "c2",
+        "c3",
+        "q0",
+        "q1",
+        "q2",
+        "q3",
+        "fit_error",
+        "nf_param_id",
+        "connect_ops_risk",
+        "connect_efficiency",
+        "connect_condition",
     )
 
 
@@ -244,25 +268,57 @@ class StageAVG(TimestampMixin, ModelMixin, db.Model, QCReportDataModel, JsonMode
 
     opening_well = db.Column(db.Integer)
     to_report = [
-        "breakdown_pressure", "isip", "frac_gradient",
-        "diverter", "acid", "opening_well",
-        "isip_5min", "isip_10min", "isip_15min",
-        "time_to_max_rate", "mesh_100", "mesh_30_50",
-        "mesh_40_70", "mesh_20_40", "micro_prop",
-        "friction_reducer", "gel", "crosslink",
+        "breakdown_pressure",
+        "isip",
+        "frac_gradient",
+        "diverter",
+        "acid",
+        "opening_well",
+        "isip_5min",
+        "isip_10min",
+        "isip_15min",
+        "time_to_max_rate",
+        "mesh_100",
+        "mesh_30_50",
+        "mesh_40_70",
+        "mesh_20_40",
+        "micro_prop",
+        "friction_reducer",
+        "gel",
+        "crosslink",
     ]
 
     json_fields = (
-        "breakdown_pressure", "isip", "frac_gradient",
-        "diverter", "acid", "open_well_pressure",
-        "isip_5min", "isip_10min", "isip_15min",
-        "time_to_max_rate", "avg_pressure", "max_pressure",
-        "slickwater_volume", "total_slurry", "total_clean",
-        "avg_rate", "max_rate", "mesh_100",
-        "mesh_30_50", "mesh_40_70", "mesh_20_40",
-        "micro_prop", "friction_reducer", "gel",
-        "crosslink", "additional", "pad_vol",
-        "flush_volume", "max_prop_conc", "pad_vol",
+        "breakdown_pressure",
+        "isip",
+        "frac_gradient",
+        "diverter",
+        "acid",
+        "open_well_pressure",
+        "isip_5min",
+        "isip_10min",
+        "isip_15min",
+        "time_to_max_rate",
+        "avg_pressure",
+        "max_pressure",
+        "slickwater_volume",
+        "total_slurry",
+        "total_clean",
+        "avg_rate",
+        "max_rate",
+        "mesh_100",
+        "mesh_30_50",
+        "mesh_40_70",
+        "mesh_20_40",
+        "micro_prop",
+        "friction_reducer",
+        "gel",
+        "crosslink",
+        "additional",
+        "pad_vol",
+        "flush_volume",
+        "max_prop_conc",
+        "pad_vol",
     )
 
 
@@ -314,3 +370,217 @@ class FFProcessingResult(TimestampMixin, ModelMixin, db.Model, QCReportDataModel
         "ff_version",
         "unit",
     ]
+
+
+class Slurry(TimestampMixin, ModelMixin, db.Model):
+
+    __tablename__ = "slurry"
+
+    id = db.Column(db.BigInteger, autoincrement=True)
+    stage_id = db.Column(db.BigInteger, primary_key=True)
+    total_slurry_rate = db.Column(db.Float)
+
+
+class TreatingPressure(TimestampMixin, ModelMixin, db.Model):
+
+    __tablename__ = "treating_pressure"
+
+    id = db.Column(db.BigInteger, autoincrement=True)
+    stage_id = db.Column(db.BigInteger, primary_key=True)
+    wellhead_pressure = db.Column(db.Float)
+    treating_pressure = db.Column(db.Float)
+    annulus_pressure = db.Column(db.Float)
+    calc_hydrostatic_pressure = db.Column(db.Float)
+    calc_bhp = db.Column(db.Float)
+
+
+class Wireline(TimestampMixin, ModelMixin, db.Model):
+
+    __tablename__ = "wireline"
+
+    id = db.Column(db.BigInteger, autoincrement=True)
+    stage_id = db.Column(db.BigInteger, primary_key=True)
+    ccl = db.Column(db.Float)
+    current = db.Column(db.Float)
+    line_speed = db.Column(db.Float)
+    line_tension = db.Column(db.Float)
+    trigger_perfs = db.Column(db.DateTime)
+    weight = db.Column(db.Float)
+    measured_depth = db.Column(db.Float)
+    voltage = db.Column(db.Float)
+    timestamp = db.Column(db.DateTime)
+    elapsed_time = db.Column(db.DateTime)
+    additional = db.Column(JSON)
+
+
+class ResultProcessed(TimestampMixin, ModelMixin, db.Model):
+
+    __tablename__ = "result_processed"
+
+    id = db.Column(db.BigInteger, autoincrement=True)
+    stage_id = db.Column(db.BigInteger, primary_key=True)
+    well_id = db.Column(db.BigInteger)
+
+
+class SinglePulseParameter(TimestampMixin, ModelMixin, db.Model):
+
+    __tablename__ = "single_pulse_parameter"
+
+    id = db.Column(db.BigInteger, autoincrement=True)
+    stage_id = db.Column(db.BigInteger, primary_key=True)
+    crew_id = db.Column(db.Integer, nullable=False)
+    pulse_ordinal = db.Column(db.Integer)
+    t_trigger = db.Column(db.DateTime)
+    t_send = db.Column(db.Float)
+    t_ref_0 = db.Column(db.DateTime)
+    t_ref_1 = db.Column(db.Float)
+
+
+class SinglePulseNfResult(TimestampMixin, ModelMixin, db.Model):
+
+    __tablename__ = "single_pulse_nf_result"
+
+    id = db.Column(db.BigInteger, autoincrement=True)
+    stage_id = db.Column(db.BigInteger, primary_key=True)
+    single_pulse_param_id = db.Column(db.Integer, nullable=False)
+    crew_id = db.Column(db.Integer, nullable=False)
+    nf_parameter_set_id = db.Column(db.Integer, nullable=False)
+    pulse_ordinal = db.Column(db.Integer, nullable=False, default=1)
+    inv_ver = db.Column(db.Float)
+    reprocessed = db.Column(db.Integer)
+    reprocessed_t = db.Column(db.DateTime)
+    t_0 = db.Column(db.DateTime)
+    t_end = db.Column(db.Float)
+    nfci = db.Column(db.Float)
+    w_inch = db.Column(db.Float)
+    polarity = db.Column(db.Float)
+    fit_error = db.Column(db.Float)
+    runtime_s = db.Column(db.Float)
+    k_d = db.Column(db.Float)
+    q1 = db.Column(db.Float)
+    q2 = db.Column(db.Float)
+    q3 = db.Column(db.Float)
+    c1 = db.Column(db.Float)
+    c2 = db.Column(db.Float)
+    c3 = db.Column(db.Float)
+    tof1 = db.Column(db.Float)
+    tof2 = db.Column(db.Float)
+    tof3 = db.Column(db.Float)
+    ld = db.Column(db.Float)
+    ss_change = db.Column(db.Integer)
+    qc_passed = db.Column(db.Integer)
+    wco1 = db.Column(db.Float)
+    wco2 = db.Column(db.Float)
+    additional = db.Column(JSON)
+    processing_note = db.Column(db.Text)
+
+
+class Ff3Parameter(TimestampMixin, ModelMixin, db.Model):
+
+    __tablename__ = "ff3_parameter"
+
+    id = db.Column(db.BigInteger, autoincrement=True)
+    stage_id = db.Column(db.BigInteger, primary_key=True)
+    crew_id = db.Column(db.Integer, nullable=False)
+    daq_sensor_id = db.Column(db.Integer, nullable=False)
+    ff3_type = db.Column(db.Text)
+    t_0 = db.Column(db.DateTime)
+    t_length_s = db.Column(db.Float)
+    avg_injection_rate = db.Column(db.Float)
+    p_r = db.Column(db.Float)
+    e_y = db.Column(db.Float)
+    reservoir_press_psiperft = db.Column(db.Float)
+    overburden_press = db.Column(db.Float)
+    biot_coeff = db.Column(db.Float)
+    tectonic_press = db.Column(db.Float)
+    nu_lim_var = db.Column(db.Float)
+    treatment_fluid_type = db.Column(db.Text)
+    beta = db.Column(db.Float)
+    compressibility_mpa = db.Column(db.Float)
+    flags_PDL = db.Column(db.Integer)
+    flags_stress_shadow = db.Column(db.Integer)
+    flags_poisson_ver = db.Column(db.Integer)
+    flags_breaker = db.Column(db.Integer)
+    ff3_wci1 = db.Column(db.Float)
+    ff3_wci2 = db.Column(db.Float)
+    additional = db.Column(JSON)
+    processing_note = db.Column(db.Text)
+
+
+class Ff3Result(TimestampMixin, ModelMixin, db.Model):
+
+    __tablename__ = "ff3_result"
+
+    id = db.Column(db.BigInteger, autoincrement=True)
+    stage_id = db.Column(db.BigInteger, primary_key=True)
+    ff3_parameter_id = db.Column(db.Integer, nullable=False)
+    crew_id = db.Column(db.Integer, nullable=False)
+    inv_ver = db.Column(db.Float)
+    ff3_reprocessed = db.Column(db.Integer, nullable=False, default=0)
+    reprocessed_t = db.Column(db.DateTime)
+    t_0 = db.Column(db.DateTime)
+    t_length_s = db.Column(db.Float)
+    ffkw_isip = db.Column(db.Float)
+    ffkw_prop = db.Column(db.Float)
+    min_stress = db.Column(db.Float)
+    ff3_frac_pressure = db.Column(db.Float)
+    min_stress_gradient = db.Column(db.Float)
+    net_pressure = db.Column(db.Float)
+    st_well_potential = db.Column(db.Float)
+    st_reservoir_potential = db.Column(db.Float)
+    leakoff_par1 = db.Column(db.Float)
+    leakoff_par2 = db.Column(db.Float)
+    nwb_drop_psi = db.Column(db.Float)
+    c_nwb = db.Column(db.Float)
+    v_nwb = db.Column(db.Float)
+    nwb_compressibility = db.Column(db.Float)
+    nwb_length = db.Column(db.Float)
+    ff3_wc01 = db.Column(db.Float)
+    ff3_wc02 = db.Column(db.Float)
+    stress_shadow_psi = db.Column(db.Float)
+    res_pressure_psi = db.Column(db.Float)
+    ff3_poisson_rat = db.Column(db.Float)
+    processing_note = db.Column(db.Text)
+    frac_efficiency = db.Column(db.Float)
+    H = db.Column(db.Float)
+    R = db.Column(db.Float)
+    W0 = db.Column(db.Float)
+    shift_psi = db.Column(db.Float)
+    r2 = db.Column(db.Float)
+    calc_isip = db.Column(db.Float)
+    l_max = db.Column(db.Float)
+    l_min = db.Column(db.Float)
+    h_max = db.Column(db.Float)
+    h_min = db.Column(db.Float)
+    additional = db.Column(JSON)
+
+
+class Ff3Tvd(TimestampMixin, ModelMixin, db.Model):
+
+    __tablename__ = "ff3_tvd"
+
+    id = db.Column(db.BigInteger, autoincrement=True)
+    stage_id = db.Column(db.BigInteger, primary_key=True)
+    sigt = db.Column(db.Float)
+    pres = db.Column(db.Float)
+    p_r_calc = db.Column(db.Float)
+    latepress = db.Column(db.Float)
+
+
+class CloudSyncTableList(TimestampMixin, ModelMixin, db.Model):
+
+    __tablename__ = "cloud_sync_table_list"
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    table_name = db.Column(db.Text, nullable=False)
+    is_active = db.Column(TINYINT, default=1)
+
+
+class CloudSyncTableList(TimestampMixin, ModelMixin, db.Model):
+
+    __tablename__ = "cloud_sync_table_log"
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    table_name = db.Column(db.Text, nullable=False)
+    sync_status = db.Column(db.String(25), nullable=False)
+    synch_date = db.Column(db.DateTime)
