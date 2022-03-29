@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
@@ -198,6 +199,14 @@ def unpack_active_data(json_data, stage_id=None):
         active_data[field] = value
     if stage_id:
         active_data["stage_id"] = stage_id
+    for time_field in (
+        "post_frac_start_time",
+        "post_frac_end_time",
+        "pre_frac_start_time",
+        "pre_frac_end_time",
+    ):
+        if time_field in active_data:
+            active_data[time_field] = datetime.fromtimestamp(active_data[time_field])
 
     return active_data
 
@@ -239,7 +248,7 @@ class TrackingSheetResource(Resource):
                 date_field in response["stage_data"]
                 and response["stage_data"][date_field] is not None
             ):
-                response["stage_data"][date_field] = int(
+                response["stage_data"][date_field] = datetime.timestamp(
                     response["stage_data"][date_field]
                 )
 
@@ -268,12 +277,12 @@ class TrackingSheetResource(Resource):
             active_data[resp_field] = {}
             for field in db_fields:
                 if field in (
-                    "post_frac_end_time",
                     "post_frac_start_time",
-                    "pre_frac_end_time",
+                    "post_frac_end_time",
                     "pre_frac_start_time",
+                    "pre_frac_end_time",
                 ):
-                    active_data[resp_field][field] = int(
+                    active_data[resp_field][field] = datetime.timestamp(
                         getattr(stage.active_data, field)
                     )
                 else:
@@ -344,7 +353,10 @@ class TrackingSheetResource(Resource):
         # update stage
         tracking_sheet_data = parse_tracking_sheet_data(req)
         for field, value in tracking_sheet_data[Stage].items():
-            setattr(stage, field, value)
+            if field in ("stage_start_time", "stage_end_time"):
+                setattr(stage, field, datetime.fromtimestamp(value))
+            else:
+                setattr(stage, field, value)
 
         stage.save()
 
