@@ -6,7 +6,7 @@ class Clean(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "clean"
 
-    id = db.Column(db.BigInteger, autoincrement=True)
-    stage_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    stage_id = db.Column(db.Integer, nullable=False)
     total_clean_rate = db.Column(db.Float)
     total_clean_rate2 = db.Column(db.Float)

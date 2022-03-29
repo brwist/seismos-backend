@@ -376,8 +376,8 @@ class Slurry(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "slurry"
 
-    id = db.Column(db.BigInteger, autoincrement=True)
-    stage_id = db.Column(db.BigInteger, primary_key=True)
+    id = db.Column(db.BigInteger, autoincrement=True, primary_key=True)
+    stage_id = db.Column(db.Integer, nullable=False)
     total_slurry_rate = db.Column(db.Float)
 
 
@@ -385,8 +385,8 @@ class TreatingPressure(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "treating_pressure"
 
-    id = db.Column(db.BigInteger, autoincrement=True)
-    stage_id = db.Column(db.BigInteger, primary_key=True)
+    id = db.Column(db.BigInteger, autoincrement=True, primary_key=True)
+    stage_id = db.Column(db.Integer, nullable=False)
     wellhead_pressure = db.Column(db.Float)
     treating_pressure = db.Column(db.Float)
     annulus_pressure = db.Column(db.Float)
@@ -398,8 +398,8 @@ class Wireline(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "wireline"
 
-    id = db.Column(db.BigInteger, autoincrement=True)
-    stage_id = db.Column(db.BigInteger, primary_key=True)
+    id = db.Column(db.BigInteger, autoincrement=True, primary_key=True)
+    stage_id = db.Column(db.Integer, nullable=False)
     ccl = db.Column(db.Float)
     current = db.Column(db.Float)
     line_speed = db.Column(db.Float)
@@ -417,8 +417,8 @@ class ResultProcessed(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "result_processed"
 
-    id = db.Column(db.BigInteger, autoincrement=True)
-    stage_id = db.Column(db.BigInteger, primary_key=True)
+    id = db.Column(db.BigInteger, autoincrement=True, primary_key=True)
+    stage_id = db.Column(db.Integer, nullable=False)
     well_id = db.Column(db.BigInteger)
 
 
@@ -426,8 +426,8 @@ class SinglePulseParameter(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "single_pulse_parameter"
 
-    id = db.Column(db.BigInteger, autoincrement=True)
-    stage_id = db.Column(db.BigInteger, primary_key=True)
+    id = db.Column(db.BigInteger, autoincrement=True, primary_key=True)
+    stage_id = db.Column(db.Integer, nullable=False)
     crew_id = db.Column(db.Integer, nullable=False)
     pulse_ordinal = db.Column(db.Integer)
     t_trigger = db.Column(db.DateTime)
@@ -440,8 +440,8 @@ class SinglePulseNfResult(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "single_pulse_nf_result"
 
-    id = db.Column(db.BigInteger, autoincrement=True)
-    stage_id = db.Column(db.BigInteger, primary_key=True)
+    id = db.Column(db.BigInteger, autoincrement=True, primary_key=True)
+    stage_id = db.Column(db.Integer, nullable=False)
     single_pulse_param_id = db.Column(db.Integer, nullable=False)
     crew_id = db.Column(db.Integer, nullable=False)
     nf_parameter_set_id = db.Column(db.Integer, nullable=False)
@@ -479,8 +479,8 @@ class Ff3Parameter(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "ff3_parameter"
 
-    id = db.Column(db.BigInteger, autoincrement=True)
-    stage_id = db.Column(db.BigInteger, primary_key=True)
+    id = db.Column(db.BigInteger, autoincrement=True, primary_key=True)
+    stage_id = db.Column(db.Integer, nullable=False)
     crew_id = db.Column(db.Integer, nullable=False)
     daq_sensor_id = db.Column(db.Integer, nullable=False)
     ff3_type = db.Column(db.Text)
@@ -511,8 +511,8 @@ class Ff3Result(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "ff3_result"
 
-    id = db.Column(db.BigInteger, autoincrement=True)
-    stage_id = db.Column(db.BigInteger, primary_key=True)
+    id = db.Column(db.BigInteger, autoincrement=True, primary_key=True)
+    stage_id = db.Column(db.Integer, nullable=False)
     ff3_parameter_id = db.Column(db.Integer, nullable=False)
     crew_id = db.Column(db.Integer, nullable=False)
     inv_ver = db.Column(db.Float)
@@ -559,8 +559,8 @@ class Ff3Tvd(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "ff3_tvd"
 
-    id = db.Column(db.BigInteger, autoincrement=True)
-    stage_id = db.Column(db.BigInteger, primary_key=True)
+    id = db.Column(db.BigInteger, autoincrement=True, primary_key=True)
+    stage_id = db.Column(db.Integer, nullable=False)
     sigt = db.Column(db.Float)
     pres = db.Column(db.Float)
     p_r_calc = db.Column(db.Float)

@@ -6,6 +6,6 @@ class BacksidePressure(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "backside_pressure"
 
-    id = db.Column(db.BigInteger, autoincrement=True)
-    stage_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    stage_id = db.Column(db.Integer, nullable=False)
     value = db.Column(db.Float, nullable=False)

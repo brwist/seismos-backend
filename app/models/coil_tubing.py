@@ -6,8 +6,8 @@ class CoilTubing(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "coil_tubing"
 
-    id = db.Column(db.BigInteger, autoincrement=True)
-    stage_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    stage_id = db.Column(db.Integer, nullable=False)
     timestamp = db.Column(db.DateTime)
     pump_rate = db.Column(db.Float)
     pump_rate_unit = db.Column(db.Text)

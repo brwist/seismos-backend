@@ -7,8 +7,8 @@ class FormationTop(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "formation_top"
 
-    id = db.Column(db.BigInteger, autoincrement=True)
-    well_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    well_id = db.Column(db.Integer, nullable=False)
     measured_depth = db.Column(db.Float)
     inclination = db.Column(db.Float)
     azimuth = db.Column(db.Float)

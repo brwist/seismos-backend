@@ -197,8 +197,8 @@ class Proppant(ModelMixin, db.Model, TimestampMixin, JsonModelMixin):
 class ActiveData(ModelMixin, db.Model):
     __tablename__ = "active_data"
 
-    id = db.Column(db.Integer, autoincrement=True)
-    stage_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    stage_id = db.Column(db.Integer, nullable=False)
     amplitude = db.Column(db.Integer, nullable=False, default=0)
     frequency = db.Column(db.Float, nullable=False, default=0)
     offset = db.Column(db.Integer, nullable=False, default=0)
