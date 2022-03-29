@@ -77,8 +77,8 @@ class PulsingParameters(Schema):
 
 
 class StageDataSchema(Schema):
-    stage_start_time = fields.Int()
-    stage_end_time = fields.Int()
+    stage_start_time = fields.Integer()
+    stage_end_time = fields.Integer()
     opening_well = fields.Int()
     # isip = fields.Float()
     fluid_parameters = fields.Nested(StageDataFluidParam, required=True)
@@ -90,14 +90,14 @@ class StageDataSchema(Schema):
 
 
 class PreFracPulsesSchema(Schema):
-    pre_frac_start_time = fields.Int()
-    pre_frac_end_time = fields.Int()
+    pre_frac_start_time = fields.Integer()
+    pre_frac_end_time = fields.Integer()
     pre_frac_num_pulse = fields.Integer()
 
 
 class PostFracPulsesSchema(Schema):
-    post_frac_start_time = fields.Int()
-    post_frac_end_time = fields.Int()
+    post_frac_start_time = fields.Integer()
+    post_frac_end_time = fields.Integer()
     post_frac_num_pulse = fields.Integer()
 
 
