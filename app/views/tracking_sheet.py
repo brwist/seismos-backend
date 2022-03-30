@@ -359,10 +359,7 @@ class TrackingSheetResource(Resource):
         # update stage
         tracking_sheet_data = parse_tracking_sheet_data(req)
         for field, value in tracking_sheet_data[Stage].items():
-            if field in ("stage_start_time", "stage_end_time"):
-                setattr(stage, field, datetime.fromtimestamp(value))
-            else:
-                setattr(stage, field, value)
+            setattr(stage, field, value)
 
         stage.save()
 
