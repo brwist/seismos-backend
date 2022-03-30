@@ -157,7 +157,13 @@ def unpack_json_data(json_data, data_map):
             current_data_point = json_data
             for data_point in path:
                 if data_point in current_data_point:
-                    current_data_point = current_data_point[data_point]
+                    print(current_data_point[data_point])
+                    if data_point in ("stage_start_time", "stage_end_time"):
+                        current_data_point = datetime.fromtimestamp(
+                            current_data_point[data_point]
+                        )
+                    else:
+                        current_data_point = current_data_point[data_point]
                     continue
                 current_data_point = {}
                 break
