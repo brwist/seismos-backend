@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy.dialects.mysql import JSON, TINYINT
 from app.models.mixin_models import (
     TimestampMixin,
@@ -155,8 +156,8 @@ class Stage(TimestampMixin, ModelMixin, db.Model, QCReportDataModel):
 
     def generate_report(self, include_none=False):
         report = super().generate_report(include_none)
-        report["stage_start_time"] = int(report["stage_start_time"])
-        report["stage_end_time"] = int(report["stage_end_time"])
+        report["stage_start_time"] = datetime.fromtimestamp(report["stage_start_time"])
+        report["stage_end_time"] = datetime.fromtimestamp(report["stage_end_time"])
         return report
 
     def to_json(self):
