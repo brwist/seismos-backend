@@ -55,7 +55,7 @@ class SyncCloud(Resource):
                 # prepare sql query
                 reader = csv.reader(f)
                 columns = next(reader)
-                query = "insert into ({0}) ({1}) values ({2})"
+                query = "insert into {0} ({1}) values ({2})"
                 query = query.format(
                     tableName, ",".join(columns), ("%s," * (len(columns) - 1)) + "%s"
                 )
