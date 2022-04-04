@@ -22,6 +22,8 @@ from .qc_report import (
     Ff3Parameter,
     Ff3Result,
     Ff3Tvd,
+    CloudSyncTableList,
+    CloudSyncTableLog,
 )
 from .default_values import (
     DefaultVal,

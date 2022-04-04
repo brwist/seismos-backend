@@ -99,6 +99,7 @@ class ProjectReturnDataSchema(Schema):
 
 class ProjectFieldSchema(Schema):
     project = fields.Nested(ProjectReturnDataSchema)
+    last_sync_date = fields.Integer(required=True)
 
 
 class ProjectReturnSchema(Schema):
