@@ -24,8 +24,15 @@ class SyncCloud(Resource):
         path_schema=SyncCloudRequestScehma,
         tag="Sync Cloud",
     )
-    def exportCSV(cls, conn, query, id, path):
-        frame = pd.read_sql_query(query, conn, params={"id": id})
+    def test(self):
+        pass
+
+    def exportCSV(cls, conn, query, id, path, isMultiQuery):
+        if isMultiQuery:
+            frame = pd.read_sql_query(query, conn, params=[id])
+        else:
+            frame = pd.read_sql_query(query, conn, params={"id": id})
+
         frame.to_csv(path, index=False)
 
     def importCSVToStore(cls, path, tableName, connection):
@@ -64,11 +71,11 @@ class SyncCloud(Resource):
                     for i in range(len(data)):
                         if data[i] == "":
                             data[i] = None
-
+                    # print("data: ", data)
                     result = connection.execute(query, data)
                     print(tableName + " table query result: ", result.rowcount)
 
-    def get(self, project_uuid, well_uuid):
+    def get(self, project_uuid):
         # Connect to managed store
         sqlEngine = create_engine(CLOUD_DB_URL, pool_recycle=3600)
         connection = sqlEngine.connect()
@@ -85,13 +92,6 @@ class SyncCloud(Resource):
             project = Project.query.filter(
                 (Project.project_uuid == project_uuid)
             ).first()
-            location_info = LocationInfo.query.filter(
-                (LocationInfo.job_info_id == project.job_info.id)
-            ).first()
-            well = Well.query.filter(
-                Well.pad_id == project.pad.id, Well.well_uuid == well_uuid
-            ).first()
-            stage = Stage.query.filter((Stage.well_id == well.id)).first()
 
             if project:
                 # Get default system path
@@ -102,6 +102,11 @@ class SyncCloud(Resource):
                     + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"),
                 )
                 os.mkdir(mydir)
+
+                location_info = LocationInfo.query.filter(
+                    (LocationInfo.job_info_id == project.job_info.id)
+                ).first()
+
                 tableNames = [
                     "project",
                     "client",
@@ -140,11 +145,11 @@ class SyncCloud(Resource):
                     "SELECT * FROM crew WHERE id=%(id)s",
                     "SELECT * FROM user WHERE id=%(id)s",
                     "SELECT * FROM well WHERE pad_id=%(id)s",
-                    "SELECT * FROM equipment WHERE id=%(id)s",
-                    "SELECT * FROM field_notes WHERE well_id=%(id)s",
-                    "SELECT * FROM default_val WHERE well_id=%(id)s",
-                    "SELECT * FROM default_param_val WHERE well_id=%(id)s",
-                    "SELECT * FROM default_advance_val WHERE well_id=%(id)s",
+                    "SELECT * FROM equipment WHERE id IN ({})",
+                    "SELECT * FROM field_notes WHERE well_id IN ({})",
+                    "SELECT * FROM default_val WHERE well_id IN ({})",
+                    "SELECT * FROM default_param_val WHERE well_id IN ({})",
+                    "SELECT * FROM default_advance_val WHERE well_id IN ({})",
                 ]
                 ids = [
                     project_uuid,
@@ -162,14 +167,22 @@ class SyncCloud(Resource):
                     project.project_crew.crew_id,
                     project.user_id,
                     project.pad.id,
-                    well.equipment_id,
-                    well.id,
-                    well.id,
-                    well.id,
-                    well.id,
                 ]
+                equipment_ids = []
+                well_ids = []
+                stage_ids = []
+                chem_fluids = []
+                for well in project.pad.wells:
+                    equipment_ids.append(well.equipment_id)
+                    well_ids.append(well.id)
+                    stage = Stage.query.filter((Stage.well_id == well.id)).first()
+                    if stage:
+                        stage_ids.append(stage.id)
+                        chem_fluids.append(stage.chem_fluids.id)
 
-                if stage:
+                ids.extend([equipment_ids, well_ids, well_ids, well_ids, well_ids])
+
+                if len(stage_ids) > 0:
                     tableNames.extend(
                         [
                             "stage",
@@ -180,35 +193,40 @@ class SyncCloud(Resource):
                             "ff_processing_result",
                             "nf_processing_result",
                             "active_data",
-                            "formation_fluid_injection",
                         ]
                     )
                     queries.extend(
                         [
-                            "SELECT * FROM stage WHERE well_id=%(id)s",
-                            "SELECT * FROM proppant WHERE stage_id=%(id)s",
-                            "SELECT * FROM perforation WHERE stage_id=%(id)s",
-                            "SELECT * FROM chem_fluids WHERE stage_id=%(id)s",
-                            "SELECT * FROM stage_avg WHERE stage_id=%(id)s",
-                            "SELECT * FROM ff_processing_result WHERE stage_id=%(id)s",
-                            "SELECT * FROM nf_processing_result WHERE stage_id=%(id)s",
-                            "SELECT * FROM active_data WHERE stage_id=%(id)s",
-                            "SELECT * FROM formation_fluid_injection WHERE chem_fluid_id=%(id)s",
+                            "SELECT * FROM stage WHERE well_id IN ({})",
+                            "SELECT * FROM proppant WHERE stage_id IN ({})",
+                            "SELECT * FROM perforation WHERE stage_id IN ({})",
+                            "SELECT * FROM chem_fluids WHERE stage_id IN ({})",
+                            "SELECT * FROM stage_avg WHERE stage_id IN ({})",
+                            "SELECT * FROM ff_processing_result WHERE stage_id IN ({})",
+                            "SELECT * FROM nf_processing_result WHERE stage_id IN ({})",
+                            "SELECT * FROM active_data WHERE stage_id IN ({})",
                         ]
                     )
                     ids.extend(
                         [
-                            well.id,
-                            stage.id,
-                            stage.id,
-                            stage.id,
-                            stage.id,
-                            stage.id,
-                            stage.id,
-                            stage.id,
-                            stage.chem_fluids.id,
+                            well_ids,
+                            stage_ids,
+                            stage_ids,
+                            stage_ids,
+                            stage_ids,
+                            stage_ids,
+                            stage_ids,
+                            stage_ids,
                         ]
                     )
+                if len(chem_fluids) > 0:
+                    tableNames.extend(["formation_fluid_injection"])
+                    queries.extend(
+                        [
+                            "SELECT * FROM formation_fluid_injection WHERE chem_fluid_id IN ({})"
+                        ]
+                    )
+                    ids.extend([chem_fluids])
 
                 # Connect to local DB
                 localEngine = create_engine(DATABASE_URL, pool_recycle=3600)
@@ -217,13 +235,19 @@ class SyncCloud(Resource):
                 for idx, name in enumerate(tableNames):
                     path = os.path.join(mydir, name + ".csv")
                     # export
-                    self.exportCSV(localConn, queries[idx], ids[idx], path)
+                    if idx > 14:
+                        placeholders = ", ".join(["%s"] * len(ids[idx]))
+                        query = queries[idx].format(placeholders)
+                        self.exportCSV(localConn, query, ids[idx], path, True)
+                    else:
+                        query = queries[idx].format(ids[idx])
+                        self.exportCSV(localConn, query, ids[idx], path, False)
                     # import
                     self.importCSVToStore(path, name, connection)
 
-                # Remove synced directory
-                if os.path.exists(mydir):
-                    shutil.rmtree(mydir)
+                # # Remove synced directory
+                # if os.path.exists(mydir):
+                #     shutil.rmtree(mydir)
 
                 return {"msg": "sync successed"}, 200
             else:

@@ -28,5 +28,5 @@ ENDPOINTS_MAP = {
     DailyLogResource: "/daily-log/<well_uuid>",
     DefaultValuesResource: "/default-values/<well_uuid>",
     DatabaseRestore: "/admin/db_restore/<backup_index>",
-    SyncCloud: "/sync-cloud/<project_uuid>/<well_uuid>",
+    SyncCloud: "/sync-cloud/<project_uuid>",
 }
