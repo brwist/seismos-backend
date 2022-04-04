@@ -27,6 +27,7 @@ from app.models import (
     ProjectCrew,
     Well,
     User,
+    CloudSyncTableLog,
 )
 
 from marshmallow.exceptions import ValidationError
@@ -42,6 +43,9 @@ class ProjectGeneral(Resource):
     def get(self, project_uuid):
         """Get project data"""
         project = Project.query.filter(Project.project_uuid == project_uuid).first()
+        projectSync = CloudSyncTableLog.query.filter(
+            CloudSyncTableLog.table_name == "project"
+        ).first()
         if not project or project.user_id != current_user.id:
             msg = f"Project with uuid: {project_uuid} not found"
             return {"msg": msg}, 404
@@ -56,6 +60,11 @@ class ProjectGeneral(Resource):
                 }
             )
 
+        if projectSync:
+            last_sync_date = datetime.timestamp(projectSync.synch_date)
+        else:
+            last_sync_date = 0
+
         return {
             "status": 200,
             "message": "Project details",
@@ -64,7 +73,8 @@ class ProjectGeneral(Resource):
                     "uuid": project.project_uuid,
                     "project_name": project.project_name,
                     "wells": wells,
-                }
+                },
+                "last_sync_date": last_sync_date,
             },
         }
 
