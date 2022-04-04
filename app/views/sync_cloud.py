@@ -8,7 +8,7 @@ import pandas as pd
 from flask_jwt_extended import jwt_required
 from flask_restful import Resource
 from flasgger_marshmallow import swagger_decorator
-from app.models import Project, LocationInfo, Well, Stage
+from app.models import Project, LocationInfo, Stage, CloudSyncTableLog
 from app.schemas import MessageSchema, SyncCloudRequestScehma
 
 load_dotenv()
@@ -74,6 +74,14 @@ class SyncCloud(Resource):
                     # print("data: ", data)
                     result = connection.execute(query, data)
                     print(tableName + " table query result: ", result.rowcount)
+
+                    syncTable = CloudSyncTableLog(
+                        table_name=tableName,
+                        sync_status="True",
+                        synch_date=datetime.datetime.now(),
+                    )
+
+                    syncTable.save()
 
     def get(self, project_uuid):
         # Connect to managed store
@@ -245,9 +253,9 @@ class SyncCloud(Resource):
                     # import
                     self.importCSVToStore(path, name, connection)
 
-                # # Remove synced directory
-                # if os.path.exists(mydir):
-                #     shutil.rmtree(mydir)
+                # Remove synced directory
+                if os.path.exists(mydir):
+                    shutil.rmtree(mydir)
 
                 return {"msg": "sync successed"}, 200
             else:

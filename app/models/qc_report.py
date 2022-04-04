@@ -577,7 +577,7 @@ class CloudSyncTableList(TimestampMixin, ModelMixin, db.Model):
     is_active = db.Column(TINYINT, default=1)
 
 
-class CloudSyncTableList(TimestampMixin, ModelMixin, db.Model):
+class CloudSyncTableLog(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "cloud_sync_table_log"
 
