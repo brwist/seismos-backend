@@ -75,13 +75,33 @@ class SyncCloud(Resource):
                     result = connection.execute(query, data)
                     print(tableName + " table query result: ", result.rowcount)
 
-                    syncTable = CloudSyncTableLog(
-                        table_name=tableName,
-                        sync_status="True",
-                        synch_date=datetime.datetime.now(),
-                    )
+    def updateSyncTableLog(cls, tableName, connection):
+        # if exist update, not insert CloudSyncTableLog
+        syncTable = CloudSyncTableLog.query.filter(
+            CloudSyncTableLog.table_name == tableName
+        ).first()
 
-                    syncTable.save()
+        if syncTable:
+            # update local db
+            syncTable.synch_date = datetime.datetime.now()
+            syncTable.save()
+            # update cloud db
+            query = "update cloud_sync_table_log SET synch_date=%s WHERE table_name=%s"
+            connection.execute(query, [datetime.datetime.now(), tableName])
+        else:
+            # insert row on local db
+            syncTable = CloudSyncTableLog(
+                table_name=tableName,
+                sync_status="True",
+                synch_date=datetime.datetime.now(),
+            )
+            syncTable.save()
+            # insert row on cloud db
+            query = "insert into cloud_sync_table_log (table_name, sync_status, synch_date) values (%s, %s, %s)"
+            connection.execute(
+                query,
+                [tableName, "True", datetime.datetime.now()],
+            )
 
     def get(self, project_uuid):
         # Connect to managed store
@@ -252,7 +272,8 @@ class SyncCloud(Resource):
                         self.exportCSV(localConn, query, ids[idx], path, False)
                     # import
                     self.importCSVToStore(path, name, connection)
-
+                    # update syncTableLog
+                    self.updateSyncTableLog(name, connection)
                 # Remove synced directory
                 if os.path.exists(mydir):
                     shutil.rmtree(mydir)
