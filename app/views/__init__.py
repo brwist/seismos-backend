@@ -1,6 +1,6 @@
 # flake8: noqa F401
 from .auth import Login, UserResource
-from .project import ProjectGeneral, ProjectCreate, ProjectListGet
+from .project import ProjectGeneral, ProjectCreate, ProjectListGet, ProjectDownload
 from .tracking_sheet import (
     TrackingSheetResource,
     TrackingSheetCreateResource,
@@ -18,6 +18,7 @@ ENDPOINTS_MAP = {
     UserResource: "/user",
     ProjectGeneral: "/project/<project_uuid>",
     ProjectCreate: "/project",
+    ProjectDownload: "/project/download/<project_uuid>",
     ProjectListGet: "/project/list",
     TrackingSheetResource: "/tracking-sheet/<stage_uuid>",
     TrackingSheetStageList: "/tracking-sheet/stage_list/<well_uuid>",
