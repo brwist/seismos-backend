@@ -574,6 +574,7 @@ class CloudSyncTableList(TimestampMixin, ModelMixin, db.Model):
 
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     table_name = db.Column(db.Text, nullable=False)
+    sql_string = db.Column(db.Text, nullable=False)
     is_active = db.Column(TINYINT, default=1)
 
 
