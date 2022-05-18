@@ -1,9 +1,9 @@
 import datetime
-import time
 import os
+from os.path import basename
 import shutil
 from io import BytesIO
-import zipfile
+from zipfile import ZipFile
 from dotenv import load_dotenv
 import pandas as pd
 from sqlalchemy import create_engine
@@ -344,7 +344,7 @@ class ProjectListGet(Resource):
 
 
 class ProjectDownload(Resource):
-    # @jwt_required()
+    @jwt_required()
     @swagger_decorator(
         response_schema={404: MessageSchema},
         path_schema=ProjectUuidPathSchema,
@@ -354,32 +354,19 @@ class ProjectDownload(Resource):
         frame = pd.read_sql_query(query, conn, params={id})
         frame.to_csv(path, index=False)
 
-    def downloadZIP(cls, path):
-        fileName = "seismos_proj_dump_{}.zip".format(
-            datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")
-        )
+    def generateZIP(cls, dir):
         memory_file = BytesIO()
-        with zipfile.ZipFile(memory_file, "w", zipfile.ZIP_DEFLATED) as zipf:
-            for root, dirs, files in os.walk(path):
-                for file in files:
-                    zipf.write(os.path.join(root, file))
+        # create a ZipFile object
+        with ZipFile(memory_file, "w") as zipObj:
+            # Iterate over all the files in directory
+            for folderName, subfolders, filenames in os.walk(dir):
+                for filename in filenames:
+                    # create complete filepath of file in directory
+                    filePath = os.path.join(folderName, filename)
+                    # Add file to zip
+                    zipObj.write(filePath, basename(filePath))
         memory_file.seek(0)
-
-        # return send_file(
-        #     memory_file,
-        #     mimetype="application/zip",
-        #     attachment_filename=fileName,
-        #     as_attachment=True,
-        # )
-        response = make_response(memory_file.read())
-        response.headers.set("Content-Type", "zip")
-        response.headers.set(
-            "Content-Disposition",
-            "attachment",
-            filename=fileName,
-        )
-        print(response.headers)
-        return response
+        return memory_file
 
     def get(self, project_uuid):
         # Get table list
@@ -398,20 +385,21 @@ class ProjectDownload(Resource):
             # Connect to local DB
             localEngine = create_engine(DATABASE_URL, pool_recycle=3600)
             localConn = localEngine.connect()
-
+            # Export db data into csv
             for table in tableList:
                 path = os.path.join(mydir, table.table_name + ".csv")
                 if table.sql_string != "":
                     self.exportCSV(localConn, table.sql_string, project_uuid, path)
+            # generate zip from the exported csv directory
+            memory_file = self.generateZIP(mydir)
+            # Remove synced directory
+            if os.path.exists(mydir):
+                shutil.rmtree(mydir)
 
-            self.downloadZIP(mydir)
-            # # Remove synced directory
-            # if os.path.exists(mydir):
-            #     shutil.rmtree(mydir)
-
-            # return {
-            #     "status": 200,
-            #     "message": "Project is downloaded",
-            # }
+            response = Response(memory_file, mimetype="application/zip")
+            response.headers["Content-Disposition"] = "attachment; filename={}".format(
+                "seismos.zip"
+            )
+            return response
         else:
             return {"msg": "no active table found"}, 401
