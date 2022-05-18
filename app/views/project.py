@@ -1,5 +1,13 @@
-from datetime import datetime
-from flask import request
+import datetime
+import os
+from os.path import basename
+import shutil
+from io import BytesIO
+from zipfile import ZipFile
+from dotenv import load_dotenv
+import pandas as pd
+from sqlalchemy import create_engine
+from flask import Response, request, send_file, make_response
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity, current_user
 from flasgger_marshmallow import swagger_decorator
@@ -27,10 +35,16 @@ from app.models import (
     ProjectCrew,
     Well,
     User,
+    CloudSyncTableList,
     CloudSyncTableLog,
 )
 
 from marshmallow.exceptions import ValidationError
+
+load_dotenv()
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+CLOUD_DB_URL = os.environ.get("CLOUD_DB_URL")
 
 
 class ProjectGeneral(Resource):
@@ -327,3 +341,65 @@ class ProjectListGet(Resource):
             )
 
         return {"projects": projects}, 200
+
+
+class ProjectDownload(Resource):
+    @jwt_required()
+    @swagger_decorator(
+        response_schema={404: MessageSchema},
+        path_schema=ProjectUuidPathSchema,
+        tag="Project",
+    )
+    def exportCSV(cls, conn, query, id, path):
+        frame = pd.read_sql_query(query, conn, params={id})
+        frame.to_csv(path, index=False)
+
+    def generateZIP(cls, dir):
+        memory_file = BytesIO()
+        # create a ZipFile object
+        with ZipFile(memory_file, "w") as zipObj:
+            # Iterate over all the files in directory
+            for folderName, subfolders, filenames in os.walk(dir):
+                for filename in filenames:
+                    # create complete filepath of file in directory
+                    filePath = os.path.join(folderName, filename)
+                    # Add file to zip
+                    zipObj.write(filePath, basename(filePath))
+        memory_file.seek(0)
+        return memory_file
+
+    def get(self, project_uuid):
+        # Get table list
+        tableList = CloudSyncTableList.query.filter(
+            (CloudSyncTableList.sql_string != None)
+        ).all()
+
+        if tableList:
+            # Get default system path
+            mydir = os.path.join(
+                os.getcwd(),
+                project_uuid + "_" + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M"),
+            )
+            os.mkdir(mydir)
+
+            # Connect to local DB
+            localEngine = create_engine(DATABASE_URL, pool_recycle=3600)
+            localConn = localEngine.connect()
+            # Export db data into csv
+            for table in tableList:
+                path = os.path.join(mydir, table.table_name + ".csv")
+                if table.sql_string != "":
+                    self.exportCSV(localConn, table.sql_string, project_uuid, path)
+            # generate zip from the exported csv directory
+            memory_file = self.generateZIP(mydir)
+            # Remove synced directory
+            if os.path.exists(mydir):
+                shutil.rmtree(mydir)
+
+            response = Response(memory_file, mimetype="application/zip")
+            response.headers["Content-Disposition"] = "attachment; filename={}".format(
+                "seismos.zip"
+            )
+            return response
+        else:
+            return {"msg": "no active table found"}, 401
