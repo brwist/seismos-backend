@@ -27,7 +27,7 @@ VALUES
 	(18, 'ff_parameter_set', 1, '', '2022-03-18 19:16:40', '2022-03-18 19:16:40'),
 	(19, 'ff_processing_result', 1, '', '2022-03-18 19:16:40', '2022-03-18 19:16:40'),
 	(22, 'fluid_type_lookup', 0, '', '2022-03-18 19:16:40', '2022-03-18 19:16:40'),
-	(23, 'formation_fuild_injection', 1, 'select ffi.* from project p JOIN pad pa ON pa.project_id = p.id JOIN well w on pa.id=w.pad_id JOIN stage s on w.id = s.well_id JOIN chem_fluids cf on cf.stage_id=s.id JOIN formation_fluid_injection ffi on ffi.chem_fluid_id=cf.id where p.project_UUID =%s', '2022-03-18 19:16:40', '2022-03-18 19:16:40'),
+	(23, 'formation_fluid_injection', 1, 'select ffi.* from project p JOIN pad pa ON pa.project_id = p.id JOIN well w on pa.id=w.pad_id JOIN stage s on w.id = s.well_id JOIN chem_fluids cf on cf.stage_id=s.id JOIN formation_fluid_injection ffi on ffi.chem_fluid_id=cf.id where p.project_UUID =%s', '2022-03-18 19:16:40', '2022-03-18 19:16:40'),
 	(26, 'frac_design_lookup', 0, '', '2022-03-18 19:16:40', '2022-03-18 19:16:40'),
 	(28, 'job_info', 1, 'select ji.* from job_info ji JOIN project p on p.id=ji.job_id where p.project_UUID =%s', '2022-03-18 19:16:40', '2022-03-18 19:16:40'),
 	(32, 'mwd_report', 1, 'select mwd.* from project p JOIN pad pa ON pa.project_id = p.id JOIN well w on pa.id=w.pad_id JOIN file_metadata fm on fm.well_id=w.id JOIN mwd_report mwd on mwd.file_metadata_id=fm.id where p.project_UUID =%s', '2022-03-18 19:16:40', '2022-03-18 19:16:40'),
