@@ -1,4 +1,5 @@
-import datetime
+import csv
+from datetime import datetime
 import os
 from os.path import basename
 import shutil
@@ -7,6 +8,7 @@ from zipfile import ZipFile
 from dotenv import load_dotenv
 import pandas as pd
 from sqlalchemy import create_engine
+from werkzeug.utils import secure_filename
 from flask import Response, request, send_file, make_response
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity, current_user
@@ -378,7 +380,7 @@ class ProjectDownload(Resource):
             # Get default system path
             mydir = os.path.join(
                 os.getcwd(),
-                project_uuid + "_" + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M"),
+                project_uuid + "_" + datetime.now().strftime("%Y_%m_%d_%H_%M"),
             )
             os.mkdir(mydir)
 
@@ -403,3 +405,66 @@ class ProjectDownload(Resource):
             return response
         else:
             return {"msg": "no active table found"}, 401
+
+
+class ProjectUpload(Resource):
+    @jwt_required()
+    @swagger_decorator(
+        response_schema={404: MessageSchema},
+        tag="Project",
+    )
+    def extractZIP(cls, dir, target):
+        with ZipFile(dir, "r") as zip_ref:
+            zip_ref.extractall(target)
+        os.remove(dir)
+
+    def importCSVToStore(cls, path, tableName, connection):
+        with open(path, "r") as f:
+            # prepare sql query
+            reader = csv.reader(f)
+            columns = next(reader)
+            query = "replace into {0} ({1}) values ({2})"
+            query = query.format(
+                tableName, ",".join(columns), ("%s," * (len(columns) - 1)) + "%s"
+            )
+            for data in reader:
+                print("query: ", query)
+                for i in range(len(data)):
+                    if data[i] == "":
+                        data[i] = None
+                # print("data: ", data)
+                result = connection.execute(query, data)
+                print(tableName + " table query result: ", result.rowcount)
+
+    def post(self):
+        # create uploads dir if it's not existed
+        target = os.path.join(os.getcwd(), "uploads")
+        if not os.path.isdir(target):
+            os.mkdir(target)
+        # save file into uploads dir
+        file = request.files["file"]
+        filename = secure_filename(file.filename)
+        destination = "/".join([target, filename])
+        file.save(destination)
+        # extract zip file
+        self.extractZIP(destination, target)
+
+        localEngine = create_engine(DATABASE_URL, pool_recycle=3600)
+        localConn = localEngine.connect()
+
+        for folderName, subfolders, filenames in os.walk(target):
+            if folderName != target:
+                continue
+            else:
+                for filename in filenames:
+                    if filename.endswith(".csv"):
+                        filePath = os.path.join(folderName, filename)
+                        tableName = os.path.splitext(filename)[0]
+                        self.importCSVToStore(filePath, tableName, localConn)
+                    else:
+                        print(filename)
+
+        if os.path.exists(target):
+                shutil.rmtree(target)
+
+        return {"msg": "file uploaded!"}, 200
