@@ -11,7 +11,7 @@ class User(db.Model, ModelMixin):
 
     __tablename__ = "user"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(150), nullable=False)
     password = db.Column(db.String(255), nullable=False)
@@ -20,9 +20,9 @@ class User(db.Model, ModelMixin):
 
     def to_dict(self):
         return {
-            'username': self.username,
-            'email': self.email,
-            'created_at': self.created_at.timestamp(),
+            "username": self.username,
+            "email": self.email,
+            "created_at": self.created_at.timestamp(),
         }
 
     # @password.setter
@@ -32,7 +32,10 @@ class User(db.Model, ModelMixin):
     @classmethod
     def authenticate(cls, user_id, password):
         user = cls.query.filter(
-            db.or_(func.lower(cls.username) == func.lower(user_id), func.lower(cls.email) == func.lower(user_id))
+            db.or_(
+                func.lower(cls.username) == func.lower(user_id),
+                func.lower(cls.email) == func.lower(user_id),
+            )
         ).first()
         if user is not None and check_password_hash(user.password, password):
             return user
@@ -43,8 +46,8 @@ class User(db.Model, ModelMixin):
 
 class UserProjects(db.Model):
 
-    __tablename__ = "user_projects"
+    __tablename__ = "project_user"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False)
     project_id = db.Column(db.BigInteger, nullable=False)

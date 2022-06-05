@@ -32,26 +32,40 @@ class ChemFluids(ModelMixin, db.Model, TimestampMixin, JsonModelMixin):
     max_conc_density = db.Column(db.Float)
     design_acid_vol = db.Column(db.Integer)
 
-    formation_fuild_injection = db.relation(
-        "FormationFuildInjection",
+    formation_fluid_injection = db.relation(
+        "FormationFluidInjection",
         foreign_keys=[id],
-        primaryjoin="ChemFluids.id == FormationFuildInjection.chem_fluid_id",
+        primaryjoin="ChemFluids.id == FormationFluidInjection.chem_fluid_id",
         uselist=True,
         cascade="all,delete",
     )
 
     json_fields = (
-        "fluid_type_name", "chem_trade_name", "chem_name",
-        "volume", "volume_unit", "volume_concentration",
-        "volume_concentration_unit", "dry_total", "dry_total_unit",
-        "dry_concentration", "dry_concentration_unit", "acid",
-        "acid_unit", "clay_stabilizer", "clay_stabilizer_unit",
-        "misc", "bulk_modulus", "bulk_modulus_unit",
-        "base_fluid_density", "base_fluid_type", "max_conc_density",
-        "design_acid_vol"
+        "fluid_type_name",
+        "chem_trade_name",
+        "chem_name",
+        "volume",
+        "volume_unit",
+        "volume_concentration",
+        "volume_concentration_unit",
+        "dry_total",
+        "dry_total_unit",
+        "dry_concentration",
+        "dry_concentration_unit",
+        "acid",
+        "acid_unit",
+        "clay_stabilizer",
+        "clay_stabilizer_unit",
+        "misc",
+        "bulk_modulus",
+        "bulk_modulus_unit",
+        "base_fluid_density",
+        "base_fluid_type",
+        "max_conc_density",
+        "design_acid_vol",
     )
 
-    json_list_fields = ("formation_fuild_injection",)
+    json_list_fields = ("formation_fluid_injection",)
 
     def to_json(self, remove_none=False):
         res = super().to_json(remove_none)
@@ -64,8 +78,8 @@ class ChemFluids(ModelMixin, db.Model, TimestampMixin, JsonModelMixin):
 
 
 # FluidsItem
-class FormationFuildInjection(ModelMixin, db.Model, JsonModelMixin):
-    __tablename__ = "formation_fuild_injection"
+class FormationFluidInjection(ModelMixin, db.Model, JsonModelMixin):
+    __tablename__ = "formation_fluid_injection"
 
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     chem_fluid_id = db.Column(db.Integer, nullable=False)
@@ -79,7 +93,7 @@ class FormationFuildInjection(ModelMixin, db.Model, JsonModelMixin):
 class Perforation(ModelMixin, db.Model, TimestampMixin, JsonModelMixin):
     __tablename__ = "perforation"
 
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     stage_id = db.Column(db.Integer)
     order_num = db.Column(db.Integer)
     ordinal = db.Column(db.Float)
@@ -104,13 +118,27 @@ class Perforation(ModelMixin, db.Model, TimestampMixin, JsonModelMixin):
     perf_gun_description = db.Column(db.String(255))
 
     json_fields = (
-        "order_num", "ordinal", "top_measured_depth",
-        "bottom_measured_depth", "depth_unit", "shot_number",
-        "shot_density", "shot_density_unit", "shot_count",
-        "phasing", "conveyance_method", "charge_type",
-        "charge_size", "charge_size_unit", "estimated_hole_diameter",
-        "estimated_hole_diameter_unit", "perf_plug_num", "perf_start_time",
-        "perf_end_time", "bottom_perf", "perf_gun_description",
+        "order_num",
+        "ordinal",
+        "top_measured_depth",
+        "bottom_measured_depth",
+        "depth_unit",
+        "shot_number",
+        "shot_density",
+        "shot_density_unit",
+        "shot_count",
+        "phasing",
+        "conveyance_method",
+        "charge_type",
+        "charge_size",
+        "charge_size_unit",
+        "estimated_hole_diameter",
+        "estimated_hole_diameter_unit",
+        "perf_plug_num",
+        "perf_start_time",
+        "perf_end_time",
+        "bottom_perf",
+        "perf_gun_description",
     )
 
 
@@ -138,17 +166,23 @@ class Proppant(ModelMixin, db.Model, TimestampMixin, JsonModelMixin):
     proppant_end_start_time = db.Column(db.DateTime)
 
     json_fields = (
-        "proppant_name", "prop_mass", "mass_unit",
-        "material", "mesh_size", "avg_concentration",
-        "avg_concentration_unit", "max_concentration", "max_concentration_unit",
-        "bulk_density", "specific_gravity", "actual_lbs",
-        "designed_lbs", "total_pumped_lbs"
+        "proppant_name",
+        "prop_mass",
+        "mass_unit",
+        "material",
+        "mesh_size",
+        "avg_concentration",
+        "avg_concentration_unit",
+        "max_concentration",
+        "max_concentration_unit",
+        "bulk_density",
+        "specific_gravity",
+        "actual_lbs",
+        "designed_lbs",
+        "total_pumped_lbs",
     )
 
-    datetime_fields = (
-        "proppant_type_start_time",
-        "proppant_end_start_time"
-    )
+    datetime_fields = ("proppant_type_start_time", "proppant_end_start_time")
 
     def to_json(self):
         data = super().to_json()
@@ -161,19 +195,45 @@ class Proppant(ModelMixin, db.Model, TimestampMixin, JsonModelMixin):
 
 
 class ActiveData(ModelMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    __tablename__ = "active_data"
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     stage_id = db.Column(db.Integer, nullable=False)
     amplitude = db.Column(db.Integer, nullable=False, default=0)
     frequency = db.Column(db.Float, nullable=False, default=0)
     offset = db.Column(db.Integer, nullable=False, default=0)
     period = db.Column(db.Integer, nullable=False, default=0)
     wave_type = db.Column(db.String(50))
-    post_frac_start_time = db.Column(db.Integer)
-    post_frac_end_time = db.Column(db.Integer)
-    pre_frac_start_time = db.Column(db.Integer)
-    pre_frac_end_time = db.Column(db.Integer)
+    post_frac_start_time = db.Column(db.DateTime)
+    post_frac_end_time = db.Column(db.DateTime)
+    pre_frac_start_time = db.Column(db.DateTime)
+    pre_frac_end_time = db.Column(db.DateTime)
     pre_frac_num_pulse = db.Column(db.Integer)
     post_frac_num_pulse = db.Column(db.Integer)
     pre_frac_pulse_note = db.Column(db.String(255))
     post_frac_pulse_note = db.Column(db.String(255))
     additional_note = db.Column(db.String(255))
+
+
+class PostFrac(TimestampMixin, ModelMixin, db.Model):
+
+    __tablename__ = "post_frac"
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    stage_id = db.Column(db.Integer)
+    post_start_time = db.Column(db.DateTime)
+    post_end_time = db.Column(db.DateTime)
+    post_frac_num_pulse = db.Column(db.Text)
+    post_frac_pulse_notes = db.Column(db.Text)
+
+
+class PreFrac(TimestampMixin, ModelMixin, db.Model):
+
+    __tablename__ = "pre_frac"
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    stage_id = db.Column(db.Integer)
+    pre_start_time = db.Column(db.DateTime)
+    pre_end_time = db.Column(db.DateTime)
+    pre_frac_num_pulse = db.Column(db.Text)
+    pre_frac_pulse_notes = db.Column(db.Text)

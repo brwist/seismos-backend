@@ -48,3 +48,4 @@ from .default_values import (
 )
 
 from .backup_db import BackupIndexSchema
+from .qc_report import SyncCloudRequestScehma

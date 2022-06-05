@@ -6,7 +6,7 @@ class Equipment(TimestampMixin, ModelMixin, db.Model):
 
     __tablename__ = "equipment"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     trailer_id = db.Column(db.Integer)
     powerpack_id = db.Column(db.Integer)
     source_id = db.Column(db.Integer)

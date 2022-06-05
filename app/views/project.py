@@ -1,5 +1,15 @@
+import csv
 from datetime import datetime
-from flask import request
+import os
+from os.path import basename
+import shutil
+from io import BytesIO
+from zipfile import ZipFile
+from dotenv import load_dotenv
+import pandas as pd
+from sqlalchemy import create_engine
+from werkzeug.utils import secure_filename
+from flask import Response, request, send_file, make_response
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity, current_user
 from flasgger_marshmallow import swagger_decorator
@@ -27,9 +37,16 @@ from app.models import (
     ProjectCrew,
     Well,
     User,
+    CloudSyncTableList,
+    CloudSyncTableLog,
 )
 
 from marshmallow.exceptions import ValidationError
+
+load_dotenv()
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+CLOUD_DB_URL = os.environ.get("CLOUD_DB_URL")
 
 
 class ProjectGeneral(Resource):
@@ -42,6 +59,9 @@ class ProjectGeneral(Resource):
     def get(self, project_uuid):
         """Get project data"""
         project = Project.query.filter(Project.project_uuid == project_uuid).first()
+        projectSync = CloudSyncTableLog.query.filter(
+            CloudSyncTableLog.table_name == "project"
+        ).first()
         if not project or project.user_id != current_user.id:
             msg = f"Project with uuid: {project_uuid} not found"
             return {"msg": msg}, 404
@@ -56,6 +76,11 @@ class ProjectGeneral(Resource):
                 }
             )
 
+        if projectSync:
+            last_sync_date = datetime.timestamp(projectSync.synch_date)
+        else:
+            last_sync_date = 0
+
         return {
             "status": 200,
             "message": "Project details",
@@ -64,7 +89,8 @@ class ProjectGeneral(Resource):
                     "uuid": project.project_uuid,
                     "project_name": project.project_name,
                     "wells": wells,
-                }
+                },
+                "last_sync_date": last_sync_date,
             },
         }
 
@@ -317,3 +343,128 @@ class ProjectListGet(Resource):
             )
 
         return {"projects": projects}, 200
+
+
+class ProjectDownload(Resource):
+    @jwt_required()
+    @swagger_decorator(
+        response_schema={404: MessageSchema},
+        path_schema=ProjectUuidPathSchema,
+        tag="Project",
+    )
+    def exportCSV(cls, conn, query, id, path):
+        frame = pd.read_sql_query(query, conn, params={id})
+        frame.to_csv(path, index=False)
+
+    def generateZIP(cls, dir):
+        memory_file = BytesIO()
+        # create a ZipFile object
+        with ZipFile(memory_file, "w") as zipObj:
+            # Iterate over all the files in directory
+            for folderName, subfolders, filenames in os.walk(dir):
+                for filename in filenames:
+                    # create complete filepath of file in directory
+                    filePath = os.path.join(folderName, filename)
+                    # Add file to zip
+                    zipObj.write(filePath, basename(filePath))
+        memory_file.seek(0)
+        return memory_file
+
+    def get(self, project_uuid):
+        # Get table list
+        tableList = CloudSyncTableList.query.filter(
+            (CloudSyncTableList.sql_string != None)
+        ).all()
+
+        if tableList:
+            # Get default system path
+            mydir = os.path.join(
+                os.getcwd(),
+                project_uuid + "_" + datetime.now().strftime("%Y_%m_%d_%H_%M"),
+            )
+            os.mkdir(mydir)
+
+            # Connect to local DB
+            localEngine = create_engine(DATABASE_URL, pool_recycle=3600)
+            localConn = localEngine.connect()
+            # Export db data into csv
+            for table in tableList:
+                path = os.path.join(mydir, table.table_name + ".csv")
+                if table.sql_string != "":
+                    self.exportCSV(localConn, table.sql_string, project_uuid, path)
+            # generate zip from the exported csv directory
+            memory_file = self.generateZIP(mydir)
+            # Remove synced directory
+            if os.path.exists(mydir):
+                shutil.rmtree(mydir)
+
+            response = Response(memory_file, mimetype="application/zip")
+            response.headers["Content-Disposition"] = "attachment; filename={}".format(
+                "seismos.zip"
+            )
+            return response
+        else:
+            return {"msg": "no active table found"}, 401
+
+
+class ProjectUpload(Resource):
+    @jwt_required()
+    @swagger_decorator(
+        response_schema={404: MessageSchema},
+        tag="Project",
+    )
+    def extractZIP(cls, dir, target):
+        with ZipFile(dir, "r") as zip_ref:
+            zip_ref.extractall(target)
+        os.remove(dir)
+
+    def importCSVToStore(cls, path, tableName, connection):
+        with open(path, "r") as f:
+            # prepare sql query
+            reader = csv.reader(f)
+            columns = next(reader)
+            query = "replace into {0} ({1}) values ({2})"
+            query = query.format(
+                tableName, ",".join(columns), ("%s," * (len(columns) - 1)) + "%s"
+            )
+            for data in reader:
+                print("query: ", query)
+                for i in range(len(data)):
+                    if data[i] == "":
+                        data[i] = None
+                # print("data: ", data)
+                result = connection.execute(query, data)
+                print(tableName + " table query result: ", result.rowcount)
+
+    def post(self):
+        # create uploads dir if it's not existed
+        target = os.path.join(os.getcwd(), "uploads")
+        if not os.path.isdir(target):
+            os.mkdir(target)
+        # save file into uploads dir
+        file = request.files["file"]
+        filename = secure_filename(file.filename)
+        destination = "/".join([target, filename])
+        file.save(destination)
+        # extract zip file
+        self.extractZIP(destination, target)
+
+        localEngine = create_engine(DATABASE_URL, pool_recycle=3600)
+        localConn = localEngine.connect()
+
+        for folderName, subfolders, filenames in os.walk(target):
+            if folderName != target:
+                continue
+            else:
+                for filename in filenames:
+                    if filename.endswith(".csv"):
+                        filePath = os.path.join(folderName, filename)
+                        tableName = os.path.splitext(filename)[0]
+                        self.importCSVToStore(filePath, tableName, localConn)
+                    else:
+                        print(filename)
+
+        if os.path.exists(target):
+                shutil.rmtree(target)
+
+        return {"msg": "file uploaded!"}, 200

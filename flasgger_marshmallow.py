@@ -174,9 +174,7 @@ def swagger_decorator(
             }
 
             if hasattr(schemas_field, "schema"):
-                res = {
-                    "properties": parse_request_schema(schemas_field.schema)
-                }
+                res = {"properties": parse_request_schema(schemas_field.schema)}
 
             elif field_type == "array":
                 res["items"] = parse_field(schemas_field.inner)
@@ -245,7 +243,7 @@ def swagger_decorator(
                         "application/json": {
                             "schema": {
                                 "type": "object",
-                                "properties": parse_request_schema(json_schema)
+                                "properties": parse_request_schema(json_schema),
                             },
                         }
                     }
@@ -256,9 +254,11 @@ def swagger_decorator(
                     "content": {
                         "multipart/form-data": {
                             "schema": flasgger.marshmallow_apispec.schema2jsonschema(
-                                marshmallow.Schema.from_dict({
-                                    **file_form_schema().fields,
-                                })
+                                marshmallow.Schema.from_dict(
+                                    {
+                                        **file_form_schema().fields,
+                                    }
+                                )
                             ),
                             "encoding": {
                                 "watchers": {"style": "form", "explode": True},
@@ -267,7 +267,7 @@ def swagger_decorator(
                         }
                     }
                 }
-            
+
             if response_schema:
                 doc_dict["responses"] = {}
                 for code, current_schema in response_schema.items():
@@ -358,7 +358,10 @@ def swagger_decorator(
                 return (
                     "request error: %s"
                     % "".join(
-                        [("%s: %s; " % (str(x), "".join(y))) for x, y in e.messages.items()]
+                        [
+                            ("%s: %s; " % (str(x), "".join(y)))
+                            for x, y in e.messages.items()
+                        ]
                     ),
                     400,
                 )

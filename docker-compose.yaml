@@ -1,7 +1,7 @@
 version: '2'
 services:
   front_end:
-    image: datasleek/seismos:integrationTest
+    image: datasleek/seismos:amd64
     ports:
       - "3000:3000"
 
